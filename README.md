@@ -5,7 +5,7 @@
 [![npm](https://img.shields.io/npm/v/@trailguide/core)](https://www.npmjs.com/package/@trailguide/core)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-[Live Demo](https://demo-app-steel-phi.vercel.app) · [Documentation](docs/) · [Website](https://gettrailguide.vercel.app)
+[Live Demo](https://trailguidedemo.vercel.app) · [Documentation](docs/) · [Website](https://gettrailguide.vercel.app)
 
 ---
 
