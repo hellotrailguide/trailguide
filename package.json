@@ -1,0 +1,22 @@
+{
+  "name": "trailguide",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "pnpm --filter demo-app dev",
+    "dev:website": "npx serve website",
+    "build": "pnpm -r build",
+    "build:runtime": "pnpm --filter @trailguide/runtime build",
+    "build:recorder": "pnpm --filter @trailguide/recorder build",
+    "typecheck": "pnpm -r typecheck",
+    "clean": "pnpm -r exec rm -rf dist node_modules"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  },
+  "engines": {
+    "node": ">=18",
+    "pnpm": ">=8"
+  }
+}
