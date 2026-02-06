@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import type { Trail, Step, Placement } from '@trailguide/runtime';
+import type { Trail, Step, Placement } from '@trailguide/core';
 import { generateSelector, highlightElement } from '../utils/selectorGenerator';
 
 export interface UseRecorderOptions {

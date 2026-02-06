@@ -1,6 +1,7 @@
 {
   "name": "@trailguide/core",
-  "version": "0.0.1",
+  "version": "0.0.2",
+  "description": "Framework-agnostic product tours. Tutorials as code for any web app.",
   "type": "module",
   "main": "./dist/trailguide.js",
   "module": "./dist/trailguide.js",
@@ -8,9 +9,10 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/trailguide.js"
+      "import": "./dist/trailguide.js",
+      "require": "./dist/trailguide.umd.js"
     },
-    "./styles.css": "./dist/trailguide.css"
+    "./dist/style.css": "./dist/style.css"
   },
   "files": [
     "dist"
@@ -19,6 +21,27 @@
     "dev": "vite build --watch",
     "build": "vite build && tsc --emitDeclarationOnly",
     "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "product-tour",
+    "onboarding",
+    "walkthrough",
+    "tutorial",
+    "guide",
+    "tooltip",
+    "popover",
+    "user-onboarding"
+  ],
+  "author": "Branden Langhals",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brandenlanghals/trailguide.git",
+    "directory": "packages/core"
+  },
+  "homepage": "https://github.com/brandenlanghals/trailguide#readme",
+  "bugs": {
+    "url": "https://github.com/brandenlanghals/trailguide/issues"
   },
   "dependencies": {
     "@floating-ui/dom": "^1.6.0"

@@ -1,6 +1,7 @@
 {
   "name": "@trailguide/recorder",
   "version": "0.0.1",
+  "description": "Record Trailguide tours by clicking on elements. Capture CSS selectors and export trail JSON.",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -19,12 +20,30 @@
     "build": "vite build && tsc --emitDeclarationOnly",
     "typecheck": "tsc --noEmit"
   },
+  "keywords": [
+    "react",
+    "product-tour",
+    "recorder",
+    "onboarding",
+    "trailguide"
+  ],
+  "author": "Branden Langhals",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brandenlanghals/trailguide.git",
+    "directory": "packages/recorder"
+  },
+  "homepage": "https://github.com/brandenlanghals/trailguide#readme",
+  "bugs": {
+    "url": "https://github.com/brandenlanghals/trailguide/issues"
+  },
   "peerDependencies": {
     "react": "^18.0.0",
     "react-dom": "^18.0.0"
   },
   "dependencies": {
-    "@trailguide/runtime": "workspace:*"
+    "@trailguide/core": "^0.0.1"
   },
   "devDependencies": {
     "@types/react": "^18.2.0",

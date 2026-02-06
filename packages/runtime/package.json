@@ -1,6 +1,7 @@
 {
   "name": "@trailguide/runtime",
   "version": "0.0.1",
+  "description": "React hooks and components for Trailguide product tours.",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -9,8 +10,7 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
-    },
-    "./styles.css": "./dist/styles.css"
+    }
   },
   "files": [
     "dist"
@@ -20,12 +20,31 @@
     "build": "vite build && tsc --emitDeclarationOnly",
     "typecheck": "tsc --noEmit"
   },
+  "keywords": [
+    "react",
+    "product-tour",
+    "onboarding",
+    "walkthrough",
+    "tutorial",
+    "trailguide"
+  ],
+  "author": "Branden Langhals",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brandenlanghals/trailguide.git",
+    "directory": "packages/runtime"
+  },
+  "homepage": "https://github.com/brandenlanghals/trailguide#readme",
+  "bugs": {
+    "url": "https://github.com/brandenlanghals/trailguide/issues"
+  },
   "peerDependencies": {
     "react": "^18.0.0",
     "react-dom": "^18.0.0"
   },
   "dependencies": {
-    "@trailguide/core": "workspace:*"
+    "@trailguide/core": "^0.0.1"
   },
   "devDependencies": {
     "@types/react": "^18.2.0",

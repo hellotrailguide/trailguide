@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trailguide - Vanilla JS Demo</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #f3f4f6;
+      min-height: 100vh;
+    }
+    header {
+      background: white;
+      border-bottom: 1px solid #e5e7eb;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 600;
+    }
+    #settings-btn {
+      padding: 8px 16px;
+      font-size: 14px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      background: white;
+      cursor: pointer;
+    }
+    main {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    .actions {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    #create-btn {
+      padding: 12px 24px;
+      font-size: 14px;
+      font-weight: 500;
+      border: none;
+      border-radius: 8px;
+      background: #3b82f6;
+      color: white;
+      cursor: pointer;
+    }
+    #start-tour-btn {
+      padding: 12px 24px;
+      font-size: 14px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      background: white;
+      cursor: pointer;
+    }
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      margin-bottom: 24px;
+    }
+    .card h2 {
+      margin: 0 0 16px 0;
+      font-size: 16px;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 16px;
+    }
+    .stat-value {
+      font-size: 28px;
+      font-weight: 700;
+    }
+    .stat-label {
+      font-size: 13px;
+      color: #6b7280;
+    }
+    .info {
+      font-size: 14px;
+      color: #4b5563;
+      line-height: 1.6;
+    }
+    code {
+      background: #f3f4f6;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <header id="dashboard-header">
+    <h1>Dashboard</h1>
+    <button id="settings-btn">Settings</button>
+  </header>
+
+  <main>
+    <div class="actions">
+      <button id="create-btn">+ Create New</button>
+      <button id="start-tour-btn">Start Tour</button>
+    </div>
+
+    <div class="card" id="stats-panel">
+      <h2>Your Statistics</h2>
+      <div class="stats">
+        <div>
+          <div class="stat-value">12</div>
+          <div class="stat-label">Projects</div>
+        </div>
+        <div>
+          <div class="stat-value">48</div>
+          <div class="stat-label">Tasks Done</div>
+        </div>
+        <div>
+          <div class="stat-value">6</div>
+          <div class="stat-label">Team Members</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Vanilla JS Demo</h2>
+      <p class="info">
+        This demo uses <code>@trailguide/core</code> directly with no framework.
+        Works with any web app - just load the script and call <code>Trailguide.start(trail)</code>.
+      </p>
+    </div>
+  </main>
+
+  <!-- Load Trailguide -->
+  <link rel="stylesheet" href="../../packages/core/dist/style.css">
+  <script src="../../packages/core/dist/trailguide.umd.js"></script>
+
+  <script>
+    // Define the trail
+    const trail = {
+      id: 'welcome',
+      title: 'Welcome Tour',
+      version: '1.0.0',
+      steps: [
+        {
+          id: 'step-1',
+          target: '#dashboard-header',
+          placement: 'bottom',
+          title: 'Welcome!',
+          content: 'This is a vanilla JS demo of Trailguide. No React, no build step required.'
+        },
+        {
+          id: 'step-2',
+          target: '#create-btn',
+          placement: 'bottom',
+          title: 'Create Button',
+          content: 'Click here to create new items. This tour works with any framework.'
+        },
+        {
+          id: 'step-3',
+          target: '#stats-panel',
+          placement: 'top',
+          title: 'Statistics',
+          content: 'View your stats here. The tour JSON can live in your repo and be version controlled.'
+        },
+        {
+          id: 'step-4',
+          target: '#settings-btn',
+          placement: 'left',
+          title: 'Settings',
+          content: 'Configure your preferences. That\'s the tour - simple, framework-agnostic, and git-friendly!'
+        }
+      ]
+    };
+
+    // Start tour button
+    document.getElementById('start-tour-btn').addEventListener('click', () => {
+      Trailguide.start(trail, {
+        onComplete: () => console.log('Tour completed!'),
+        onSkip: () => console.log('Tour skipped'),
+      });
+    });
+
+    // Auto-start on load
+    setTimeout(() => {
+      Trailguide.start(trail, {
+        onComplete: () => console.log('Tour completed!'),
+        onSkip: () => console.log('Tour skipped'),
+      });
+    }, 500);
+  </script>
+</body>
+</html>

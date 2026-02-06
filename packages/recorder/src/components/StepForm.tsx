@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { Placement } from '@trailguide/runtime';
+import type { Placement } from '@trailguide/core';
 import type { PendingStep } from '../hooks/useRecorder';
 
 interface StepFormProps {

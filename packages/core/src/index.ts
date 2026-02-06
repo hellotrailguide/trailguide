@@ -17,3 +17,15 @@ export {
   isElementVisible,
   scrollToElement,
 } from './dom';
+
+// Validation utilities
+export {
+  validateTrail,
+  logValidationResults,
+} from './validate';
+
+export type {
+  ValidationResult,
+  ValidationError,
+  ValidationWarning,
+} from './validate';

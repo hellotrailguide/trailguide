@@ -5,8 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "pnpm --filter demo-app dev",
+    "dev:vanilla": "npx serve examples/vanilla-demo",
     "dev:website": "npx serve website",
     "build": "pnpm -r build",
+    "build:core": "pnpm --filter @trailguide/core build",
     "build:runtime": "pnpm --filter @trailguide/runtime build",
     "build:recorder": "pnpm --filter @trailguide/recorder build",
     "typecheck": "pnpm -r typecheck",

@@ -1,19 +1,21 @@
 # @trailguide/runtime
 
-The runtime package for Trailguide. Renders interactive product tours from JSON trail files.
+React wrapper for Trailguide. Provides hooks and components for React apps.
+
+> **Note:** For non-React apps, use `@trailguide/core` directly.
 
 ## Installation
 
 ```bash
-pnpm add @trailguide/runtime
-# or
-npm install @trailguide/runtime
+npm install @trailguide/runtime @trailguide/core
 ```
 
 ## Usage
 
 ```tsx
+import { useState } from 'react';
 import { Trailguide } from '@trailguide/runtime';
+import '@trailguide/core/dist/style.css';
 import myTour from './tours/my-tour.json';
 
 function App() {
@@ -50,7 +52,7 @@ Main component that renders the tour.
 
 ### `useTrail(options)`
 
-Hook for custom tour UI.
+Hook for programmatic control.
 
 ```tsx
 import { useTrail } from '@trailguide/runtime';
@@ -60,33 +62,26 @@ const {
   currentStepIndex,
   totalSteps,
   isActive,
-  targetElement,
   next,
   prev,
   skip,
   goToStep,
-} = useTrail({ trail, onComplete, onStepChange });
+  start,
+  stop,
+} = useTrail({
+  trail,
+  onComplete,
+  onStepChange,
+  autoStart: false, // set true to start immediately
+});
 ```
 
-### Types
+## Types
+
+Types are re-exported from `@trailguide/core`:
 
 ```typescript
-interface Trail {
-  id: string;
-  title: string;
-  version: string;
-  steps: Step[];
-}
-
-interface Step {
-  id: string;
-  target: string;
-  placement: 'top' | 'bottom' | 'left' | 'right';
-  title: string;
-  content: string;
-  action?: 'click' | 'input' | 'hover' | 'none';
-  nextOn?: 'click' | 'manual';
-}
+import type { Trail, Step, Placement } from '@trailguide/runtime';
 ```
 
 ## Keyboard Navigation
@@ -97,7 +92,14 @@ interface Step {
 
 ## Styling
 
-The runtime uses inline styles for zero-config setup. Components have class names for custom styling:
+Import styles from the core package:
 
-- `.trailguide-spotlight` - The overlay with cutout
-- `.trailguide-step-overlay` - The tooltip container
+```tsx
+import '@trailguide/core/dist/style.css';
+```
+
+CSS classes available for customization:
+- `.trailguide-overlay` - Main overlay container
+- `.trailguide-spotlight` - The darkened backdrop
+- `.trailguide-highlight` - Border around target element
+- `.trailguide-tooltip` - The tooltip container
