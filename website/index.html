@@ -29,21 +29,45 @@
   <!-- Hero -->
   <section class="hero">
     <div class="container">
-      <div class="badge">Open Source</div>
+      <div class="badge">Open Source · MIT License</div>
       <h1>Tutorials as Code</h1>
       <p class="hero-subtitle">
         Product tours that live in your Git repo.<br>
-        No vendor lock-in. No per-user pricing. Just JSON files.
+        No vendor lock-in. No per-user pricing. Just JSON files you own.
       </p>
       <div class="hero-cta">
         <a href="https://trailguidedemo.vercel.app" target="_blank" class="btn btn-primary btn-large">
           Try Live Demo
         </a>
         <a href="https://github.com/brandenlanghals/trailguide#quick-start" target="_blank" class="btn btn-secondary btn-large">
-          Get Started
+          View Documentation
         </a>
       </div>
-      <p class="hero-note">Free forever for self-hosted. Paid editor coming soon.</p>
+      <p class="hero-note">Free forever. No account required.</p>
+    </div>
+  </section>
+
+  <!-- Philosophy -->
+  <section class="philosophy">
+    <div class="container">
+      <h2>Why Trailguide exists</h2>
+      <p class="philosophy-lead">
+        Most product tour tools charge per user, lock your content in their dashboard, and disappear when they shut down. We think that's broken.
+      </p>
+      <div class="philosophy-points">
+        <div class="philosophy-point">
+          <h3>You own your tours</h3>
+          <p>Tours are JSON files in your repo. Review them in PRs. Roll back mistakes. Fork them for experiments. They're yours forever.</p>
+        </div>
+        <div class="philosophy-point">
+          <h3>No surprise bills</h3>
+          <p>The runtime is free for unlimited users. We'll never charge you based on how many people see your tours.</p>
+        </div>
+        <div class="philosophy-point">
+          <h3>Works everywhere</h3>
+          <p>React, Vue, Svelte, vanilla JS — if it runs in a browser, Trailguide works. No framework lock-in either.</p>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -84,9 +108,9 @@
       <div class="steps">
         <div class="step">
           <div class="step-number">1</div>
-          <h3>Install the runtime</h3>
+          <h3>Install the package</h3>
           <div class="code-block">
-            <code>npm install @trailguide/runtime</code>
+            <code>npm install @trailguide/core</code>
           </div>
         </div>
 
@@ -100,7 +124,7 @@
   <span class="code-key">"title"</span>: <span class="code-string">"Welcome Tour"</span>,
   <span class="code-key">"steps"</span>: [
     {
-      <span class="code-key">"target"</span>: <span class="code-string">"#create-btn"</span>,
+      <span class="code-key">"target"</span>: <span class="code-string">"[data-trail-id='create-btn']"</span>,
       <span class="code-key">"title"</span>: <span class="code-string">"Start here"</span>,
       <span class="code-key">"content"</span>: <span class="code-string">"Click to create your first project."</span>,
       <span class="code-key">"placement"</span>: <span class="code-string">"bottom"</span>
@@ -112,15 +136,14 @@
 
         <div class="step">
           <div class="step-number">3</div>
-          <h3>Add to your app</h3>
+          <h3>Start the tour</h3>
           <div class="code-block code-block-large">
-<pre><code><span class="code-keyword">import</span> { Trailguide } <span class="code-keyword">from</span> <span class="code-string">'@trailguide/runtime'</span>;
+<pre><code><span class="code-keyword">import</span> { start } <span class="code-keyword">from</span> <span class="code-string">'@trailguide/core'</span>;
+<span class="code-keyword">import</span> <span class="code-string">'@trailguide/core/dist/style.css'</span>;
 
-<span class="code-comment">// Load your trail and start</span>
-<span class="code-keyword">const</span> tour = <span class="code-keyword">await</span> <span class="code-function">fetch</span>(<span class="code-string">'/tours/welcome.json'</span>);
-<span class="code-keyword">const</span> trail = <span class="code-keyword">await</span> tour.<span class="code-function">json</span>();
-
-Trailguide.<span class="code-function">start</span>(trail);</code></pre>
+<span class="code-function">fetch</span>(<span class="code-string">'/tours/welcome.json'</span>)
+  .<span class="code-function">then</span>(res => res.<span class="code-function">json</span>())
+  .<span class="code-function">then</span>(trail => <span class="code-function">start</span>(trail));</code></pre>
           </div>
         </div>
       </div>
@@ -131,10 +154,38 @@ Trailguide.<span class="code-function">start</span>(trail);</code></pre>
     </div>
   </section>
 
+  <!-- Who it's for -->
+  <section class="who-for">
+    <div class="container">
+      <h2>Built for developers</h2>
+      <p class="section-subtitle">Trailguide is for teams who want control over their onboarding.</p>
+
+      <div class="who-grid">
+        <div class="who-card who-good">
+          <h3>Good fit</h3>
+          <ul>
+            <li>Dev teams who want onboarding without a SaaS dependency</li>
+            <li>Products that ship behind firewalls or on-prem</li>
+            <li>OSS maintainers documenting complex UIs</li>
+            <li>Teams tired of per-seat pricing</li>
+          </ul>
+        </div>
+        <div class="who-card who-not">
+          <h3>Not a fit</h3>
+          <ul>
+            <li>No-code teams that never touch Git</li>
+            <li>Marketing-led tours managed by non-technical users</li>
+            <li>Products that want hosted analytics only</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Features -->
   <section class="features">
     <div class="container">
-      <h2>Why developers choose Trailguide</h2>
+      <h2>Everything you need, nothing you don't</h2>
 
       <div class="features-grid">
         <div class="feature">
@@ -158,7 +209,7 @@ Trailguide.<span class="code-function">start</span>(trail);</code></pre>
             <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
           </div>
           <h3>No Per-User Pricing</h3>
-          <p>The runtime is free. Forever. Show tours to a million users without paying a cent more.</p>
+          <p>The runtime is free. Forever. Show tours to a million users without paying a cent.</p>
         </div>
 
         <div class="feature">
@@ -174,7 +225,7 @@ Trailguide.<span class="code-function">start</span>(trail);</code></pre>
             <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
           </div>
           <h3>5 Minute Setup</h3>
-          <p>No account, no API keys, no configuration. Install, add JSON, ship. You're done.</p>
+          <p>No account, no API keys, no configuration. Install, add JSON, ship.</p>
         </div>
 
         <div class="feature">
@@ -187,7 +238,6 @@ Trailguide.<span class="code-function">start</span>(trail);</code></pre>
       </div>
     </div>
   </section>
-
 
   <!-- Pricing -->
   <section id="pricing" class="pricing">
@@ -204,11 +254,12 @@ Trailguide.<span class="code-function">start</span>(trail);</code></pre>
               <span class="price-period">forever</span>
             </div>
           </div>
+          <p class="pricing-description">Full power. Full control. No limits.</p>
           <ul class="pricing-features">
-            <li>Runtime package</li>
-            <li>Unlimited users</li>
-            <li>JSON trail format</li>
-            <li>Local recorder tool</li>
+            <li>Runtime package for any framework</li>
+            <li>Unlimited users, unlimited tours</li>
+            <li>Recorder tool for capturing steps</li>
+            <li>Trail validation utilities</li>
             <li>Self-host everything</li>
             <li>MIT License</li>
           </ul>
@@ -226,19 +277,24 @@ Trailguide.<span class="code-function">start</span>(trail);</code></pre>
               <span class="price-period">/month</span>
             </div>
           </div>
+          <p class="pricing-description">Speed, safety, and scale for teams.</p>
           <ul class="pricing-features">
-            <li>Everything in Open Source</li>
-            <li>Visual tour editor</li>
-            <li>Click-to-record in browser</li>
-            <li>GitHub sync (push to repo)</li>
-            <li>Selector auto-repair</li>
-            <li>Team collaboration</li>
+            <li><strong>Authoring:</strong> Visual editor, drag-and-drop</li>
+            <li><strong>Reliability:</strong> Selector auto-repair</li>
+            <li><strong>Workflow:</strong> GitHub sync, push as PRs</li>
+            <li><strong>Insights:</strong> Completion rates (opt-in)</li>
+            <li>Everything still exports to JSON</li>
+            <li>No lock-in, ever</li>
           </ul>
           <a href="#waitlist" class="btn btn-primary btn-block">
             Join Waitlist
           </a>
         </div>
       </div>
+
+      <p class="pricing-note">
+        The Pro Editor is optional. Everything it produces is still just JSON files in your repo.
+      </p>
     </div>
   </section>
 
@@ -248,11 +304,48 @@ Trailguide.<span class="code-function">start</span>(trail);</code></pre>
       <h2>Get early access to the Pro Editor</h2>
       <p class="section-subtitle">Be the first to know when we launch. No spam, just one email.</p>
 
-      <form class="waitlist-form" action="https://formspree.io/f/mqedkkbr" method="POST">
+      <form id="waitlist-form" class="waitlist-form" action="https://formspree.io/f/mqedkkbr" method="POST">
         <input type="email" name="email" placeholder="you@company.com" required>
         <button type="submit" class="btn btn-primary">Join Waitlist</button>
       </form>
-      <p class="waitlist-note">Be the first to get access</p>
+      <div id="waitlist-success" class="waitlist-success" style="display: none;">
+        <div class="success-icon">✓</div>
+        <h3>You're on the list!</h3>
+        <p>We'll email you when the Pro Editor is ready.</p>
+      </div>
+      <p class="waitlist-note">Join 0 others on the waitlist</p>
+
+      <script>
+        document.getElementById('waitlist-form').addEventListener('submit', async function(e) {
+          e.preventDefault();
+          const form = e.target;
+          const button = form.querySelector('button');
+          const originalText = button.textContent;
+
+          button.textContent = 'Joining...';
+          button.disabled = true;
+
+          try {
+            const response = await fetch(form.action, {
+              method: 'POST',
+              body: new FormData(form),
+              headers: { 'Accept': 'application/json' }
+            });
+
+            if (response.ok) {
+              form.style.display = 'none';
+              document.getElementById('waitlist-success').style.display = 'block';
+              document.querySelector('.waitlist-note').style.display = 'none';
+            } else {
+              throw new Error('Form submission failed');
+            }
+          } catch (error) {
+            button.textContent = originalText;
+            button.disabled = false;
+            alert('Something went wrong. Please try again.');
+          }
+        });
+      </script>
     </div>
   </section>
 
@@ -265,7 +358,7 @@ Trailguide.<span class="code-function">start</span>(trail);</code></pre>
             <span class="logo-icon">~</span>
             <span>Trailguide</span>
           </a>
-          <p>Tutorials as code for any web app.</p>
+          <p>Tutorials as code. Free forever.</p>
         </div>
         <div class="footer-links">
           <h4>Product</h4>
@@ -275,13 +368,13 @@ Trailguide.<span class="code-function">start</span>(trail);</code></pre>
         </div>
         <div class="footer-links">
           <h4>Resources</h4>
+          <a href="https://trailguidedemo.vercel.app">Live Demo</a>
           <a href="https://github.com/brandenlanghals/trailguide/blob/main/docs/trail-format.md">Trail Format</a>
           <a href="https://github.com/brandenlanghals/trailguide/blob/main/docs/api-reference.md">API Reference</a>
-          <a href="https://github.com/brandenlanghals/trailguide/tree/main/examples">Examples</a>
         </div>
       </div>
       <div class="footer-bottom">
-        <p>&copy; 2024 Trailguide. MIT License.</p>
+        <p>MIT License. Free for personal and commercial use.</p>
       </div>
     </div>
   </footer>

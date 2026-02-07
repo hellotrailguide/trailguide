@@ -2,9 +2,8 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { Trailguide } from '@trailguide/runtime';
 import type { Trail } from '@trailguide/runtime';
 import { RecorderOverlay, useRecorder } from '@trailguide/recorder';
-import '@trailguide/core/dist/style.css';
+import '@trailguide/core/styles.css';
 import { Dashboard } from './components/Dashboard';
-import { CreateButton } from './components/CreateButton';
 import { StatsPanel } from './components/StatsPanel';
 
 function App() {
@@ -12,12 +11,30 @@ function App() {
   const [showRecorder, setShowRecorder] = useState(false);
   const [trail, setTrail] = useState<Trail | null>(null);
   const [trailSource, setTrailSource] = useState<'default' | 'imported'>('default');
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [builderState, setBuilderState] = useState<'initial' | 'recording' | 'ready'>('initial');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const recorder = useRecorder({
     trailId: 'new-trail',
     trailTitle: 'My New Trail',
   });
+
+  useEffect(() => {
+    if (toastMessage) {
+      const timer = setTimeout(() => {
+        setToastMessage(null);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [toastMessage]);
+
+  useEffect(() => {
+    if (builderState === 'recording' && recorder.steps.length > 0) {
+        const lastStep = recorder.steps[recorder.steps.length - 1];
+        setToastMessage(`Step added: ${lastStep.target}`);
+    }
+    }, [recorder.steps, builderState]);
 
   // Load default tour from JSON file
   const loadDefaultTour = useCallback(async () => {
@@ -60,68 +77,174 @@ function App() {
       }
     };
     reader.readAsText(file);
-
-    // Reset input so same file can be imported again
     e.target.value = '';
+  };
+
+  // Start recording flow
+  const startRecording = () => {
+    setShowRecorder(true);
+    setBuilderState('recording');
   };
 
   return (
     <>
       <Dashboard>
-        {/* Hero section with Play Tour */}
+        {/* Toast Message */}
+        {toastMessage && (
+            <div style={{
+                position: 'fixed',
+                bottom: '20px',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                padding: '12px 24px',
+                background: '#22c55e',
+                color: 'white',
+                borderRadius: '8px',
+                zIndex: 2000,
+                boxShadow: '0 4px 14px rgba(0,0,0,0.2)',
+            }}>
+                {toastMessage}
+            </div>
+        )}
+
+        {/* Workbench Header */}
         <div
           style={{
-            background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
-            borderRadius: '16px',
-            padding: '32px',
+            padding: '20px',
             marginBottom: '24px',
-            color: 'white',
-            textAlign: 'center',
+            background: '#ffffff',
+            borderRadius: '16px',
+            border: '1px solid #e5e7eb',
           }}
         >
-          <h2 style={{ margin: '0 0 8px 0', fontSize: '24px', fontWeight: 700 }}>
-            Trailguide Demo
+          <h2 style={{ margin: '0 0 4px 0', fontSize: '24px', fontWeight: 700, color: '#111827' }}>
+            Build a Trail by Clicking Your App
           </h2>
-          <p style={{ margin: '0 0 24px 0', opacity: 0.9, fontSize: '15px' }}>
-            Interactive product tours that live in your Git repo
+          <p style={{ margin: 0, fontSize: '15px', color: '#6b7280' }}>
+            Trails are recorded by clicking real UI elements. No dashboards. No setup.
           </p>
-          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <button
-              onClick={playTour}
-              style={{
-                padding: '14px 32px',
-                fontSize: '16px',
-                fontWeight: 600,
-                border: 'none',
-                borderRadius: '8px',
-                background: 'white',
-                color: '#1d4ed8',
-                cursor: 'pointer',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-              }}
-            >
-              Play Tour
-            </button>
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              style={{
-                padding: '14px 32px',
-                fontSize: '16px',
-                fontWeight: 600,
-                border: '2px solid rgba(255,255,255,0.3)',
-                borderRadius: '8px',
-                background: 'transparent',
-                color: 'white',
-                cursor: 'pointer',
-              }}
-            >
-              Import Trail
-            </button>
-          </div>
-          {trailSource === 'imported' && (
-            <p style={{ margin: '16px 0 0 0', fontSize: '13px', opacity: 0.8 }}>
-              Playing imported trail: {trail?.title || 'Untitled'}
-            </p>
+        </div>
+
+        {/* Trail Builder */}
+        <div
+          style={{
+            padding: '20px',
+            marginBottom: '24px',
+            background: '#ffffff',
+            borderRadius: '16px',
+            border: '1px solid #e5e7eb',
+          }}
+        >
+          {builderState === 'initial' && (
+            <div>
+              <h3 style={{ margin: '0 0 16px 0', fontSize: '18px', fontWeight: 600, color: '#111827' }}>
+                Step 1: Record your first trail
+              </h3>
+              <button
+                onClick={startRecording}
+                data-trail-id="start-recording"
+                style={{
+                  padding: '12px 24px',
+                  fontSize: '14px',
+                  fontWeight: 600,
+                  border: 'none',
+                  borderRadius: '8px',
+                  background: '#3b82f6',
+                  color: 'white',
+                  cursor: 'pointer',
+                }}
+              >
+                Start Recording
+              </button>
+            </div>
+          )}
+          {builderState === 'recording' && (
+            <div>
+              <h3 style={{ margin: '0 0 16px 0', fontSize: '18px', fontWeight: 600, color: '#111827' }}>
+                Recording — click elements to add steps
+              </h3>
+              <button
+                onClick={() => {
+                  setShowRecorder(false);
+                  setBuilderState('ready');
+                }}
+                data-trail-id="finish-recording"
+                style={{
+                  padding: '12px 24px',
+                  fontSize: '14px',
+                  fontWeight: 600,
+                  border: '2px solid #3b82f6',
+                  borderRadius: '8px',
+                  background: '#eff6ff',
+                  color: '#1d4ed8',
+                  cursor: 'pointer',
+                }}
+              >
+                Finish Recording
+              </button>
+              {recorder.steps.length > 0 && (
+                <button
+                    onClick={() => {
+                        const recordedTrail = recorder.exportTrail();
+                        setTrail(recordedTrail);
+                        setShowTour(true);
+                    }}
+                    data-trail-id="preview-trail-recording"
+                    style={{
+                        padding: '12px 24px',
+                        fontSize: '14px',
+                        border: '1px solid #d1d5db',
+                        borderRadius: '8px',
+                        background: 'white',
+                        color: '#374151',
+                        cursor: 'pointer',
+                        marginLeft: '12px',
+                    }}
+                >
+                    Preview Trail
+                </button>
+              )}
+            </div>
+          )}
+          {builderState === 'ready' && (
+            <div>
+              <h3 style={{ margin: '0 0 16px 0', fontSize: '18px', fontWeight: 600, color: '#111827' }}>
+                Trail ready — save or preview it
+              </h3>
+              <div style={{ display: 'flex', gap: '12px' }}>
+                <button
+                  onClick={() => recorder.downloadTrail()}
+                  data-trail-id="save-trail"
+                  style={{
+                    padding: '12px 24px',
+                    fontSize: '14px',
+                    fontWeight: 600,
+                    border: 'none',
+                    borderRadius: '8px',
+                    background: '#3b82f6',
+                    color: 'white',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Save Trail
+                </button>
+                <button
+                  onClick={playTour}
+                  data-trail-id="preview-trail"
+                  style={{
+                    padding: '12px 24px',
+                    fontSize: '14px',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '8px',
+                    background: 'white',
+                    color: '#374151',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Preview Trail
+                </button>
+              </div>
+            </div>
           )}
         </div>
 
@@ -134,131 +257,170 @@ function App() {
           style={{ display: 'none' }}
         />
 
-        {/* Action bar */}
-        <div
-          style={{
-            display: 'flex',
-            gap: '12px',
-            marginBottom: '24px',
-            flexWrap: 'wrap',
-          }}
-        >
-          <CreateButton />
-          <button
-            onClick={() => {
-              loadDefaultTour();
-              setShowTour(true);
-            }}
-            style={{
-              padding: '12px 24px',
-              fontSize: '14px',
-              border: '1px solid #d1d5db',
-              borderRadius: '8px',
-              background: 'white',
-              color: '#374151',
-              cursor: 'pointer',
-            }}
-          >
-            Reset to Default
-          </button>
-          <button
-            onClick={() => setShowRecorder(prev => !prev)}
-            style={{
-              padding: '12px 24px',
-              fontSize: '14px',
-              border: showRecorder ? '2px solid #3b82f6' : '1px solid #d1d5db',
-              borderRadius: '8px',
-              background: showRecorder ? '#eff6ff' : 'white',
-              color: showRecorder ? '#1d4ed8' : '#374151',
-              cursor: 'pointer',
-            }}
-          >
-            {showRecorder ? 'Hide Recorder' : 'Show Recorder'}
-          </button>
+        <div style={{ display: 'flex', gap: '12px', marginBottom: '24px', opacity: builderState === 'recording' ? 0.5 : 1 }}>
+            <button
+                onClick={() => fileInputRef.current?.click()}
+                data-trail-id="import-trail"
+                style={{
+                padding: '12px 24px',
+                fontSize: '14px',
+                border: '1px solid #d1d5db',
+                borderRadius: '8px',
+                background: 'white',
+                color: '#374151',
+                cursor: 'pointer',
+                }}
+            >
+                Load a Trail
+            </button>
+            <button
+                onClick={playTour}
+                data-trail-id="play-example"
+                style={{
+                padding: '12px 24px',
+                fontSize: '14px',
+                border: '1px solid #d1d5db',
+                borderRadius: '8px',
+                background: 'white',
+                color: '#374151',
+                cursor: 'pointer',
+                }}
+            >
+                Run Trail
+            </button>
         </div>
 
-        {/* Stats */}
-        <StatsPanel />
+        {trailSource === 'imported' && (
+          <div
+            style={{
+              padding: '12px 16px',
+              background: '#ecfdf5',
+              border: '1px solid #a7f3d0',
+              borderRadius: '8px',
+              marginBottom: '24px',
+              fontSize: '14px',
+              color: '#065f46',
+            }}
+          >
+            Loaded: <strong>{trail?.title || 'Untitled Trail'}</strong> ({trail?.steps?.length || 0} steps)
+          </div>
+        )}
+
+        {/* Sample App Content - things to target */}
+        <div style={{ opacity: builderState === 'recording' ? 0.5 : 1 }}>
+            <StatsPanel />
+        </div>
+
+        {/* Recording Banner */}
+        {builderState === 'recording' && (
+            <div style={{
+                position: 'fixed',
+                top: '80px',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                padding: '12px 24px',
+                background: 'rgba(0,0,0,0.8)',
+                color: 'white',
+                borderRadius: '8px',
+                zIndex: 1000,
+            }}>
+                Click anything to add it to the trail
+            </div>
+        )}
+
+        {/* Sample buttons to record */}
+        <div
+          style={{
+            marginTop: '24px',
+            padding: '24px',
+            background: 'white',
+            borderRadius: '12px',
+            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+            opacity: builderState === 'recording' ? 1 : 0.5,
+          }}
+        >
+          <h3 style={{ margin: '0 0 8px 0', fontSize: '16px', fontWeight: 600, color: '#111827' }}>
+            Things to Try Recording
+          </h3>
+          <p style={{ margin: '0 0 16px 0', fontSize: '14px', color: '#6b7280' }}>
+            These are normal app buttons — Trailguide just watches what you click.
+          </p>
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+            <button
+              data-trail-id="new-project"
+              style={{
+                padding: '10px 20px',
+                fontSize: '14px',
+                fontWeight: 500,
+                border: 'none',
+                borderRadius: '8px',
+                background: '#3b82f6',
+                color: 'white',
+                cursor: 'pointer',
+              }}
+            >
+              + New Project
+            </button>
+            <button
+              data-trail-id="invite-team"
+              style={{
+                padding: '10px 20px',
+                fontSize: '14px',
+                fontWeight: 500,
+                border: '1px solid #d1d5db',
+                borderRadius: '8px',
+                background: 'white',
+                color: '#374151',
+                cursor: 'pointer',
+              }}
+            >
+              Invite Team
+            </button>
+            <button
+              data-trail-id="view-reports"
+              style={{
+                padding: '10px 20px',
+                fontSize: '14px',
+                fontWeight: 500,
+                border: '1px solid #d1d5db',
+                borderRadius: '8px',
+                background: 'white',
+                color: '#374151',
+                cursor: 'pointer',
+              }}
+            >
+              View Reports
+            </button>
+          </div>
+        </div>
 
         {/* How it works */}
         <div
           style={{
-            marginTop: '24px',
-            padding: '20px',
-            background: 'white',
-            borderRadius: '12px',
-            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
-          }}
-        >
-          <h3
-            style={{
-              margin: '0 0 12px 0',
-              fontSize: '14px',
-              fontWeight: 600,
-              color: '#111827',
-            }}
-          >
-            Try It Out
-          </h3>
-          <ol
-            style={{
-              margin: 0,
-              paddingLeft: '20px',
-              fontSize: '14px',
-              lineHeight: 1.8,
-              color: '#4b5563',
-            }}
-          >
-            <li>Click <strong>Show Recorder</strong> → then <strong>Record</strong></li>
-            <li>Click any element on the page to capture it</li>
-            <li>Fill in the step details and add more steps</li>
-            <li>Click <strong>Export JSON</strong> to download your trail</li>
-            <li>Click <strong>Import Trail</strong> to test it immediately</li>
-          </ol>
-        </div>
-
-        {/* Info panel */}
-        <div
-          style={{
             marginTop: '16px',
             padding: '20px',
-            background: 'white',
+            background: '#f9fafb',
             borderRadius: '12px',
-            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+            border: '1px solid #e5e7eb',
           }}
         >
-          <h3
-            style={{
-              margin: '0 0 12px 0',
-              fontSize: '14px',
-              fontWeight: 600,
-              color: '#111827',
-            }}
-          >
-            Tutorials as Code
+          <h3 style={{ margin: '0 0 12px 0', fontSize: '16px', fontWeight: 600, color: '#111827' }}>
+            What did we just do?
           </h3>
-          <p
-            style={{
-              margin: '0 0 16px 0',
-              fontSize: '14px',
-              lineHeight: 1.6,
-              color: '#4b5563',
-            }}
-          >
-            Tours are just JSON files in your repo. Edit them, commit changes, review in PRs.
-            No vendor dashboard, no per-user pricing.
-          </p>
-          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-            <span style={{ fontSize: '12px', background: '#f3f4f6', padding: '4px 10px', borderRadius: '6px', color: '#374151' }}>
-              No build step
-            </span>
-            <span style={{ fontSize: '12px', background: '#f3f4f6', padding: '4px 10px', borderRadius: '6px', color: '#374151' }}>
-              JSON format
-            </span>
-            <span style={{ fontSize: '12px', background: '#f3f4f6', padding: '4px 10px', borderRadius: '6px', color: '#374151' }}>
-              Git diff-able
-            </span>
-          </div>
+          <ul style={{ margin: 0, paddingLeft: '20px', fontSize: '14px', lineHeight: 1.7, color: '#4b5563' }}>
+            <li>You recorded a trail by clicking real UI</li>
+            <li>Trailguide generated a trail file</li>
+            <li>That file can live in your repo</li>
+            <li>Anyone can edit it and review changes</li>
+          </ul>
+          <details style={{ marginTop: '16px', fontSize: '14px', color: '#4b5563' }}>
+            <summary style={{ cursor: 'pointer', fontWeight: 500 }}>Advanced: How trails are loaded</summary>
+            <p style={{ margin: '8px 0 0 0', lineHeight: 1.7 }}>
+              After exporting, drop the trail file in your app's <code style={{ background: '#e5e7eb', padding: '2px 6px', borderRadius: '4px' }}>/public/tours/</code> folder.
+              Then load it with <code style={{ background: '#e5e7eb', padding: '2px 6px', borderRadius: '4px' }}>Trailguide.start(trail)</code> — that's it!
+              Your tours are now version controlled and reviewable in PRs.
+            </p>
+          </details>
         </div>
       </Dashboard>
 

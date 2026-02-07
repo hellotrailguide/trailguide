@@ -87,7 +87,7 @@ export function RecorderOverlay({ recorder }: RecorderOverlayProps) {
               }}
             />
             <span style={{ fontWeight: 600, fontSize: '14px', color: '#111827' }}>
-              Trailguide Recorder
+              Trail Recording
             </span>
           </div>
           <button
@@ -103,7 +103,7 @@ export function RecorderOverlay({ recorder }: RecorderOverlayProps) {
               cursor: 'pointer',
             }}
           >
-            {isRecording ? 'Stop' : 'Record'}
+            {isRecording ? 'Pause' : 'Record'}
           </button>
         </div>
 
@@ -124,8 +124,8 @@ export function RecorderOverlay({ recorder }: RecorderOverlayProps) {
               }}
             >
               {isRecording
-                ? 'Click on elements to capture steps'
-                : 'Click "Record" to start capturing'}
+                ? 'Click any element to add it to the trail'
+                : 'Click "Record" to start'}
             </div>
           ) : (
             <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
@@ -243,7 +243,7 @@ export function RecorderOverlay({ recorder }: RecorderOverlayProps) {
                 fontWeight: 500,
               }}
             >
-              Export JSON
+              Save Trail
             </button>
           </div>
         )}

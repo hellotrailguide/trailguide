@@ -30,60 +30,37 @@ export function StepForm({ pendingStep, onConfirm, onCancel }: StepFormProps) {
       data-recorder-ui
       style={{
         background: 'white',
-        borderRadius: '8px',
-        padding: '16px',
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+        borderRadius: '12px',
+        padding: '20px',
+        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
       }}
     >
-      <div style={{ marginBottom: '12px' }}>
-        <label
-          style={{
-            display: 'block',
-            fontSize: '12px',
-            fontWeight: 600,
-            marginBottom: '4px',
-            color: '#374151',
-          }}
-        >
-          Selector
-        </label>
-        <code
-          style={{
-            display: 'block',
-            padding: '8px',
-            background: '#f3f4f6',
-            borderRadius: '4px',
-            fontSize: '12px',
-            wordBreak: 'break-all',
-            color: '#1f2937',
-          }}
-        >
-          {pendingStep.selector}
-        </code>
-      </div>
+      <h3 style={{ margin: '0 0 16px 0', fontSize: '16px', fontWeight: 600, color: '#111827' }}>
+        Add Step to Trail
+      </h3>
 
-      <div style={{ marginBottom: '12px' }}>
+      <div style={{ marginBottom: '14px' }}>
         <label
           htmlFor="step-title"
           style={{
             display: 'block',
-            fontSize: '12px',
-            fontWeight: 600,
-            marginBottom: '4px',
+            fontSize: '13px',
+            fontWeight: 500,
+            marginBottom: '6px',
             color: '#374151',
           }}
         >
-          Title *
+          What should the user do?
         </label>
         <input
           id="step-title"
           type="text"
           value={title}
           onChange={e => setTitle(e.target.value)}
-          placeholder="e.g., Click the Create button"
+          placeholder="Click New Project"
           style={{
             width: '100%',
-            padding: '8px 12px',
+            padding: '10px 12px',
             border: '1px solid #d1d5db',
             borderRadius: '6px',
             fontSize: '14px',
@@ -93,28 +70,28 @@ export function StepForm({ pendingStep, onConfirm, onCancel }: StepFormProps) {
         />
       </div>
 
-      <div style={{ marginBottom: '12px' }}>
+      <div style={{ marginBottom: '14px' }}>
         <label
           htmlFor="step-content"
           style={{
             display: 'block',
-            fontSize: '12px',
-            fontWeight: 600,
-            marginBottom: '4px',
+            fontSize: '13px',
+            fontWeight: 500,
+            marginBottom: '6px',
             color: '#374151',
           }}
         >
-          Content
+          What should they know?
         </label>
         <textarea
           id="step-content"
           value={content}
           onChange={e => setContent(e.target.value)}
-          placeholder="Describe what the user should do..."
-          rows={3}
+          placeholder="This starts a new project from scratch."
+          rows={2}
           style={{
             width: '100%',
-            padding: '8px 12px',
+            padding: '10px 12px',
             border: '1px solid #d1d5db',
             borderRadius: '6px',
             fontSize: '14px',
@@ -124,17 +101,17 @@ export function StepForm({ pendingStep, onConfirm, onCancel }: StepFormProps) {
         />
       </div>
 
-      <div style={{ marginBottom: '16px' }}>
+      <div style={{ marginBottom: '14px' }}>
         <label
           style={{
             display: 'block',
-            fontSize: '12px',
-            fontWeight: 600,
-            marginBottom: '4px',
+            fontSize: '13px',
+            fontWeight: 500,
+            marginBottom: '6px',
             color: '#374151',
           }}
         >
-          Placement
+          Tooltip position
         </label>
         <div style={{ display: 'flex', gap: '8px' }}>
           {placements.map(p => (
@@ -144,8 +121,8 @@ export function StepForm({ pendingStep, onConfirm, onCancel }: StepFormProps) {
               onClick={() => setPlacement(p)}
               style={{
                 flex: 1,
-                padding: '6px 12px',
-                fontSize: '12px',
+                padding: '8px 12px',
+                fontSize: '13px',
                 border: placement === p ? '2px solid #3b82f6' : '1px solid #d1d5db',
                 borderRadius: '6px',
                 background: placement === p ? '#eff6ff' : 'white',
@@ -160,13 +137,41 @@ export function StepForm({ pendingStep, onConfirm, onCancel }: StepFormProps) {
         </div>
       </div>
 
+      {/* Selector - collapsed by default */}
+      <details style={{ marginBottom: '16px' }}>
+        <summary
+          style={{
+            fontSize: '12px',
+            color: '#6b7280',
+            cursor: 'pointer',
+            userSelect: 'none',
+          }}
+        >
+          Advanced: element selector
+        </summary>
+        <code
+          style={{
+            display: 'block',
+            marginTop: '8px',
+            padding: '8px',
+            background: '#f3f4f6',
+            borderRadius: '4px',
+            fontSize: '11px',
+            wordBreak: 'break-all',
+            color: '#1f2937',
+          }}
+        >
+          {pendingStep.selector}
+        </code>
+      </details>
+
       <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
         <button
           type="button"
           onClick={onCancel}
           style={{
-            padding: '8px 16px',
-            fontSize: '13px',
+            padding: '10px 18px',
+            fontSize: '14px',
             border: '1px solid #d1d5db',
             borderRadius: '6px',
             background: 'white',
@@ -180,8 +185,8 @@ export function StepForm({ pendingStep, onConfirm, onCancel }: StepFormProps) {
           type="submit"
           disabled={!title.trim()}
           style={{
-            padding: '8px 16px',
-            fontSize: '13px',
+            padding: '10px 18px',
+            fontSize: '14px',
             border: 'none',
             borderRadius: '6px',
             background: title.trim() ? '#3b82f6' : '#9ca3af',
@@ -190,7 +195,7 @@ export function StepForm({ pendingStep, onConfirm, onCancel }: StepFormProps) {
             fontWeight: 500,
           }}
         >
-          Add Step
+          Add to Trail
         </button>
       </div>
     </form>

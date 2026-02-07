@@ -1,39 +1,77 @@
 # Trailguide
 
-**Tutorials as code** — Git-native, editable UI walkthroughs for any web app.
+**Tutorials as code** — Git-native product tours for any web app.
 
 [![npm](https://img.shields.io/npm/v/@trailguide/core)](https://www.npmjs.com/package/@trailguide/core)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-[Live Demo](https://trailguidedemo.vercel.app) · [Documentation](docs/) · [Website](https://gettrailguide.vercel.app)
+[Live Demo](https://trailguidedemo.vercel.app) · [Website](https://gettrailguide.vercel.app) · [Documentation](docs/)
 
 ---
 
-## What is Trailguide?
+## Why Trailguide?
 
-Trailguide lets you create interactive product tours that live in your codebase as JSON files. Edit a tour, commit the change, and your users see the update—no separate dashboard needed.
+Most product tour tools charge per user, lock your content in their dashboard, and disappear when they shut down.
 
-- **Framework-agnostic** — Works with React, Vue, Svelte, vanilla JS, or any web app
-- **Version controlled** — Trail changes show up in PRs, get reviewed, roll back easily
-- **No vendor lock-in** — Your tours are JSON files in your repo
-- **No per-user pricing** — Free runtime, unlimited users
+Trailguide is different:
+
+- **No vendor lock-in** — Tours are JSON files in your repo. You own them forever.
+- **No per-user pricing** — The runtime is free. Show tours to a million users without paying a cent.
+- **Git-native** — Review tour changes in PRs. Roll back mistakes. Branch for experiments.
+- **Framework-agnostic** — Works with React, Vue, Svelte, vanilla JS, or anything that runs in a browser.
+
+Your UI already knows how to teach itself. Trailguide just makes it easy.
+
+---
+
+## Free Forever
+
+Trailguide runtime and recorder are **open-source and free forever** under the MIT license.
+
+You can:
+- Create unlimited trails
+- Show them to unlimited users
+- Store and version them in your repo
+- Self-host everything
+
+No accounts. No tracking. No hosted dependencies.
+
+The optional [Pro Editor](#trailguide-pro-coming-soon) adds convenience features for teams — but the core tooling will always be free.
+
+---
+
+## Who This Is For
+
+**Good fit:**
+- Dev teams who want onboarding without a SaaS dependency
+- Products that ship behind firewalls or on-prem
+- OSS maintainers documenting complex UIs
+- Teams tired of per-seat pricing
+- Anyone who wants to version control their tours
+
+**Not a fit:**
+- No-code teams that never touch Git
+- Marketing-led tours managed by non-technical users
+- Products that want hosted analytics only
+
+---
+
+## How It Works
+
+```
+1. Run your app locally
+2. Enable the recorder
+3. Click through your UI to capture steps
+4. Export the trail as a JSON file
+5. Commit it to your repo
+6. Load it in production with <Trailguide />
+```
+
+That's it. Edit the JSON, reload, see changes. No build step. No deploy. No dashboard.
+
+---
 
 ## Quick Start
-
-### Any Framework (Vanilla JS)
-
-```bash
-npm install @trailguide/core
-```
-
-```js
-import { start } from '@trailguide/core';
-import '@trailguide/core/dist/style.css';
-
-fetch('/tours/welcome.json')
-  .then(res => res.json())
-  .then(trail => start(trail));
-```
 
 ### React
 
@@ -63,6 +101,21 @@ function App() {
 }
 ```
 
+### Vanilla JS
+
+```bash
+npm install @trailguide/core
+```
+
+```js
+import { start } from '@trailguide/core';
+import '@trailguide/core/dist/style.css';
+
+fetch('/tours/welcome.json')
+  .then(res => res.json())
+  .then(trail => start(trail));
+```
+
 ### CDN (No Build Step)
 
 ```html
@@ -79,7 +132,7 @@ function App() {
 
 ## Trail Format
 
-Tours are defined as JSON files. See [docs/trail-format.md](docs/trail-format.md) for the complete schema.
+Tours are JSON files. Simple, readable, diffable.
 
 ```json
 {
@@ -98,7 +151,7 @@ Tours are defined as JSON files. See [docs/trail-format.md](docs/trail-format.md
 }
 ```
 
-### Step Options
+### Step Fields
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
@@ -108,58 +161,23 @@ Tours are defined as JSON files. See [docs/trail-format.md](docs/trail-format.md
 | `title` | string | Yes | Step headline |
 | `content` | string | Yes | Step description |
 
-### Best Practice: Use `data-trail-id` for Stable Selectors
+### Best Practice: Stable Selectors
+
+Use `data-trail-id` attributes for selectors that won't break when classes change:
 
 ```html
-<!-- Recommended: stable, won't break if classes change -->
 <button data-trail-id="create-btn">Create</button>
-
-<!-- Avoid: fragile, breaks if class names change -->
-<button class="btn-primary-v2">Create</button>
 ```
 
-Then target it in your trail:
 ```json
 { "target": "[data-trail-id='create-btn']" }
 ```
 
 ---
 
-## Demo App
-
-The [demo app](examples/demo-app) shows Trailguide in action with:
-
-- Interactive dashboard with buttons and stats panel
-- **Play Tour** button to start the tour
-- **Recorder overlay** to capture new steps
-- Live JSON reload — edit `public/tours/welcome.json` and click "Restart Tour"
-
-Try it live: **[demo-app-steel-phi.vercel.app](https://demo-app-steel-phi.vercel.app)**
-
-Run locally:
-```bash
-git clone https://github.com/brandenlanghals/trailguide.git
-cd trailguide
-pnpm install
-pnpm dev
-```
-
----
-
 ## Using the Recorder
 
-The recorder lets you capture tour steps by clicking on elements.
-
-### Enable Recorder in Demo App
-
-1. Run `pnpm dev`
-2. Click **"Show Recorder"** button
-3. Click **"Record"** to start
-4. Click any element on the page to capture it
-5. Fill in the step title, content, and placement
-6. Click **"Export JSON"** to download your trail
-
-### Use in Your Own App
+The recorder is a **developer capture tool** — not a full visual editor. It generates clean, reviewable JSON that you own.
 
 ```bash
 npm install @trailguide/recorder
@@ -182,11 +200,21 @@ function App() {
 }
 ```
 
+### Recording Flow
+
+1. Click **Record** in the overlay panel
+2. Click any element on the page to capture it
+3. Fill in what the user should do and know
+4. Repeat for each step
+5. Click **Save Trail** to download the JSON
+
+The recorder generates smart selectors, preferring stable attributes (`id`, `data-trail-id`, `aria-label`) over fragile paths.
+
 ---
 
 ## Validating Trails
 
-Use `validateTrail()` to check if all selectors exist before showing tours to users:
+Catch broken selectors before your users do:
 
 ```ts
 import { validateTrail, logValidationResults } from '@trailguide/core';
@@ -195,24 +223,77 @@ import myTrail from './tours/welcome.json';
 const result = validateTrail(myTrail);
 
 if (!result.valid) {
-  logValidationResults(result); // Logs errors to console
+  logValidationResults(result);
 }
 ```
 
-This catches:
+Validation checks:
 - Missing target elements
 - Hidden elements
-- Potentially unstable selectors (warns to use `data-trail-id`)
+- Unstable selectors (warns to use `data-trail-id`)
 
 ---
 
 ## Packages
 
-| Package | Description | |
-|---------|-------------|---|
-| [`@trailguide/core`](packages/core) | Vanilla JS runtime — works with any framework | [![npm](https://img.shields.io/npm/v/@trailguide/core)](https://www.npmjs.com/package/@trailguide/core) |
-| [`@trailguide/runtime`](packages/runtime) | React hooks and components | [![npm](https://img.shields.io/npm/v/@trailguide/runtime)](https://www.npmjs.com/package/@trailguide/runtime) |
-| [`@trailguide/recorder`](packages/recorder) | Capture steps by clicking | [![npm](https://img.shields.io/npm/v/@trailguide/recorder)](https://www.npmjs.com/package/@trailguide/recorder) |
+| Package | Description |
+|---------|-------------|
+| [`@trailguide/core`](packages/core) | Vanilla JS runtime — works with any framework |
+| [`@trailguide/runtime`](packages/runtime) | React hooks and components |
+| [`@trailguide/recorder`](packages/recorder) | Capture steps by clicking elements |
+
+All packages are MIT licensed and free forever.
+
+---
+
+## API Reference
+
+### Core
+
+```ts
+import { start, stop, next, prev, skip, validateTrail } from '@trailguide/core';
+
+start(trail, options)    // Start a tour
+stop()                   // Stop the current tour
+next()                   // Go to next step
+prev()                   // Go to previous step
+skip()                   // Skip/close the tour
+validateTrail(trail)     // Check if selectors exist
+```
+
+### React
+
+```tsx
+import { Trailguide, useTrail } from '@trailguide/runtime';
+
+// Component approach
+<Trailguide
+  trail={trail}
+  onComplete={() => {}}
+  onSkip={() => {}}
+  onStepChange={(step, index) => {}}
+/>
+
+// Hook approach
+const { next, prev, skip, goToStep, currentStep, isActive } = useTrail({ trail });
+```
+
+See [docs/api-reference.md](docs/api-reference.md) for complete documentation.
+
+---
+
+## Live Demo
+
+Try it now: **[trailguidedemo.vercel.app](https://trailguidedemo.vercel.app)**
+
+Or run locally:
+
+```bash
+git clone https://github.com/brandenlanghals/trailguide.git
+cd trailguide
+pnpm install
+pnpm dev
+```
 
 ---
 
@@ -225,48 +306,44 @@ This catches:
 - [x] Trail validation
 - [ ] Vue wrapper
 - [ ] Svelte wrapper
-
-### Pro Editor (Coming Soon)
-- [ ] Visual tour builder
-- [ ] Click-to-record in browser
-- [ ] GitHub sync
-- [ ] Selector auto-repair
-- [ ] Team collaboration
-
-### Enterprise Add-ons
-- [ ] Analytics & completion tracking
-- [ ] Conditional branching
-- [ ] A/B testing for tours
-- [ ] SSO & audit logs
+- [ ] Conditional steps
 
 ---
 
-## API Reference
+## Trailguide Pro (Coming Soon)
 
-See [docs/api-reference.md](docs/api-reference.md) for complete API documentation.
+For teams who want **speed, safety, and scale** — without changing how trails are stored or shipped.
 
-### Core
+### Authoring Speed
+- Visual editor (no JSON hand-editing)
+- Drag-and-drop step ordering
+- Live preview across breakpoints
 
-```ts
-import { start, stop, validateTrail } from '@trailguide/core';
+### Maintenance & Reliability
+- Selector auto-repair when DOM changes
+- Warnings when trails break
+- CI-friendly validation reports
 
-start(trail, options)    // Start a tour
-stop()                   // Stop the current tour
-validateTrail(trail)     // Check if selectors exist
-```
+### Team Workflows
+- GitHub sync (push trails as PRs)
+- Comments on steps
+- Review history
 
-### React
+### Insights (opt-in)
+- Completion rates
+- Drop-off by step
+- Time per step
 
-```tsx
-import { Trailguide, useTrail } from '@trailguide/runtime';
+**The Pro Editor is optional.** Everything it produces is still just JSON files in your repo. No lock-in, ever.
 
-<Trailguide trail={trail} onComplete={() => {}} />
-
-const { next, prev, skip, currentStep } = useTrail({ trail });
-```
+[Join the waitlist](https://gettrailguide.vercel.app#waitlist)
 
 ---
 
 ## License
 
-MIT © [Branden Langhals](https://github.com/brandenlanghals)
+**MIT** — free for personal and commercial use.
+
+Trailguide is and will always be open source. Use it, fork it, build on it.
+
+Made by [Branden Langhals](https://github.com/brandenlanghals)

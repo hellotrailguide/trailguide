@@ -549,6 +549,41 @@ ul {
   color: var(--color-text-muted);
 }
 
+.waitlist-success {
+  max-width: 440px;
+  margin: 40px auto 0;
+  padding: 32px;
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  border-radius: 12px;
+}
+
+.waitlist-success .success-icon {
+  width: 48px;
+  height: 48px;
+  background: var(--color-success);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0 auto 16px;
+}
+
+.waitlist-success h3 {
+  color: var(--color-success);
+  font-size: 20px;
+  margin-bottom: 8px;
+}
+
+.waitlist-success p {
+  color: var(--color-text-muted);
+  margin: 0;
+  font-size: 15px;
+}
+
 /* Footer */
 .footer {
   padding: 80px 0 40px;
@@ -594,6 +629,145 @@ ul {
 
 .footer-bottom p {
   margin: 0;
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+
+/* Philosophy */
+.philosophy {
+  padding: 80px 0;
+  background: var(--color-bg-subtle);
+}
+
+.philosophy h2 {
+  text-align: center;
+  font-size: 32px;
+  margin-bottom: 16px;
+}
+
+.philosophy-lead {
+  text-align: center;
+  font-size: 18px;
+  color: var(--color-text-muted);
+  max-width: 600px;
+  margin: 0 auto 48px;
+  line-height: 1.6;
+}
+
+.philosophy-points {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 32px;
+}
+
+.philosophy-point {
+  padding: 24px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+}
+
+.philosophy-point h3 {
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+.philosophy-point p {
+  color: var(--color-text-muted);
+  font-size: 15px;
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* Who it's for */
+.who-for {
+  padding: 80px 0;
+}
+
+.who-for h2 {
+  text-align: center;
+  font-size: 32px;
+  margin-bottom: 12px;
+}
+
+.who-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.who-card {
+  padding: 28px;
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+}
+
+.who-card h3 {
+  font-size: 16px;
+  margin-bottom: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.who-card li {
+  padding: 8px 0;
+  padding-left: 24px;
+  position: relative;
+  color: var(--color-text-muted);
+  font-size: 15px;
+}
+
+.who-card li::before {
+  position: absolute;
+  left: 0;
+  font-size: 14px;
+}
+
+.who-good {
+  background: rgba(34, 197, 94, 0.05);
+  border-color: rgba(34, 197, 94, 0.2);
+}
+
+.who-good h3 {
+  color: var(--color-success);
+}
+
+.who-good li::before {
+  content: "✓";
+  color: var(--color-success);
+}
+
+.who-not {
+  background: rgba(161, 161, 170, 0.05);
+  border-color: rgba(161, 161, 170, 0.2);
+}
+
+.who-not h3 {
+  color: var(--color-text-muted);
+}
+
+.who-not li::before {
+  content: "—";
+  color: var(--color-text-muted);
+}
+
+/* Pricing additions */
+.pricing-description {
+  color: var(--color-text-muted);
+  font-size: 14px;
+  margin: 0 0 20px 0;
+  text-align: center;
+}
+
+.pricing-features strong {
+  color: var(--color-text);
+}
+
+.pricing-note {
+  text-align: center;
+  margin-top: 32px;
   font-size: 14px;
   color: var(--color-text-muted);
 }

@@ -14,12 +14,15 @@ importers:
 
   examples/demo-app:
     dependencies:
+      '@trailguide/core':
+        specifier: ^0.0.1
+        version: 0.0.1
       '@trailguide/recorder':
-        specifier: workspace:*
-        version: link:../../packages/recorder
+        specifier: ^0.0.1
+        version: 0.0.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@trailguide/runtime':
-        specifier: workspace:*
-        version: link:../../packages/runtime
+        specifier: ^0.0.1
+        version: 0.0.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react:
         specifier: ^18.2.0
         version: 18.3.1
@@ -62,8 +65,8 @@ importers:
   packages/recorder:
     dependencies:
       '@trailguide/core':
-        specifier: workspace:*
-        version: link:../core
+        specifier: ^0.0.1
+        version: 0.0.1
     devDependencies:
       '@types/react':
         specifier: ^18.2.0
@@ -93,8 +96,8 @@ importers:
   packages/runtime:
     dependencies:
       '@trailguide/core':
-        specifier: workspace:*
-        version: link:../core
+        specifier: ^0.0.1
+        version: 0.0.1
     devDependencies:
       '@types/react':
         specifier: ^18.2.0
@@ -553,6 +556,21 @@ packages:
 
   '@rushstack/ts-command-line@4.19.1':
     resolution: {integrity: sha512-J7H768dgcpG60d7skZ5uSSwyCZs/S2HrWP1Ds8d1qYAyaaeJmpmmLr9BVw97RjFzmQPOYnoXcKA4GkqDCkduQg==}
+
+  '@trailguide/core@0.0.1':
+    resolution: {integrity: sha512-G92lT7P9JWjcROHkl9oHbdyUQVhLPr7dhkcjol+/qybN1ya41g0GOW8VjXxchiqzqqxWcAoce61ez+Z1/y9M+g==}
+
+  '@trailguide/recorder@0.0.1':
+    resolution: {integrity: sha512-CciKNYqcXblyEp3dqqzfRnmeicnuGOcNaN45NPLn3Lq3hpmX7BNC6knZqnhH3jloXeZ0P5wGPXPyikt4pfpPVA==}
+    peerDependencies:
+      react: ^18.0.0
+      react-dom: ^18.0.0
+
+  '@trailguide/runtime@0.0.1':
+    resolution: {integrity: sha512-AbhGKr8S+qiLj++Ny1bhx8WcChlsL/nIxKPLLLfZfwnlqBw1GNl7muEf7weI43NEcfKdIZSYPSKOstCFlD7Rcw==}
+    peerDependencies:
+      react: ^18.0.0
+      react-dom: ^18.0.0
 
   '@types/argparse@1.0.38':
     resolution: {integrity: sha512-ebDJ9b0e702Yr7pWgB0jzm+CX4Srzz8RcXtLJDJB+BSccqMa36uyH/zUsSYao5+BD1ytv3k3rPYCq4mAE1hsXA==}
@@ -1344,6 +1362,22 @@ snapshots:
       string-argv: 0.3.2
     transitivePeerDependencies:
       - '@types/node'
+
+  '@trailguide/core@0.0.1':
+    dependencies:
+      '@floating-ui/dom': 1.7.5
+
+  '@trailguide/recorder@0.0.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      '@trailguide/core': 0.0.1
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+
+  '@trailguide/runtime@0.0.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      '@trailguide/core': 0.0.1
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
 
   '@types/argparse@1.0.38': {}
 

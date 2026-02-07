@@ -135,6 +135,7 @@ export class Trailguide {
     const target = findElement(step.target);
     if (!target || !isElementVisible(target)) {
       console.warn(`[Trailguide] Target not found or not visible: ${step.target}`);
+      this.showErrorState(step);
       return;
     }
 
@@ -147,6 +148,42 @@ export class Trailguide {
       this.updateTooltip(step, target);
       this.options.onStepChange?.(step, this.currentStepIndex);
     }, 100);
+  }
+
+  private showErrorState(step: Step): void {
+    if (!this.tooltip || !this.trail) return;
+
+    // Hide spotlight when there's an error
+    const spotlight = this.overlay?.querySelector<HTMLElement>('.trailguide-spotlight');
+    const highlight = this.overlay?.querySelector<HTMLElement>('.trailguide-highlight');
+    if (spotlight) spotlight.style.display = 'none';
+    if (highlight) highlight.style.display = 'none';
+
+    // Update tooltip with error message
+    const title = this.tooltip.querySelector('.trailguide-tooltip-title');
+    const body = this.tooltip.querySelector('.trailguide-tooltip-body');
+    const progress = this.tooltip.querySelector('.trailguide-tooltip-progress');
+    const prevBtn = this.tooltip.querySelector<HTMLElement>('.trailguide-btn-prev');
+    const nextBtn = this.tooltip.querySelector('.trailguide-btn-next');
+
+    const isFirst = this.currentStepIndex === 0;
+    const isLast = this.currentStepIndex === this.trail.steps.length - 1;
+
+    if (title) title.textContent = 'Element Not Found';
+    if (body) {
+      body.innerHTML = `
+        <p style="color: #ef4444; margin: 0 0 8px 0;">Could not find: <code style="background: #fee2e2; padding: 2px 6px; border-radius: 4px; font-size: 12px;">${step.target}</code></p>
+        <p style="margin: 0; font-size: 13px; color: #6b7280;">The target element doesn't exist on this page. Press <kbd style="background: #f3f4f6; padding: 2px 6px; border-radius: 4px; font-size: 11px;">Esc</kbd> to close or skip to the next step.</p>
+      `;
+    }
+    if (progress) progress.textContent = `${this.currentStepIndex + 1} of ${this.trail.steps.length}`;
+    if (prevBtn) prevBtn.style.display = isFirst ? 'none' : 'block';
+    if (nextBtn) nextBtn.textContent = isLast ? 'Close' : 'Skip Step';
+
+    // Center tooltip on screen
+    this.tooltip.style.left = '50%';
+    this.tooltip.style.top = '50%';
+    this.tooltip.style.transform = 'translate(-50%, -50%)';
   }
 
   private updateSpotlight(target: HTMLElement): void {
