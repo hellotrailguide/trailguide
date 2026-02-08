@@ -263,14 +263,19 @@ function SettingsContent() {
                   Manage Subscription
                 </Button>
               ) : (
-                <Button onClick={handleUpgrade} disabled={isCheckingOut}>
-                  {isCheckingOut ? (
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  ) : (
-                    <CreditCard className="h-4 w-4 mr-2" />
-                  )}
-                  Upgrade to Pro
-                </Button>
+                <div className="space-y-2">
+                  <Button onClick={handleUpgrade} disabled={isCheckingOut}>
+                    {isCheckingOut ? (
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    ) : (
+                      <CreditCard className="h-4 w-4 mr-2" />
+                    )}
+                    Start 14-Day Free Trial
+                  </Button>
+                  <p className="text-xs text-muted-foreground">
+                    No charge until trial ends. Cancel anytime.
+                  </p>
+                </div>
               )}
             </CardFooter>
           </Card>
