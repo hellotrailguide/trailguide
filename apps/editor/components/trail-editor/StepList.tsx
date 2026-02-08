@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import {
   DndContext,
   closestCenter,
@@ -11,18 +10,17 @@ import {
   DragEndEvent,
 } from '@dnd-kit/core'
 import {
-  arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
-import { Plus } from 'lucide-react'
+import { Plus, Upload } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useEditorStore } from '@/lib/stores/editor-store'
 import { StepCard } from './StepCard'
 
 export function StepList() {
-  const { trail, reorderSteps, addStep, selectStep, setPreviewMode } = useEditorStore()
+  const { trail, reorderSteps, addStep, selectStep, importTrail } = useEditorStore()
   const steps = trail?.steps || []
 
   const sensors = useSensors(
@@ -55,26 +53,36 @@ export function StepList() {
       content: 'Step description',
       placement: 'bottom',
     })
-    // Select the new step (will be last in array)
     selectStep(steps.length)
   }
 
-  const handlePickSelector = () => {
-    // Add step first, then switch to pick mode
-    addStep({
-      target: '',
-      title: 'New Step',
-      content: 'Step description',
-      placement: 'bottom',
-    })
-    selectStep(steps.length)
-    setPreviewMode('pick')
+  const handleImport = () => {
+    const input = document.createElement('input')
+    input.type = 'file'
+    input.accept = '.json'
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0]
+      if (file) {
+        const reader = new FileReader()
+        reader.onload = (e) => {
+          const content = e.target?.result as string
+          if (content) {
+            const success = importTrail(content)
+            if (!success) {
+              alert('Invalid trail JSON file')
+            }
+          }
+        }
+        reader.readAsText(file)
+      }
+    }
+    input.click()
   }
 
   return (
     <div className="flex flex-col h-full">
       <div className="p-4 border-b border-border">
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center justify-between mb-3">
           <h2 className="text-sm font-semibold">Steps</h2>
           <span className="text-xs text-muted-foreground">{steps.length} steps</span>
         </div>
@@ -83,8 +91,8 @@ export function StepList() {
             <Plus className="h-4 w-4 mr-1" />
             Add Step
           </Button>
-          <Button size="sm" variant="outline" onClick={handlePickSelector}>
-            Pick
+          <Button size="sm" variant="outline" onClick={handleImport} title="Import from JSON">
+            <Upload className="h-4 w-4" />
           </Button>
         </div>
       </div>
@@ -93,9 +101,13 @@ export function StepList() {
         {steps.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center p-4">
             <p className="text-sm text-muted-foreground mb-2">No steps yet</p>
-            <p className="text-xs text-muted-foreground">
-              {'Click "Add Step" to create your first step, or use "Pick" to select an element visually.'}
+            <p className="text-xs text-muted-foreground mb-4">
+              Add steps manually or import a trail JSON exported from the Chrome extension.
             </p>
+            <Button variant="outline" size="sm" onClick={handleImport}>
+              <Upload className="h-4 w-4 mr-2" />
+              Import Trail
+            </Button>
           </div>
         ) : (
           <DndContext

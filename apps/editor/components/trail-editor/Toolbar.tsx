@@ -8,7 +8,6 @@ import {
   Redo2,
   Download,
   Upload,
-  Play,
   ArrowLeft,
   Github,
 } from 'lucide-react'
@@ -32,8 +31,6 @@ export function Toolbar() {
     importTrail,
     undo,
     redo,
-    previewMode,
-    setPreviewMode,
   } = useEditorStore()
 
   if (!trail) return null
@@ -46,7 +43,7 @@ export function Toolbar() {
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `${trail.id}.trail.json`
+    a.download = `${trail.title.toLowerCase().replace(/\s+/g, '-')}.trail.json`
     a.click()
     URL.revokeObjectURL(url)
   }
@@ -74,7 +71,7 @@ export function Toolbar() {
   return (
     <div className="h-14 border-b border-border flex items-center px-4 gap-4">
       {/* Back button */}
-      <Button variant="ghost" size="icon" onClick={() => router.push('/')}>
+      <Button variant="ghost" size="icon" onClick={() => router.push('/dashboard')}>
         <ArrowLeft className="h-4 w-4" />
       </Button>
 
@@ -113,20 +110,6 @@ export function Toolbar() {
           title="Redo (Cmd+Shift+Z)"
         >
           <Redo2 className="h-4 w-4" />
-        </Button>
-      </div>
-
-      <div className="h-6 w-px bg-border" />
-
-      {/* Preview controls */}
-      <div className="flex items-center gap-1">
-        <Button
-          variant={previewMode === 'play' ? 'secondary' : 'ghost'}
-          size="sm"
-          onClick={() => setPreviewMode(previewMode === 'play' ? 'edit' : 'play')}
-        >
-          <Play className="h-4 w-4 mr-1" />
-          {previewMode === 'play' ? 'Stop' : 'Preview'}
         </Button>
       </div>
 
