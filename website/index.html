@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <title>Trailguide - Tutorials as Code</title>
   <meta name="description" content="Git-native product tours for any web app. No vendor lock-in, no per-user pricing. Your tutorials live in your repo.">
   <link rel="stylesheet" href="styles.css">
@@ -15,13 +16,12 @@
   <nav class="nav">
     <div class="nav-container">
       <a href="/" class="logo">
-        <span class="logo-icon">~</span>
-        <span>Trailguide</span>
+        <img src="trailguide-logo-nav.svg" alt="Trailguide" height="32">
       </a>
       <div class="nav-links">
         <a href="https://github.com/brandenlanghals/trailguide" target="_blank">GitHub</a>
         <a href="#pricing">Pricing</a>
-        <a href="https://github.com/brandenlanghals/trailguide#quick-start" target="_blank" class="btn btn-primary">Get Started</a>
+        <a href="https://app.gettrailguide.com" class="btn btn-primary">Get Started</a>
       </div>
     </div>
   </nav>
@@ -269,7 +269,6 @@
         </div>
 
         <div class="pricing-card pricing-card-featured">
-          <div class="pricing-badge">Coming Soon</div>
           <div class="pricing-header">
             <h3>Pro Editor</h3>
             <div class="pricing-price">
@@ -286,8 +285,8 @@
             <li>Everything still exports to JSON</li>
             <li>No lock-in, ever</li>
           </ul>
-          <a href="#waitlist" class="btn btn-primary btn-block">
-            Join Waitlist
+          <a href="https://app.gettrailguide.com" class="btn btn-primary btn-block">
+            Start Free Trial
           </a>
         </div>
       </div>
@@ -298,54 +297,19 @@
     </div>
   </section>
 
-  <!-- Waitlist -->
-  <section id="waitlist" class="waitlist">
+  <!-- CTA -->
+  <section id="cta" class="waitlist">
     <div class="container">
-      <h2>Get early access to the Pro Editor</h2>
-      <p class="section-subtitle">Be the first to know when we launch. No spam, just one email.</p>
-
-      <form id="waitlist-form" class="waitlist-form" action="https://formspree.io/f/mqedkkbr" method="POST">
-        <input type="email" name="email" placeholder="you@company.com" required>
-        <button type="submit" class="btn btn-primary">Join Waitlist</button>
-      </form>
-      <div id="waitlist-success" class="waitlist-success" style="display: none;">
-        <div class="success-icon">✓</div>
-        <h3>You're on the list!</h3>
-        <p>We'll email you when the Pro Editor is ready.</p>
+      <h2>Ready to build better onboarding?</h2>
+      <p class="section-subtitle">Start with the free open source runtime, or try the Pro Editor for visual editing and GitHub sync.</p>
+      <div class="hero-cta">
+        <a href="https://app.gettrailguide.com" class="btn btn-primary btn-large">
+          Try Pro Editor Free
+        </a>
+        <a href="https://github.com/brandenlanghals/trailguide" target="_blank" class="btn btn-secondary btn-large">
+          View on GitHub
+        </a>
       </div>
-      <p class="waitlist-note">Join 0 others on the waitlist</p>
-
-      <script>
-        document.getElementById('waitlist-form').addEventListener('submit', async function(e) {
-          e.preventDefault();
-          const form = e.target;
-          const button = form.querySelector('button');
-          const originalText = button.textContent;
-
-          button.textContent = 'Joining...';
-          button.disabled = true;
-
-          try {
-            const response = await fetch(form.action, {
-              method: 'POST',
-              body: new FormData(form),
-              headers: { 'Accept': 'application/json' }
-            });
-
-            if (response.ok) {
-              form.style.display = 'none';
-              document.getElementById('waitlist-success').style.display = 'block';
-              document.querySelector('.waitlist-note').style.display = 'none';
-            } else {
-              throw new Error('Form submission failed');
-            }
-          } catch (error) {
-            button.textContent = originalText;
-            button.disabled = false;
-            alert('Something went wrong. Please try again.');
-          }
-        });
-      </script>
     </div>
   </section>
 
@@ -355,8 +319,7 @@
       <div class="footer-grid">
         <div class="footer-brand">
           <a href="/" class="logo">
-            <span class="logo-icon">~</span>
-            <span>Trailguide</span>
+            <img src="trailguide-logo.svg" alt="Trailguide" height="24">
           </a>
           <p>Tutorials as code. Free forever.</p>
         </div>
