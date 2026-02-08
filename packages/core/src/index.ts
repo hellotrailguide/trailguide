@@ -10,7 +10,13 @@ export type {
   NextTrigger,
   TrailguideOptions,
   TrailguideState,
+  AnalyticsConfig,
 } from './types';
+
+export type {
+  AnalyticsEvent,
+  AnalyticsEventType,
+} from './analytics';
 
 export {
   findElement,
