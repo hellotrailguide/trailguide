@@ -5,7 +5,7 @@
 
 const TRAILGUIDE_CONFIG = {
   // PRODUCTION
-  EDITOR_URL: 'https://traileditor.vercel.app',
+  EDITOR_URL: 'https://app.gettrailguide.com',
 
   // DEVELOPMENT (uncomment for local testing)
   // EDITOR_URL: 'http://localhost:3000',
