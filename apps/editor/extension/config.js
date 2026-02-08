@@ -4,11 +4,11 @@
 // Change EDITOR_URL to your production URL before publishing
 
 const TRAILGUIDE_CONFIG = {
-  // DEVELOPMENT
-  EDITOR_URL: 'http://localhost:3000',
+  // PRODUCTION
+  EDITOR_URL: 'https://traileditor.vercel.app',
 
-  // PRODUCTION (uncomment and update when deploying)
-  // EDITOR_URL: 'https://editor.trailguide.dev',
+  // DEVELOPMENT (uncomment for local testing)
+  // EDITOR_URL: 'http://localhost:3000',
 };
 
 // Make available globally

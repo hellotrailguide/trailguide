@@ -41,7 +41,7 @@ export default function Home() {
           </p>
           <div className="flex items-center justify-center gap-4 mb-16">
             <Link
-              href="/edit/new"
+              href="/dashboard/edit/new"
               className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors"
             >
               Start Building
