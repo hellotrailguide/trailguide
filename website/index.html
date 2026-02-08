@@ -175,7 +175,6 @@
           <ul>
             <li>No-code teams that never touch Git</li>
             <li>Marketing-led tours managed by non-technical users</li>
-            <li>Products that want hosted analytics only</li>
           </ul>
         </div>
       </div>
@@ -239,11 +238,108 @@
     </div>
   </section>
 
+  <!-- Pro Analytics -->
+  <section id="analytics" class="pro-analytics">
+    <div class="container">
+      <div class="pro-badge">Pro Feature</div>
+      <h2>Know exactly where users drop off</h2>
+      <p class="section-subtitle">Stop guessing. See real completion data for every trail.</p>
+
+      <div class="analytics-grid">
+        <div class="analytics-preview">
+          <div class="analytics-dashboard">
+            <div class="analytics-header">
+              <h4>Trail Analytics</h4>
+              <span class="analytics-period">Last 30 days</span>
+            </div>
+            <div class="analytics-kpis">
+              <div class="kpi">
+                <span class="kpi-value">2,847</span>
+                <span class="kpi-label">Tours Started</span>
+              </div>
+              <div class="kpi">
+                <span class="kpi-value">73%</span>
+                <span class="kpi-label">Completion Rate</span>
+              </div>
+              <div class="kpi">
+                <span class="kpi-value">1m 24s</span>
+                <span class="kpi-label">Avg. Duration</span>
+              </div>
+            </div>
+            <div class="analytics-funnel">
+              <h5>Step-by-Step Funnel</h5>
+              <div class="funnel-step">
+                <span class="funnel-label">Welcome</span>
+                <div class="funnel-bar"><div class="funnel-fill" style="width: 100%"></div></div>
+                <span class="funnel-pct">100%</span>
+              </div>
+              <div class="funnel-step">
+                <span class="funnel-label">Create Project</span>
+                <div class="funnel-bar"><div class="funnel-fill" style="width: 89%"></div></div>
+                <span class="funnel-pct">89%</span>
+              </div>
+              <div class="funnel-step">
+                <span class="funnel-label">Add First Task</span>
+                <div class="funnel-bar"><div class="funnel-fill" style="width: 81%"></div></div>
+                <span class="funnel-pct">81%</span>
+              </div>
+              <div class="funnel-step funnel-dropoff">
+                <span class="funnel-label">Invite Team</span>
+                <div class="funnel-bar"><div class="funnel-fill" style="width: 52%"></div></div>
+                <span class="funnel-pct">52%</span>
+              </div>
+              <div class="funnel-step">
+                <span class="funnel-label">Complete</span>
+                <div class="funnel-bar"><div class="funnel-fill" style="width: 73%"></div></div>
+                <span class="funnel-pct">73%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="analytics-benefits">
+          <div class="benefit">
+            <div class="benefit-icon">
+              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            </div>
+            <div>
+              <h4>Find the friction</h4>
+              <p>See exactly which step loses users. In this example, "Invite Team" drops 29% — maybe it needs clearer copy or a skip option.</p>
+            </div>
+          </div>
+          <div class="benefit">
+            <div class="benefit-icon">
+              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            </div>
+            <div>
+              <h4>Measure improvements</h4>
+              <p>Ship a change, watch completion rates climb. No more hoping your onboarding works — now you'll know.</p>
+            </div>
+          </div>
+          <div class="benefit">
+            <div class="benefit-icon">
+              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+            </div>
+            <div>
+              <h4>Track over time</h4>
+              <p>Daily and weekly trends show if your onboarding is getting better or worse. Catch regressions before they hurt.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="analytics-cta">
+        <a href="https://app.gettrailguide.com" class="btn btn-primary btn-large">Try Pro Analytics Free</a>
+        <p class="analytics-cta-note">14-day free trial. No credit card required.</p>
+      </div>
+    </div>
+  </section>
+
   <!-- Pricing -->
   <section id="pricing" class="pricing">
     <div class="container">
       <h2>Simple pricing</h2>
-      <p class="section-subtitle">Free to use. Pay only for convenience.</p>
+      <p class="section-subtitle">Free to use. Pay only for convenience and insights.</p>
 
       <div class="pricing-grid">
         <div class="pricing-card">
@@ -269,21 +365,22 @@
         </div>
 
         <div class="pricing-card pricing-card-featured">
+          <div class="pricing-badge">Most Popular</div>
           <div class="pricing-header">
-            <h3>Pro Editor</h3>
+            <h3>Pro</h3>
             <div class="pricing-price">
               <span class="price">$29</span>
               <span class="price-period">/month</span>
             </div>
           </div>
-          <p class="pricing-description">Speed, safety, and scale for teams.</p>
+          <p class="pricing-description">Analytics, visual editing, and GitHub sync.</p>
           <ul class="pricing-features">
-            <li><strong>Authoring:</strong> Visual editor, drag-and-drop</li>
-            <li><strong>Reliability:</strong> Selector auto-repair</li>
-            <li><strong>Workflow:</strong> GitHub sync, push as PRs</li>
-            <li><strong>Insights:</strong> Completion rates (opt-in)</li>
-            <li>Everything still exports to JSON</li>
-            <li>No lock-in, ever</li>
+            <li><strong>Analytics Dashboard</strong> — completion rates, drop-off funnel, time per step</li>
+            <li><strong>Visual Editor</strong> — drag-and-drop, live preview, no JSON editing</li>
+            <li><strong>GitHub Sync</strong> — push trails as PRs, review changes in code</li>
+            <li><strong>Selector Auto-Repair</strong> — fix broken selectors when DOM changes</li>
+            <li>Everything exports to JSON</li>
+            <li>14-day free trial</li>
           </ul>
           <a href="https://app.gettrailguide.com" class="btn btn-primary btn-block">
             Start Free Trial
@@ -292,7 +389,7 @@
       </div>
 
       <p class="pricing-note">
-        The Pro Editor is optional. Everything it produces is still just JSON files in your repo.
+        No lock-in. Everything Pro produces is still just JSON files in your repo.
       </p>
     </div>
   </section>

@@ -52,7 +52,6 @@ The optional [Pro Editor](#trailguide-pro-coming-soon) adds convenience features
 **Not a fit:**
 - No-code teams that never touch Git
 - Marketing-led tours managed by non-technical users
-- Products that want hosted analytics only
 
 ---
 
@@ -310,33 +309,33 @@ pnpm dev
 
 ---
 
-## Trailguide Pro (Coming Soon)
+## Trailguide Pro
 
-For teams who want **speed, safety, and scale** — without changing how trails are stored or shipped.
+For teams who want **speed, safety, and insights** — without changing how trails are stored or shipped.
 
-### Authoring Speed
-- Visual editor (no JSON hand-editing)
+### Visual Editor
 - Drag-and-drop step ordering
-- Live preview across breakpoints
+- Live preview
+- No JSON hand-editing required
 
-### Maintenance & Reliability
+### Analytics Dashboard
+- Completion rates
+- Drop-off by step (funnel view)
+- Time per step
+- Daily/weekly trends
+
+### GitHub Sync
+- Push trails as PRs
+- Review changes in code
+- Full version history
+
+### Reliability
 - Selector auto-repair when DOM changes
 - Warnings when trails break
-- CI-friendly validation reports
-
-### Team Workflows
-- GitHub sync (push trails as PRs)
-- Comments on steps
-- Review history
-
-### Insights (opt-in)
-- Completion rates
-- Drop-off by step
-- Time per step
 
 **The Pro Editor is optional.** Everything it produces is still just JSON files in your repo. No lock-in, ever.
 
-[Join the waitlist](https://gettrailguide.vercel.app#waitlist)
+[Try Pro Free](https://app.gettrailguide.com) — 14-day trial, no credit card required.
 
 ---
 
