@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { Trailguide as TrailguideCore } from '@trailguide/core';
-import type { Trail, Step } from '@trailguide/core';
+import type { Trail, Step, AnalyticsConfig } from '@trailguide/core';
 
 export interface UseTrailOptions {
   trail: Trail;
@@ -8,6 +8,7 @@ export interface UseTrailOptions {
   onStepChange?: (step: Step, index: number) => void;
   onSkip?: () => void;
   autoStart?: boolean;
+  analytics?: AnalyticsConfig;
 }
 
 export interface UseTrailReturn {
@@ -29,6 +30,7 @@ export function useTrail({
   onStepChange,
   onSkip,
   autoStart = false,
+  analytics,
 }: UseTrailOptions): UseTrailReturn {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [isActive, setIsActive] = useState(false);
@@ -55,6 +57,7 @@ export function useTrail({
         setIsActive(false);
         onSkip?.();
       },
+      analytics,
     });
 
     if (autoStart) {
@@ -65,7 +68,7 @@ export function useTrail({
     return () => {
       instanceRef.current?.stop();
     };
-  }, [trail, onComplete, onStepChange, onSkip, autoStart]);
+  }, [trail, onComplete, onStepChange, onSkip, autoStart, analytics]);
 
   const start = useCallback(() => {
     if (instanceRef.current) {

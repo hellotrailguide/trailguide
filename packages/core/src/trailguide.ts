@@ -1,6 +1,7 @@
 import { computePosition, offset, flip, shift, arrow } from '@floating-ui/dom';
 import type { Trail, Step, TrailguideOptions, Placement } from './types';
 import { findElement, isElementVisible, scrollToElement, createElement } from './dom';
+import { sendEvent } from './analytics';
 
 export class Trailguide {
   private trail: Trail | null = null;
@@ -27,6 +28,7 @@ export class Trailguide {
     this.createOverlay();
     this.showStep();
     this.bindKeyboard();
+    this.emitAnalytics('trail_started');
   }
 
   stop(): void {
@@ -36,6 +38,9 @@ export class Trailguide {
 
   next(): void {
     if (!this.trail || !this.isActive) return;
+
+    // Emit step_completed before advancing
+    this.emitAnalytics('step_completed');
 
     if (this.currentStepIndex < this.trail.steps.length - 1) {
       this.currentStepIndex++;
@@ -55,6 +60,7 @@ export class Trailguide {
   }
 
   skip(): void {
+    this.emitAnalytics('trail_skipped');
     this.isActive = false;
     this.cleanup();
     this.options.onSkip?.();
@@ -69,6 +75,7 @@ export class Trailguide {
   }
 
   private complete(): void {
+    this.emitAnalytics('trail_completed');
     this.isActive = false;
     this.cleanup();
     this.options.onComplete?.();
@@ -130,6 +137,9 @@ export class Trailguide {
 
     const step = this.trail.steps[this.currentStepIndex];
     if (!step) return;
+
+    // Emit step_viewed event
+    this.emitAnalytics('step_viewed');
 
     // Find target element
     const target = findElement(step.target);
@@ -307,6 +317,22 @@ export class Trailguide {
     this.tooltip?.remove();
     this.overlay = null;
     this.tooltip = null;
+  }
+
+  private emitAnalytics(
+    eventType: 'trail_started' | 'step_viewed' | 'step_completed' | 'trail_completed' | 'trail_skipped'
+  ): void {
+    if (!this.options.analytics || !this.trail) return;
+
+    const step = this.trail.steps[this.currentStepIndex];
+    const trailId = this.options.analytics.trailId || this.trail.id;
+
+    sendEvent(this.options.analytics, {
+      event_type: eventType,
+      trail_id: trailId,
+      step_id: step?.id,
+      step_index: this.currentStepIndex,
+    });
   }
 }
 
