@@ -1,0 +1,31 @@
+<svg
+  width="360"
+  height="80"
+  viewBox="0 0 360 80"
+  xmlns="http://www.w3.org/2000/svg"
+  role="img"
+  aria-label="Trailguide logo"
+>
+  <text
+    x="0"
+    y="48"
+    font-family="Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+    font-size="40"
+    font-weight="600"
+    fill="currentColor"
+    letter-spacing="-0.5"
+  >
+    Trailguide
+  </text>
+
+  <path
+    d="M2 62 C 60 58, 120 66, 180 62 S 300 60, 350 62"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="3"
+    stroke-linecap="round"
+    opacity="0.85"
+  />
+
+  <circle cx="350" cy="62" r="3.5" fill="currentColor" />
+</svg>
