@@ -61,13 +61,18 @@ export async function POST(request: NextRequest) {
         const subscription = event.data.object as Stripe.Subscription
         const customerId = subscription.customer as string
 
-        await getSupabaseAdmin()
+        const { error } = await getSupabaseAdmin()
           .from('subscriptions')
           .update({
             status: subscription.status,
             current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
           })
           .eq('stripe_customer_id', customerId)
+
+        if (error) {
+          console.error('Failed to update subscription:', error)
+          // Don't throw - the subscription may not exist yet if this fires before checkout.session.completed
+        }
         break
       }
 
@@ -75,12 +80,16 @@ export async function POST(request: NextRequest) {
         const subscription = event.data.object as Stripe.Subscription
         const customerId = subscription.customer as string
 
-        await getSupabaseAdmin()
+        const { error } = await getSupabaseAdmin()
           .from('subscriptions')
           .update({
             status: 'cancelled',
           })
           .eq('stripe_customer_id', customerId)
+
+        if (error) {
+          console.error('Failed to mark subscription cancelled:', error)
+        }
         break
       }
 
@@ -88,12 +97,16 @@ export async function POST(request: NextRequest) {
         const invoice = event.data.object as Stripe.Invoice
         const customerId = invoice.customer as string
 
-        await getSupabaseAdmin()
+        const { error } = await getSupabaseAdmin()
           .from('subscriptions')
           .update({
             status: 'past_due',
           })
           .eq('stripe_customer_id', customerId)
+
+        if (error) {
+          console.error('Failed to mark subscription past_due:', error)
+        }
         break
       }
 
