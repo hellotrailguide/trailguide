@@ -8,6 +8,9 @@ const inter = Inter({ subsets: ['latin'] })
 export const metadata: Metadata = {
   title: 'Trailguide Pro Editor',
   description: 'Visual product tour editor with GitHub sync and analytics',
+  icons: {
+    icon: '/favicon.svg',
+  },
 }
 
 export default function RootLayout({
