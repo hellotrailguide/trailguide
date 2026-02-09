@@ -70,11 +70,23 @@ export async function POST(request: NextRequest) {
         const subscription = event.data.object as Stripe.Subscription
         const customerId = subscription.customer as string
 
+        // Safely handle current_period_end - it may be undefined during trial or other states
+        const currentPeriodEnd = subscription.current_period_end
+          ? new Date(subscription.current_period_end * 1000).toISOString()
+          : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+
+        console.log('customer.subscription.updated:', {
+          customerId,
+          status: subscription.status,
+          currentPeriodEnd,
+          rawPeriodEnd: subscription.current_period_end
+        })
+
         const { error } = await getSupabaseAdmin()
           .from('subscriptions')
           .update({
             status: subscription.status,
-            current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+            current_period_end: currentPeriodEnd,
           })
           .eq('stripe_customer_id', customerId)
 
