@@ -95,9 +95,9 @@ export default function Home() {
         <div className="flex items-center justify-between text-sm text-muted-foreground">
           <p>Trailguide Pro Editor</p>
           <div className="flex items-center gap-4">
-            <Link href="/pricing" className="hover:text-foreground transition-colors">
+            <a href="https://gettrailguide.com#pricing" className="hover:text-foreground transition-colors">
               Pricing
-            </Link>
+            </a>
             <Link href="https://github.com/trailguide" className="hover:text-foreground transition-colors">
               GitHub
             </Link>

@@ -4,6 +4,9 @@ import { useState, useEffect } from 'react'
 import { Trailguide } from '@trailguide/runtime'
 import type { Trail } from '@trailguide/runtime'
 
+// Import Trailguide styles
+import '@trailguide/core/dist/style.css'
+
 const ONBOARDING_TOUR: Trail = {
   id: 'editor-onboarding',
   title: 'Welcome to Trailguide',
