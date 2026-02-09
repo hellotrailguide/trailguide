@@ -5,7 +5,8 @@ import { useEditorStore } from '@/lib/stores/editor-store'
 import { StepList } from './StepList'
 import { StepEditPanel } from '../step-editor/StepEditPanel'
 import { Toolbar } from './Toolbar'
-import { Code, FileText, Chrome } from 'lucide-react'
+import { PreviewPane } from '../preview-pane/PreviewPane'
+import { Code, FileText } from 'lucide-react'
 
 export function TrailEditor() {
   const { trail, undo, redo, isDirty } = useEditorStore()
@@ -75,42 +76,9 @@ export function TrailEditor() {
           <StepList />
         </div>
 
-        {/* Center - Instructions / Extension prompt */}
-        <div className="flex-1 min-w-0 flex flex-col items-center justify-center bg-muted/30 p-8">
-          <div className="max-w-md text-center">
-            <div className="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-6">
-              <Chrome className="h-8 w-8 text-primary" />
-            </div>
-            <h2 className="text-xl font-semibold mb-2">Use the Chrome Extension</h2>
-            <p className="text-muted-foreground mb-6">
-              To record and preview trails visually, use the Trailguide extension directly on your site.
-            </p>
-            <div className="bg-card border rounded-lg p-4 text-left text-sm">
-              <p className="font-medium mb-2">How it works:</p>
-              <ol className="space-y-2 text-muted-foreground">
-                <li className="flex gap-2">
-                  <span className="font-medium text-foreground">1.</span>
-                  Install the extension from the /extension folder
-                </li>
-                <li className="flex gap-2">
-                  <span className="font-medium text-foreground">2.</span>
-                  Navigate to your app in the browser
-                </li>
-                <li className="flex gap-2">
-                  <span className="font-medium text-foreground">3.</span>
-                  Click the extension icon → Start Editing
-                </li>
-                <li className="flex gap-2">
-                  <span className="font-medium text-foreground">4.</span>
-                  Click elements to capture them as steps
-                </li>
-                <li className="flex gap-2">
-                  <span className="font-medium text-foreground">5.</span>
-                  Export JSON and import here to sync
-                </li>
-              </ol>
-            </div>
-          </div>
+        {/* Center - Preview pane with URL input and element picker */}
+        <div className="flex-1 min-w-0">
+          <PreviewPane />
         </div>
 
         {/* Right panel - Edit / JSON tabs */}
