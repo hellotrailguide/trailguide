@@ -41,6 +41,12 @@ importers:
       '@tiptap/starter-kit':
         specifier: ^2.2.4
         version: 2.27.2
+      '@trailguide/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      '@trailguide/runtime':
+        specifier: workspace:*
+        version: link:../../packages/runtime
       class-variance-authority:
         specifier: ^0.7.0
         version: 0.7.1

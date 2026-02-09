@@ -72,17 +72,17 @@ export function TrailEditor() {
       <Toolbar />
       <div className="flex-1 flex min-h-0">
         {/* Left panel - Step list */}
-        <div className="w-80 border-r border-border flex flex-col">
+        <div className="w-80 border-r border-border flex flex-col" data-tour-target="step-list">
           <StepList />
         </div>
 
         {/* Center - Preview pane with URL input and element picker */}
-        <div className="flex-1 min-w-0">
+        <div className="flex-1 min-w-0" data-tour-target="preview-area">
           <PreviewPane />
         </div>
 
         {/* Right panel - Edit / JSON tabs */}
-        <div className="w-96 border-l border-border flex flex-col">
+        <div className="w-96 border-l border-border flex flex-col" data-tour-target="edit-panel">
           {/* Tab buttons */}
           <div className="flex border-b border-border">
             <button

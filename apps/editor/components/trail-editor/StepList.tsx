@@ -87,7 +87,7 @@ export function StepList() {
           <span className="text-xs text-muted-foreground">{steps.length} steps</span>
         </div>
         <div className="flex gap-2">
-          <Button size="sm" className="flex-1" onClick={handleAddStep}>
+          <Button size="sm" className="flex-1" onClick={handleAddStep} data-tour-target="add-step-button">
             <Plus className="h-4 w-4 mr-1" />
             Add Step
           </Button>
