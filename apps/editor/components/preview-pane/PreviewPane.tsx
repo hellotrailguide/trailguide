@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState, useCallback } from 'react'
-import { ExternalLink, RefreshCw, AlertCircle, MousePointer2, Chrome, Video, Square } from 'lucide-react'
+import { ExternalLink, RefreshCw, AlertCircle, MousePointer2, Video, Square } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useEditorStore } from '@/lib/stores/editor-store'
@@ -210,7 +210,7 @@ export function PreviewPane() {
 
   const handleStartPicking = () => {
     if (!iframeReady) {
-      toast.error('Install the Trailguide Chrome extension to pick elements')
+      toast.error('Wait for preview to load before picking elements')
       return
     }
     setPreviewMode('pick')
@@ -333,33 +333,26 @@ export function PreviewPane() {
                 <p className="text-sm font-medium mb-2">How it works:</p>
                 <ol className="text-sm text-muted-foreground space-y-1 list-decimal list-inside">
                   <li>Enter your app URL and click Load</li>
-                  <li>Click &ldquo;Start Recording&rdquo; to open your app</li>
-                  <li>Navigate and click elements to capture them</li>
-                  <li>Click &ldquo;Done&rdquo; when finished</li>
+                  <li>Click &ldquo;Pick in Preview&rdquo; to select elements</li>
+                  <li>Click any element to add it as a tour step</li>
+                  <li>Edit the step content in the sidebar</li>
                 </ol>
               </div>
-              <p className="text-xs text-muted-foreground mt-4">
-                Requires the Trailguide Chrome extension.
-              </p>
             </div>
           </div>
         ) : error ? (
           <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-8">
             <AlertCircle className="h-8 w-8 text-destructive mb-2" />
-            <h3 className="font-medium mb-2">This site blocks embedding</h3>
+            <h3 className="font-medium mb-2">Failed to load preview</h3>
             <p className="text-sm text-muted-foreground mb-4">
-              Most production sites block iframe embedding for security.
+              {error}
             </p>
             <div className="text-left bg-muted p-4 rounded-lg max-w-md">
-              <p className="text-sm font-medium mb-2">Options:</p>
+              <p className="text-sm font-medium mb-2">Try these options:</p>
               <ul className="text-sm text-muted-foreground space-y-2">
-                <li><strong>1. Use localhost</strong> - Development servers typically allow embedding</li>
-                <li><strong>2. For your own app</strong> - Add this header to allow the editor:
-                  <code className="block bg-background p-2 mt-1 rounded text-xs">
-                    Content-Security-Policy: frame-ancestors &apos;self&apos; {typeof window !== 'undefined' ? window.location.origin : 'https://editor.trailguide.dev'}
-                  </code>
-                </li>
-                <li><strong>3. Open in new window</strong> - Use the extension to pick elements directly on the site
+                <li><strong>1. Check the URL</strong> - Make sure it&apos;s a valid, accessible URL</li>
+                <li><strong>2. Try localhost</strong> - Use your local development server (e.g., http://localhost:3000)</li>
+                <li><strong>3. Open directly</strong> - View the site in a new tab and use the recorder
                   <Button
                     size="sm"
                     variant="outline"
@@ -382,7 +375,7 @@ export function PreviewPane() {
             )}
             <iframe
               ref={iframeRef}
-              src={previewUrl}
+              src={`/api/proxy?url=${encodeURIComponent(previewUrl)}`}
               className="w-full h-full border-0"
               onLoad={handleIframeLoad}
               onError={handleIframeError}

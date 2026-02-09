@@ -26,6 +26,25 @@ export async function GET(request: Request) {
           github_username: data.user.user_metadata?.user_name || null,
         })
       }
+
+      // Ensure user has a subscription (trial created by trigger, but fallback here)
+      const { data: subscription } = await supabase
+        .from('subscriptions')
+        .select('id')
+        .eq('user_id', data.user.id)
+        .single()
+
+      if (!subscription) {
+        // Create 14-day trial if no subscription exists
+        const trialEnd = new Date()
+        trialEnd.setDate(trialEnd.getDate() + 14)
+
+        await supabase.from('subscriptions').insert({
+          user_id: data.user.id,
+          status: 'trialing',
+          current_period_end: trialEnd.toISOString(),
+        })
+      }
     }
   }
 

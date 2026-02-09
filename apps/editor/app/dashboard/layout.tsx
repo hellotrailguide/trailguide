@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { Home, BarChart3, Settings, LogOut } from 'lucide-react'
 import { ExtensionListener } from '@/components/ExtensionListener'
+import { SubscriptionGuard } from '@/components/subscription'
 
 export default function DashboardLayout({
   children,
@@ -52,8 +53,10 @@ export default function DashboardLayout({
         </button>
       </aside>
 
-      {/* Main content */}
-      <main className="flex-1 min-w-0">{children}</main>
+      {/* Main content with subscription guard */}
+      <main className="flex-1 min-w-0 flex flex-col">
+        <SubscriptionGuard>{children}</SubscriptionGuard>
+      </main>
     </div>
   )
 }

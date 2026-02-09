@@ -87,16 +87,22 @@ create policy "Users can manage own trails"
     )
   );
 
--- Subscriptions (Stripe billing)
+-- Subscriptions (Stripe billing + trials)
 create table if not exists public.subscriptions (
   id uuid primary key default gen_random_uuid(),
   user_id uuid references public.profiles on delete cascade not null unique,
-  stripe_customer_id text not null,
-  stripe_subscription_id text not null,
-  status text not null,  -- active, cancelled, past_due, etc.
-  current_period_end timestamptz not null,
+  stripe_customer_id text,  -- NULL during trial (no credit card yet)
+  stripe_subscription_id text,  -- NULL during trial
+  status text not null,  -- trialing, active, cancelled, past_due, expired
+  current_period_end timestamptz not null,  -- Trial end date or billing period end
   created_at timestamptz default now() not null
 );
+
+-- Allow service role to insert subscriptions (for trial creation)
+create policy "Service role can manage subscriptions"
+  on public.subscriptions for all
+  using (true)
+  with check (true);
 
 -- Enable RLS on subscriptions
 alter table public.subscriptions enable row level security;
@@ -142,15 +148,25 @@ create policy "Allow analytics inserts"
   on public.analytics_events for insert
   with check (true);
 
--- Function to automatically create profile on signup
+-- Function to automatically create profile and trial on signup
 create or replace function public.handle_new_user()
 returns trigger as $$
 begin
+  -- Create profile
   insert into public.profiles (id, github_username)
   values (
     new.id,
     new.raw_user_meta_data->>'user_name'
   );
+
+  -- Create 14-day trial subscription (no credit card required)
+  insert into public.subscriptions (user_id, status, current_period_end)
+  values (
+    new.id,
+    'trialing',
+    now() + interval '14 days'
+  );
+
   return new;
 end;
 $$ language plpgsql security definer;
