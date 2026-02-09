@@ -42,7 +42,7 @@ type SyncMode = 'save' | 'load'
 type SaveMethod = 'commit' | 'pr'
 
 export function GitHubSyncModal({ isOpen, onClose }: GitHubSyncModalProps) {
-  const { trail, exportTrail } = useEditorStore()
+  const { trail, exportTrail, importTrail } = useEditorStore()
 
   const [mode, setMode] = useState<SyncMode>('save')
   const [saveMethod, setSaveMethod] = useState<SaveMethod>('commit')
@@ -61,6 +61,7 @@ export function GitHubSyncModal({ isOpen, onClose }: GitHubSyncModalProps) {
 
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<{ type: string; url?: string } | null>(null)
+  const [isLoadingTrail, setIsLoadingTrail] = useState(false)
 
   // Load repos on open
   useEffect(() => {
@@ -129,6 +130,35 @@ export function GitHubSyncModal({ isOpen, onClose }: GitHubSyncModalProps) {
       // Ignore errors loading trails
     } finally {
       setIsLoadingTrails(false)
+    }
+  }
+
+  const handleLoadTrail = async (trailFile: GitHubTrail) => {
+    if (!selectedRepo) return
+
+    setIsLoadingTrail(true)
+    setError(null)
+
+    try {
+      const response = await fetch(
+        `/api/github/trails?owner=${selectedRepo.owner.login}&repo=${selectedRepo.name}&path=${encodeURIComponent(trailFile.path)}`
+      )
+      const { content, error: apiError } = await response.json()
+
+      if (apiError) {
+        throw new Error(apiError)
+      }
+
+      const success = importTrail(JSON.stringify(content))
+      if (!success) {
+        throw new Error('Invalid trail format')
+      }
+
+      onClose()
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Failed to load trail from GitHub')
+    } finally {
+      setIsLoadingTrail(false)
     }
   }
 
@@ -363,13 +393,15 @@ export function GitHubSyncModal({ isOpen, onClose }: GitHubSyncModalProps) {
                   {trails.map((t) => (
                     <button
                       key={t.path}
-                      className="w-full flex items-center gap-2 p-3 text-left border rounded-lg hover:bg-muted transition-colors"
-                      onClick={() => {
-                        // TODO: Load trail from GitHub
-                        console.log('Load trail:', t.path)
-                      }}
+                      className="w-full flex items-center gap-2 p-3 text-left border rounded-lg hover:bg-muted transition-colors disabled:opacity-50"
+                      onClick={() => handleLoadTrail(t)}
+                      disabled={isLoadingTrail}
                     >
-                      <FolderGit2 className="h-4 w-4 text-muted-foreground" />
+                      {isLoadingTrail ? (
+                        <Loader2 className="h-4 w-4 text-muted-foreground animate-spin" />
+                      ) : (
+                        <FolderGit2 className="h-4 w-4 text-muted-foreground" />
+                      )}
                       <span className="text-sm font-mono">{t.path}</span>
                     </button>
                   ))}

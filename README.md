@@ -335,7 +335,7 @@ For teams who want **speed, safety, and insights** — without changing how trai
 
 **The Pro Editor is optional.** Everything it produces is still just JSON files in your repo. No lock-in, ever.
 
-[Try Pro Free](https://app.gettrailguide.com) — 14-day trial, no credit card required.
+[Try Pro Free](https://app.gettrailguide.com) — 14 days of Pro, no credit card.
 
 ---
 

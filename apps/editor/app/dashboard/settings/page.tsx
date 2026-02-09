@@ -270,10 +270,10 @@ function SettingsContent() {
                     ) : (
                       <CreditCard className="h-4 w-4 mr-2" />
                     )}
-                    Start 14-Day Free Trial
+                    Start 14 Days of Pro
                   </Button>
                   <p className="text-xs text-muted-foreground">
-                    No charge until trial ends. Cancel anytime.
+                    No credit card required
                   </p>
                 </div>
               )}
