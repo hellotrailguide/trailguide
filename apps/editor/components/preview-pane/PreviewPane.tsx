@@ -232,6 +232,7 @@ export function PreviewPane() {
             onChange={(e) => setUrlInput(e.target.value)}
             placeholder="Enter your app URL (e.g., https://myapp.com)"
             className="flex-1"
+            data-tour-target="url-input"
           />
           <Button type="submit" variant="secondary" size="sm">
             Load

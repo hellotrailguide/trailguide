@@ -135,13 +135,18 @@ export function Toolbar() {
       <div className="h-6 w-px bg-border" />
 
       {/* GitHub sync */}
-      <Button variant="outline" size="sm" onClick={() => setIsGitHubModalOpen(true)}>
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => setIsGitHubModalOpen(true)}
+        data-tour-target="sync-button"
+      >
         <Github className="h-4 w-4 mr-1" />
         Sync
       </Button>
 
       {/* Save */}
-      <Button onClick={handleSave} disabled={!isDirty}>
+      <Button onClick={handleSave} disabled={!isDirty} data-tour-target="save-button">
         <Save className="h-4 w-4 mr-1" />
         Save
       </Button>
