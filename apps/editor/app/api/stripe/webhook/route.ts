@@ -45,14 +45,23 @@ export async function POST(request: NextRequest) {
         const customerId = session.customer as string
         const subscriptionId = session.subscription as string
 
+        console.log('checkout.session.completed:', { userId, customerId, subscriptionId })
+
         if (userId && customerId && subscriptionId) {
-          await getSupabaseAdmin().from('subscriptions').upsert({
+          const { error } = await getSupabaseAdmin().from('subscriptions').upsert({
             user_id: userId,
             stripe_customer_id: customerId,
             stripe_subscription_id: subscriptionId,
             status: 'active',
             current_period_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
           })
+
+          if (error) {
+            console.error('Failed to create subscription:', error)
+            // Still return 200 to prevent Stripe retries, but log the error
+          }
+        } else {
+          console.error('Missing required fields:', { userId, customerId, subscriptionId })
         }
         break
       }
