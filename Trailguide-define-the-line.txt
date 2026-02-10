@@ -1,0 +1,283 @@
+Trailguide — Focus & Profitability Anchor
+What Trailguide Is (never forget this)
+
+Trailguide is a developer-first product tour system built on the belief that onboarding should be owned, versioned, and shipped like code.
+
+Trails are:
+
+Defined as JSON
+
+Stored in the application repo
+
+Reviewed in PRs
+
+Deployed with the app
+
+Runnable forever without a vendor dependency
+
+Trailguide does not try to be:
+
+A growth platform
+
+A product analytics suite
+
+A behavioral tracking system
+
+A marketing dashboard
+
+It is infrastructure for onboarding.
+
+The Core Philosophy (non-negotiables)
+
+These principles should never be compromised:
+
+Ownership over lock-in
+Users always retain their trail files. Trails must run even if Trailguide Pro disappears.
+
+Git-native by default
+Trails live in repos, not dashboards. Versioning happens via Git, not hidden UIs.
+
+Minimal runtime surface
+The free runtime stays small, predictable, and boring — in a good way.
+
+Empower non-engineers without betraying engineers
+POs and designers can iterate independently, but developers control integration and deployment.
+
+Restraint is a feature
+Trailguide avoids bloated analytics, styling controls, and marketing gimmicks.
+
+If a future feature violates one of these, it should be rejected.
+
+The Two Products (clear line, no blur)
+Trailguide Core (Always Free, Open Source)
+
+What it is
+Trailguide Core is the permanent, free foundation of the system. It provides everything needed to run tutorials in production without paying Trailguide anything.
+
+What it does
+
+Defines the trail JSON format
+
+Provides the runtime that executes trails in an app
+
+Supports step logic, targeting, progression, and completion
+
+Allows trails to be authored or edited manually
+
+Runs independently of any Trailguide service
+
+Can be used forever, even without Pro
+
+How it works
+
+A trail exists as a JSON file in the app’s repository
+
+The app imports and launches trails using the runtime
+
+Trails execute client-side inside the app
+
+Developers control when and how trails are shown
+
+Why it’s free
+Trailguide Core exists to:
+
+Build trust with developers
+
+Eliminate vendor lock-in
+
+Encourage adoption
+
+Establish Trailguide as the reference implementation
+
+Trailguide is not monetized by runtime usage.
+
+This is intentional.
+
+Trailguide Pro (Paid, Proprietary)
+
+What it is
+Trailguide Pro is a trail authoring and verification environment. It dramatically reduces the cost and friction of creating, maintaining, and validating onboarding flows.
+
+What it unlocks
+
+Visual UI recording
+
+Drag-and-drop step reordering
+
+Step detail editing (copy, placement, targeting)
+
+Live preview and testing in the real app
+
+One-click export of validated trail JSON
+
+Built-in trail usage and step completion visibility
+
+What it is not
+
+Required to run trails
+
+Required in production
+
+Required for developers
+
+It exists to make trail creation faster, safer, and more accessible.
+
+Who pays for Pro
+
+Teams with active onboarding needs
+
+Product owners who want independence
+
+Designers who want confidence
+
+Developers who want fewer interruptions
+
+Analytics: How to Think About It (critical framing)
+
+Trailguide analytics are not product analytics.
+
+They are:
+
+Trail health signals
+
+Step completion visibility
+
+Drop-off confirmation
+
+Verification that onboarding ran
+
+Analytics exist to answer:
+
+“Did this tutorial actually help?”
+
+Not:
+
+“What are users doing everywhere?”
+
+“How do we optimize conversion funnels?”
+
+This keeps analytics:
+
+Scoped
+
+Privacy-friendly
+
+Aligned with trust
+
+Clearly a Pro value-add
+
+Profitability Plan (simple and sustainable)
+
+Trailguide monetizes creation, not execution.
+
+Free: unlimited runtime usage
+
+Paid: better authoring, faster iteration, confidence
+
+This creates:
+
+Low support burden
+
+Predictable costs
+
+Clear upgrade motivation
+
+No hostage dynamics
+
+Pro pricing is justified because it:
+
+Saves engineering time
+
+Unblocks POs
+
+Reduces onboarding risk
+
+Prevents broken tutorials from shipping
+
+Trailguide never charges:
+
+Per user
+
+Per session
+
+Per trail run
+
+That’s a hard line.
+
+What to Say in Marketing (always safe)
+
+Use language like:
+
+“Tutorials as code”
+
+“Git-native onboarding”
+
+“Own your product tours”
+
+“Run trails from your repo”
+
+“No vendor lock-in”
+
+“Built for developers, usable by POs”
+
+“Verify onboarding actually works”
+
+Emphasize:
+
+Ownership
+
+Simplicity
+
+Calm tooling
+
+Independence
+
+What Not to Say (important)
+
+Avoid:
+
+“No-code”
+
+“Growth”
+
+“Funnels”
+
+“Cohorts”
+
+“User behavior tracking”
+
+“Conversion optimization”
+
+“Engagement platform”
+
+Those invite the wrong comparisons and expectations.
+
+Trailguide is infrastructure, not marketing software.
+
+The Mental Model to Protect
+
+If Trailguide ever becomes:
+
+Dashboard-first
+
+Account-based
+
+Metrics-driven
+
+Style-heavy
+
+Feature-bloated
+
+…it has lost its identity.
+
+The correct mental model is:
+
+Trails are files.
+Pro helps you make better files.
+Core runs them forever.
+
+One-Sentence Internal North Star
+
+If you need a single sentence to come back to:
+
+Trailguide exists to make onboarding feel like software, not a service.

@@ -50,7 +50,7 @@ export function ExtensionListener() {
     toast.success(`Element captured: ${selector.slice(0, 40)}${selector.length > 40 ? '...' : ''}`)
 
     // Navigate to the edit page
-    router.push(`/edit/${trail.id}`)
+    router.push(`/dashboard/edit/${trail.id}`)
   }
 
   useEffect(() => {
@@ -67,7 +67,7 @@ export function ExtensionListener() {
       if (!selector) return
 
       // Skip if already on an edit page - the PreviewPane handles it there
-      if (pathname?.startsWith('/edit/')) {
+      if (pathname?.includes('/edit/')) {
         console.log('[ExtensionListener] On edit page, letting PreviewPane handle it')
         return
       }
@@ -85,7 +85,7 @@ export function ExtensionListener() {
         try {
           const { selector, sourceUrl } = JSON.parse(pendingData)
           sessionStorage.removeItem('trailguide_pending_selector')
-          if (selector && !pathname?.startsWith('/edit/')) {
+          if (selector && !pathname?.includes('/edit/')) {
             processSelector(selector, sourceUrl)
           }
         } catch (e) {
