@@ -36,7 +36,7 @@ You can:
 
 No accounts. No tracking. No hosted dependencies.
 
-The optional [Pro Editor](#trailguide-pro-coming-soon) adds convenience features for teams — but the core tooling will always be free.
+The optional [Pro Editor](#trailguide-pro) adds convenience features for teams — but the core tooling will always be free.
 
 ---
 
@@ -307,6 +307,17 @@ pnpm dev
 - [ ] Svelte wrapper
 - [ ] Conditional steps
 
+### Pro
+- [x] Visual Editor (point-and-click, drag-and-drop, rich text, live preview)
+- [x] Inline flow recording
+- [x] Trail playback preview
+- [x] Selector quality indicators
+- [x] Selector auto-repair
+- [x] Analytics dashboard (completion rates, drop-off funnel, time per step)
+- [x] GitHub Sync (push trails as PRs)
+- [ ] A/B testing for trails
+- [ ] Team workspaces with role-based access
+
 ---
 
 ## Trailguide Pro
@@ -314,9 +325,17 @@ pnpm dev
 For teams who want **speed, safety, and insights** — without changing how trails are stored or shipped.
 
 ### Visual Editor
-- Drag-and-drop step ordering
-- Live preview
-- No JSON hand-editing required
+- **Point-and-click element selection** — click any element on your site to capture it as a step, no CSS selectors to write
+- **Inline flow recording** — hit Record, click through your app, and every click becomes a trail step in real time
+- **Trail playback preview** — step through the full trail inside the editor before publishing
+- **Rich text editing** — format step titles and content with a friendly editor, no JSON hand-editing
+- **Drag-and-drop step ordering** — reorganize your flow instantly
+- **JSON import/export** — everything exports to clean JSON you own
+
+### Selector Quality & Reliability
+- **Selector quality indicators** — every captured selector is graded as Stable, Moderate, or Fragile with actionable hints (e.g., "Add a `data-trail-id` for stability")
+- **Selector auto-repair** — when DOM changes break a selector, the editor suggests fixes with confidence scores
+- **Warnings when trails break** — catch broken selectors before your users do
 
 ### Analytics Dashboard
 - Completion rates
@@ -325,13 +344,9 @@ For teams who want **speed, safety, and insights** — without changing how trai
 - Daily/weekly trends
 
 ### GitHub Sync
-- Push trails as PRs
+- Push trails as PRs directly from the editor
 - Review changes in code
 - Full version history
-
-### Reliability
-- Selector auto-repair when DOM changes
-- Warnings when trails break
 
 **The Pro Editor is optional.** Everything it produces is still just JSON files in your repo. No lock-in, ever.
 

@@ -23,7 +23,7 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["sidebar.js", "config.js"],
+      "resources": ["sidebar.js"],
       "matches": ["<all_urls>"]
     }
   ]

@@ -1,18 +1,51 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Target, MousePointer2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select } from '@/components/ui/select'
 import { useEditorStore } from '@/lib/stores/editor-store'
+import type { EditorStep } from '@/lib/stores/editor-store'
 import { RichTextEditor } from './RichTextEditor'
 import { SelectorRepair } from './SelectorRepair'
 
 interface SelectorStatus {
   isBroken: boolean
   suggestions: Array<{ selector: string; confidence: number; reason: string }>
+}
+
+function SelectorQualityBadge({ step }: { step: EditorStep }) {
+  if (!step.selectorQuality) return null
+
+  const config = {
+    stable: {
+      label: 'Stable',
+      className: 'bg-green-100 text-green-800',
+    },
+    moderate: {
+      label: 'Moderate',
+      className: 'bg-yellow-100 text-yellow-800',
+    },
+    fragile: {
+      label: 'Fragile — may break',
+      className: 'bg-red-100 text-red-800',
+    },
+  }[step.selectorQuality]
+
+  if (!config) return null
+
+  return (
+    <div className="mt-1 space-y-1">
+      <span className={`inline-block text-xs px-2 py-0.5 rounded-full font-medium ${config.className}`}>
+        {config.label}
+      </span>
+      {step.selectorQuality === 'fragile' && step.selectorQualityHint && (
+        <p className="text-xs text-red-600">{step.selectorQualityHint}</p>
+      )}
+    </div>
+  )
 }
 
 export function StepEditPanel() {
@@ -31,7 +64,7 @@ export function StepEditPanel() {
     )
   }
 
-  const step = trail.steps[selectedStepIndex]
+  const step = trail.steps[selectedStepIndex] as EditorStep | undefined
   if (!step) return null
 
   const handleUpdate = (field: string, value: string) => {
@@ -88,6 +121,7 @@ export function StepEditPanel() {
           <p className="text-xs text-muted-foreground">
             Click the picker button, then click an element in the preview
           </p>
+          <SelectorQualityBadge step={step} />
           {step.target && previewUrl && (
             <SelectorRepair
               selector={step.target}
@@ -96,7 +130,6 @@ export function StepEditPanel() {
               onRepair={(newSelector) => handleUpdate('target', newSelector)}
               onRefresh={() => {
                 // Trigger selector validation via postMessage to iframe
-                // This would be handled by the preview pane
               }}
             />
           )}

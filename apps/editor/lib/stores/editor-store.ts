@@ -2,10 +2,18 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { Trail, Step, Placement } from '@/lib/types/trail'
 
+export type SelectorQuality = 'stable' | 'moderate' | 'fragile'
+
+export interface EditorStep extends Step {
+  selectorQuality?: SelectorQuality
+  selectorQualityHint?: string
+}
+
 export interface EditorTrail extends Trail {
   createdAt: string
   updatedAt: string
   previewUrl?: string
+  steps: EditorStep[]
 }
 
 interface HistoryState {
@@ -25,7 +33,7 @@ interface EditorState {
   history: HistoryState
 
   // Preview state
-  previewMode: 'edit' | 'play' | 'pick'
+  previewMode: 'edit' | 'play' | 'pick' | 'record'
   previewUrl: string
 
   // UI state
@@ -60,7 +68,7 @@ interface EditorState {
   pushHistory: () => void
 
   // Preview
-  setPreviewMode: (mode: 'edit' | 'play' | 'pick') => void
+  setPreviewMode: (mode: 'edit' | 'play' | 'pick' | 'record') => void
   setPreviewUrl: (url: string) => void
 }
 
@@ -309,7 +317,7 @@ export const useEditorStore = create<EditorState>()(
           id: trail.id,
           title: trail.title,
           version: trail.version,
-          steps: trail.steps,
+          steps: trail.steps.map(({ selectorQuality, selectorQualityHint, ...step }) => step),
         }
 
         return JSON.stringify(exportData, null, 2)

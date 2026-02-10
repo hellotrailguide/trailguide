@@ -201,8 +201,11 @@
 
   // Listen for messages from parent (the editor)
   window.addEventListener('message', (event) => {
-    // Accept messages from any origin since we're in an iframe
     if (!event.data?.type) return;
+
+    // Only accept messages from the known editor origin
+    var allowedOrigins = ['https://app.gettrailguide.com', 'http://localhost:3000'];
+    if (allowedOrigins.indexOf(event.origin) === -1) return;
 
     switch (event.data.type) {
       case 'TRAILGUIDE_START_PICKER':

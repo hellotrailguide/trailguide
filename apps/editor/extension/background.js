@@ -1,6 +1,9 @@
 // Background service worker for Trailguide extension
 
-const EDITOR_URL = 'http://localhost:3000'
+importScripts('config.js')
+const EDITOR_URL = (typeof TRAILGUIDE_CONFIG !== 'undefined' && TRAILGUIDE_CONFIG.EDITOR_URL)
+  ? TRAILGUIDE_CONFIG.EDITOR_URL
+  : 'https://app.gettrailguide.com'
 
 // Listen for messages from content scripts and popup
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -75,7 +78,7 @@ async function forwardToEditor(message, sourceTab) {
             type: 'TRAILGUIDE_SELECTOR',
             selector: selector,
             sourceUrl: url
-          }, '*')
+          }, EDITOR_URL)
           return 'Message posted'
         },
         args: [message.selector, sourceTab.url]
@@ -126,7 +129,7 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
               type: 'TRAILGUIDE_SELECTOR',
               selector: selector,
               sourceUrl: url
-            }, '*')
+            }, EDITOR_URL)
           },
           args: [data.pendingSelector, data.pendingUrl]
         })

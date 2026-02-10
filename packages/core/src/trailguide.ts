@@ -1,6 +1,6 @@
 import { computePosition, offset, flip, shift, arrow } from '@floating-ui/dom';
 import type { Trail, Step, TrailguideOptions, Placement } from './types';
-import { findElement, isElementVisible, scrollToElement, createElement } from './dom';
+import { findElement, isElementVisible, scrollToElement, createElement, escapeHtml } from './dom';
 import { sendEvent } from './analytics';
 
 export class Trailguide {
@@ -182,7 +182,7 @@ export class Trailguide {
     if (title) title.textContent = 'Element Not Found';
     if (body) {
       body.innerHTML = `
-        <p style="color: #ef4444; margin: 0 0 8px 0;">Could not find: <code style="background: #fee2e2; padding: 2px 6px; border-radius: 4px; font-size: 12px;">${step.target}</code></p>
+        <p style="color: #ef4444; margin: 0 0 8px 0;">Could not find: <code style="background: #fee2e2; padding: 2px 6px; border-radius: 4px; font-size: 12px;">${escapeHtml(step.target)}</code></p>
         <p style="margin: 0; font-size: 13px; color: #6b7280;">The target element doesn't exist on this page. Press <kbd style="background: #f3f4f6; padding: 2px 6px; border-radius: 4px; font-size: 11px;">Esc</kbd> to close or skip to the next step.</p>
       `;
     }
