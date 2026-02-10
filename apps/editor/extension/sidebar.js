@@ -5,6 +5,14 @@
   if (window.__trailguideSidebarActive) return;
   window.__trailguideSidebarActive = true;
 
+  // Escape HTML to prevent XSS when inserting user-controlled values
+  function escapeHtml(str) {
+    if (!str) return '';
+    const div = document.createElement('div');
+    div.textContent = String(str);
+    return div.innerHTML;
+  }
+
   // State
   let trail = {
     id: `trail-${Date.now()}`,
@@ -560,7 +568,7 @@
       <div class="__tg-step ${selectedStepIndex === i ? 'selected' : ''}" data-index="${i}">
         <div class="__tg-step-header">
           <div class="__tg-step-num">${i + 1}</div>
-          <div class="__tg-step-title">${step.title || 'Untitled Step'}</div>
+          <div class="__tg-step-title">${escapeHtml(step.title) || 'Untitled Step'}</div>
           <button class="__tg-step-delete" data-delete="${i}" title="Delete step">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <polyline points="3,6 5,6 21,6"></polyline>
@@ -570,7 +578,7 @@
             </svg>
           </button>
         </div>
-        <div class="__tg-step-selector">${step.target}</div>
+        <div class="__tg-step-selector">${escapeHtml(step.target)}</div>
       </div>
     `).join('');
 
@@ -846,9 +854,9 @@
       tooltipElement.style.opacity = '1';
       tooltipElement.innerHTML = `
         <div class="__tg-tooltip-step">Step ${index + 1} of ${trail.steps.length}</div>
-        <div class="__tg-tooltip-title">${step.title || 'Untitled Step'}</div>
+        <div class="__tg-tooltip-title">${escapeHtml(step.title) || 'Untitled Step'}</div>
         <div class="__tg-tooltip-content" style="color: #dc2626;">
-          ⚠️ Element not found: <code style="font-size: 11px;">${step.target}</code>
+          ⚠️ Element not found: <code style="font-size: 11px;">${escapeHtml(step.target)}</code>
         </div>
         <div class="__tg-tooltip-nav">
           <button class="__tg-tooltip-btn __tg-tooltip-btn-secondary" id="__tg-prev-btn" ${index === 0 ? 'disabled style="opacity:0.5"' : ''}>Previous</button>
@@ -884,8 +892,8 @@
       tooltipElement.innerHTML = `
         <div class="__tg-tooltip-arrow bottom"></div>
         <div class="__tg-tooltip-step">Step ${index + 1} of ${trail.steps.length}</div>
-        <div class="__tg-tooltip-title">${step.title || 'Untitled Step'}</div>
-        ${step.content ? `<div class="__tg-tooltip-content">${step.content}</div>` : ''}
+        <div class="__tg-tooltip-title">${escapeHtml(step.title) || 'Untitled Step'}</div>
+        ${step.content ? `<div class="__tg-tooltip-content">${escapeHtml(step.content)}</div>` : ''}
         <div class="__tg-tooltip-nav">
           <button class="__tg-tooltip-btn __tg-tooltip-btn-secondary" id="__tg-prev-btn" ${index === 0 ? 'disabled style="opacity:0.5;cursor:not-allowed"' : ''}>Previous</button>
           <span class="__tg-tooltip-progress">${index + 1} / ${trail.steps.length}</span>

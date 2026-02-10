@@ -57,6 +57,9 @@ export function ExtensionListener() {
     console.log('[ExtensionListener] Setting up message listener, pathname:', pathname)
 
     const handleMessage = (event: MessageEvent) => {
+      // Only accept messages from our own origin
+      if (event.origin !== window.location.origin) return
+
       // Only handle TRAILGUIDE_SELECTOR messages
       if (event.data?.type !== 'TRAILGUIDE_SELECTOR') return
 

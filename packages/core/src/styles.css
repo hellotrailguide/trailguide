@@ -124,8 +124,30 @@
 
 .trailguide-tooltip-arrow {
   position: absolute;
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
   background: white;
   transform: rotate(45deg);
+  box-shadow: -1px -1px 1px rgba(0, 0, 0, 0.05);
+}
+
+/* Arrow positioning based on tooltip placement */
+.trailguide-tooltip[data-placement^="top"] .trailguide-tooltip-arrow {
+  bottom: -5px;
+  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.05);
+}
+
+.trailguide-tooltip[data-placement^="bottom"] .trailguide-tooltip-arrow {
+  top: -5px;
+  box-shadow: -1px -1px 1px rgba(0, 0, 0, 0.05);
+}
+
+.trailguide-tooltip[data-placement^="left"] .trailguide-tooltip-arrow {
+  right: -5px;
+  box-shadow: 1px -1px 1px rgba(0, 0, 0, 0.05);
+}
+
+.trailguide-tooltip[data-placement^="right"] .trailguide-tooltip-arrow {
+  left: -5px;
+  box-shadow: -1px 1px 1px rgba(0, 0, 0, 0.05);
 }

@@ -8,7 +8,8 @@ alter database postgres set "app.jwt_secret" to 'your-jwt-secret';
 create table if not exists public.profiles (
   id uuid references auth.users on delete cascade primary key,
   github_username text,
-  github_access_token text,  -- Consider encrypting this in production
+  -- github_access_token: REMOVED — GitHub tokens are read from the OAuth session
+  -- (session.provider_token) at request time. Never stored in the database.
   created_at timestamptz default now() not null
 );
 
@@ -98,16 +99,12 @@ create table if not exists public.subscriptions (
   created_at timestamptz default now() not null
 );
 
--- Allow service role to insert subscriptions (for trial creation)
-create policy "Service role can manage subscriptions"
-  on public.subscriptions for all
-  using (true)
-  with check (true);
-
 -- Enable RLS on subscriptions
 alter table public.subscriptions enable row level security;
 
--- Subscriptions policies
+-- Subscriptions policies: users can only read their own subscription.
+-- All writes (insert/update/delete) are handled by the service role key
+-- which bypasses RLS automatically. No permissive write policy needed.
 create policy "Users can view own subscription"
   on public.subscriptions for select
   using (auth.uid() = user_id);
@@ -142,11 +139,9 @@ create policy "Users can view own trail analytics"
   on public.analytics_events for select
   using (auth.uid() = user_id);
 
--- Note: INSERT policy is more permissive for the analytics endpoint
--- The API validates ownership separately
-create policy "Allow analytics inserts"
-  on public.analytics_events for insert
-  with check (true);
+-- Analytics inserts are handled by the service role key (via the API route)
+-- which bypasses RLS. No permissive insert policy needed.
+-- The API route validates ownership and subscription status before inserting.
 
 -- Function to automatically create profile and trial on signup
 create or replace function public.handle_new_user()

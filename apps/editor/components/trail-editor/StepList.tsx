@@ -102,7 +102,7 @@ export function StepList() {
           <div className="flex flex-col items-center justify-center h-full text-center p-4">
             <p className="text-sm text-muted-foreground mb-2">No steps yet</p>
             <p className="text-xs text-muted-foreground mb-4">
-              Add steps manually or import a trail JSON exported from the Chrome extension.
+              Add steps manually or record a flow in the preview pane.
             </p>
             <Button variant="outline" size="sm" onClick={handleImport}>
               <Upload className="h-4 w-4 mr-2" />
