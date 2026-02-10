@@ -28,8 +28,8 @@ const ONBOARDING_TOUR: Trail = {
     },
     {
       id: 'pick-element',
-      title: 'Pick Elements',
-      content: 'After loading your app, click "Pick in Preview" to select any element. Click an element and it becomes a tour step!',
+      title: 'Record a Flow',
+      content: 'Click "Start Recording" to open your app in a new window. Click elements there and they\'ll be added as tour steps in real time!',
       target: '[data-tour-target="preview-area"]',
       placement: 'left',
     },

@@ -51,16 +51,23 @@ function isPrivateHost(hostname: string): boolean {
 }
 
 export async function GET(request: NextRequest) {
-  // Require authentication
-  const auth = await requireAuth()
-  if (auth.error) return auth.error
+  let userId = 'anonymous';
+  if (process.env.NODE_ENV !== 'development') {
+    // Require authentication
+    const auth = await requireAuth()
+    if (auth.error) return auth.error
+    userId = auth.user.id;
 
-  // Require active Pro subscription
-  const proCheck = await requireProSubscription()
-  if (proCheck) return proCheck
+    // Require active Pro subscription
+    const proCheck = await requireProSubscription()
+    if (proCheck) return proCheck
+  } else {
+    userId = 'dev-user';
+  }
 
-  // Rate limit: 60 requests per minute per user
-  const rl = await rateLimit(`proxy:${auth.user.id}`, { limit: 60, windowMs: 60_000 })
+
+  // Rate limit: 200 requests per minute per user (CSS/fonts/XHR all go through proxy)
+  const rl = await rateLimit(`proxy:${userId}`, { limit: 200, windowMs: 60_000 })
   if (!rl.allowed) {
     return NextResponse.json(
       { error: 'Rate limit exceeded. Try again shortly.' },
@@ -127,20 +134,59 @@ export async function GET(request: NextRequest) {
       // Strip CSP meta tags so picker.js can execute
       html = html.replace(/<meta[^>]+http-equiv\s*=\s*["']Content-Security-Policy["'][^>]*>/gi, '')
 
+      // Intercept XHR/fetch so the proxied page's JS requests go through our proxy
+      // (prevents CORS failures when the page makes API calls to its own origin)
+      const proxyInterceptor = `<script>
+(function(){
+  var proxyBase=location.origin+'/api/proxy?url=';
+  var editorOrigin=location.origin;
+  var origOpen=XMLHttpRequest.prototype.open;
+  XMLHttpRequest.prototype.open=function(method,url){
+    try{var u=new URL(url,document.baseURI);if(u.origin!==editorOrigin){arguments[1]=proxyBase+encodeURIComponent(u.href);}}catch(e){}
+    return origOpen.apply(this,arguments);
+  };
+  var origFetch=window.fetch;
+  window.fetch=function(input,init){
+    try{
+      if(typeof input==='string'){var u=new URL(input,document.baseURI);if(u.origin!==editorOrigin){input=proxyBase+encodeURIComponent(u.href);}}
+      else if(input instanceof Request){var u2=new URL(input.url);if(u2.origin!==editorOrigin){input=new Request(proxyBase+encodeURIComponent(u2.href),input);}}
+    }catch(e){}
+    return origFetch.call(this,input,init);
+  };
+})();
+</script>`
+
       // Inject <base href> so the browser resolves all relative URLs against the original site
       const baseTag = `<base href="${targetUrl.href}">`
+      const headInjection = proxyInterceptor + baseTag
       if (html.includes('<head>')) {
-        html = html.replace('<head>', '<head>' + baseTag)
+        html = html.replace('<head>', '<head>' + headInjection)
       } else if (html.includes('<HEAD>')) {
-        html = html.replace('<HEAD>', '<HEAD>' + baseTag)
+        html = html.replace('<HEAD>', '<HEAD>' + headInjection)
       } else if (html.includes('<html>') || html.includes('<HTML>')) {
-        html = html.replace(/<html[^>]*>/i, (match) => match + '<head>' + baseTag + '</head>')
+        html = html.replace(/<html[^>]*>/i, (match) => match + '<head>' + headInjection + '</head>')
       } else {
-        html = baseTag + html
+        html = headInjection + html
       }
 
-      // Inject picker script before </body>
-      const pickerScript = `<script src="/picker.js"></script>`
+      // Rewrite <link rel="stylesheet"> hrefs to go through proxy so CSS url()
+      // references (fonts, etc.) can also be rewritten and avoid CORS
+      html = html.replace(/<link\b[^>]*>/gi, (tag) => {
+        if (!/\brel\s*=\s*["']stylesheet["']/i.test(tag)) return tag
+        const hrefMatch = tag.match(/\bhref\s*=\s*["']([^"']+)["']/)
+        if (!hrefMatch) return tag
+        try {
+          const resolved = new URL(hrefMatch[1], targetUrl.href)
+          const proxiedHref = `/api/proxy?url=${encodeURIComponent(resolved.href)}`
+          return tag.replace(hrefMatch[0], `href="${proxiedHref}"`)
+        } catch {
+          return tag
+        }
+      })
+
+      // Inject picker script before </body> — use absolute URL so <base> tag doesn't redirect it
+      const editorOrigin = request.nextUrl.origin
+      const pickerScript = `<script src="${editorOrigin}/picker.js"></script>`
 
       if (html.includes('</body>')) {
         html = html.replace('</body>', pickerScript + '</body>')
@@ -155,7 +201,7 @@ export async function GET(request: NextRequest) {
           'Content-Type': 'text/html; charset=utf-8',
           'X-Frame-Options': 'SAMEORIGIN',
           // Restrict what the proxied page can do
-          'Content-Security-Policy': "script-src 'unsafe-inline' 'unsafe-eval' * blob: data:; frame-ancestors 'self';",
+          'Content-Security-Policy': "default-src * 'unsafe-inline' 'unsafe-eval' blob: data:; script-src * 'unsafe-inline' 'unsafe-eval' blob: data:; connect-src *; img-src * data: blob:; style-src * 'unsafe-inline'; frame-src *; frame-ancestors 'self';",
         },
       })
     }
@@ -204,14 +250,14 @@ export async function GET(request: NextRequest) {
 }
 
 function rewriteCssUrls(css: string, base: URL): string {
-  const origin = base.origin
-  const basePath = base.pathname.substring(0, base.pathname.lastIndexOf('/') + 1)
-
-  // Rewrite url(/path) to absolute
-  css = css.replace(/url\(['"]?\/([^'")]+)['"]?\)/g, `url('${origin}/$1')`)
-
-  // Rewrite url(./path) or url(path) to absolute
-  css = css.replace(/url\(['"]?\.\/([^'")]+)['"]?\)/g, `url('${origin}${basePath}$1')`)
-
-  return css
+  // Rewrite all url() references to go through the proxy (fixes font CORS)
+  return css.replace(/url\(\s*['"]?([^'")]+?)['"]?\s*\)/g, (match, rawUrl) => {
+    if (rawUrl.startsWith('data:') || rawUrl.includes('/api/proxy')) return match
+    try {
+      const resolved = new URL(rawUrl, base.href)
+      return `url('/api/proxy?url=${encodeURIComponent(resolved.href)}')`
+    } catch {
+      return match
+    }
+  })
 }

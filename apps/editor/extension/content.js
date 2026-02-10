@@ -1,256 +1,606 @@
-// Content script - injected into web pages for element picking
+// Content script — injected into target pages for element picking/recording.
+// Runs in an isolated world with access to the DOM and chrome.runtime.
 
-(function() {
-  // Prevent multiple injections
-  if (window.__trailguidePickerActive) return
-  window.__trailguidePickerActive = true
+(function () {
+  if (window.__trailguideActive) return;
+  window.__trailguideActive = true;
 
-  let isPickingMode = false
-  let highlightOverlay = null
-  let hoveredElement = null
+  let mode = null; // 'pick' | 'record'
+  let paused = false;
+  let overlay = null;
+  let panel = null;
+  let shadow = null; // Shadow DOM root for style isolation
+  let currentTarget = null;
+  let stepCount = 0;
 
-  // Create highlight overlay
+  // Drag state
+  let isDragging = false;
+  let dragOffsetX = 0;
+  let dragOffsetY = 0;
+
+  // ── Overlay ──────────────────────────────────────────────────────────
+
   function createOverlay() {
-    const overlay = document.createElement('div')
-    overlay.id = '__trailguide-highlight'
-    overlay.style.cssText = `
-      position: fixed;
-      pointer-events: none;
-      border: 2px solid #3b82f6;
-      background: rgba(59, 130, 246, 0.1);
-      z-index: 2147483647;
-      border-radius: 4px;
-      transition: all 0.1s ease;
-    `
-    document.body.appendChild(overlay)
-    return overlay
+    var el = document.createElement('div');
+    el.id = '__trailguide-overlay';
+    el.style.cssText =
+      'position:fixed;pointer-events:none;border:2px solid #3b82f6;' +
+      'background:rgba(59,130,246,0.08);z-index:2147483646;border-radius:4px;' +
+      'transition:all 0.05s ease-out;display:none';
+    document.body.appendChild(el);
+    return el;
   }
 
-  // Create picking mode indicator
-  function createIndicator() {
-    const indicator = document.createElement('div')
-    indicator.id = '__trailguide-indicator'
-    indicator.style.cssText = `
+  function positionOverlay(element) {
+    if (!overlay) overlay = createOverlay();
+    var rect = element.getBoundingClientRect();
+    overlay.style.display = 'block';
+    overlay.style.top = rect.top + 'px';
+    overlay.style.left = rect.left + 'px';
+    overlay.style.width = rect.width + 'px';
+    overlay.style.height = rect.height + 'px';
+  }
+
+  function hideOverlay() {
+    if (overlay) overlay.style.display = 'none';
+    currentTarget = null;
+  }
+
+  // ── Panel styles (injected into shadow DOM) ─────────────────────────
+
+  var PANEL_CSS = `
+    @keyframes tg-pulse {
+      0%, 100% { opacity: 1 }
+      50% { opacity: 0.3 }
+    }
+    @keyframes tg-fade-in {
+      from { opacity: 0; transform: translateY(8px) }
+      to { opacity: 1; transform: translateY(0) }
+    }
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    :host {
+      all: initial;
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      background: #3b82f6;
-      color: white;
-      padding: 12px 16px;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      font-size: 14px;
+      bottom: 24px;
+      right: 24px;
       z-index: 2147483647;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    .tg-panel {
+      width: 256px;
+      background: #0f172a;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.05);
+      overflow: hidden;
+      animation: tg-fade-in 0.2s ease-out;
+      color: #fff;
+    }
+
+    /* ── Header ── */
+    .tg-header {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-    `
-    indicator.innerHTML = `
-      <span><strong>Trailguide:</strong> Click any element to select it</span>
-      <button id="__trailguide-cancel" style="
-        background: rgba(255,255,255,0.2);
-        border: none;
-        color: white;
-        padding: 6px 12px;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 13px;
-      ">Cancel</button>
-    `
-    document.body.appendChild(indicator)
+      gap: 10px;
+      padding: 14px 16px 12px;
+      cursor: grab;
+    }
+    .tg-header:active { cursor: grabbing }
+    .tg-logo {
+      width: 32px;
+      height: 32px;
+      background: #3b82f6;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 700;
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+    .tg-brand-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #f8fafc;
+      line-height: 1.2;
+    }
+    .tg-status {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 500;
+      margin-top: 1px;
+    }
+    .tg-status--rec { color: #f87171 }
+    .tg-status--pause { color: #fbbf24 }
+    .tg-status--pick { color: #60a5fa }
+    .tg-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .tg-dot--rec { background: #f87171; animation: tg-pulse 1s infinite }
+    .tg-dot--pause { background: #fbbf24 }
+    .tg-dot--pick { background: #60a5fa }
 
-    document.getElementById('__trailguide-cancel').addEventListener('click', stopPicking)
-    return indicator
+    /* ── Body ── */
+    .tg-body {
+      padding: 0 16px 14px;
+    }
+    .tg-counter {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+    .tg-count {
+      font-size: 28px;
+      font-weight: 700;
+      color: #f8fafc;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+    .tg-count-label {
+      font-size: 12px;
+      color: #94a3b8;
+      font-weight: 400;
+    }
+    .tg-hint {
+      font-size: 12px;
+      color: #64748b;
+      line-height: 1.5;
+    }
+
+    /* ── Divider ── */
+    .tg-divider {
+      height: 1px;
+      background: rgba(255,255,255,0.06);
+      margin: 0;
+    }
+
+    /* ── Actions ── */
+    .tg-actions {
+      display: flex;
+      gap: 8px;
+      padding: 12px 16px;
+    }
+    .tg-btn {
+      flex: 1;
+      height: 34px;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      text-align: center;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+    .tg-btn--resume {
+      background: #3b82f6;
+      color: #fff;
+    }
+    .tg-btn--resume:hover { background: #2563eb }
+    .tg-btn--pause {
+      background: rgba(255,255,255,0.08);
+      color: #e2e8f0;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .tg-btn--pause:hover { background: rgba(255,255,255,0.12) }
+    .tg-btn--done {
+      background: rgba(255,255,255,0.06);
+      color: #94a3b8;
+    }
+    .tg-btn--done:hover { background: rgba(255,255,255,0.1); color: #f8fafc }
+  `;
+
+  // ── Panel rendering ─────────────────────────────────────────────────
+
+  function createHost() {
+    if (panel) return;
+    panel = document.createElement('div');
+    panel.id = '__trailguide-panel-host';
+    shadow = panel.attachShadow({ mode: 'closed' });
+
+    var style = document.createElement('style');
+    style.textContent = PANEL_CSS;
+    shadow.appendChild(style);
+
+    document.body.appendChild(panel);
   }
 
-  // Position overlay over element
-  function positionOverlay(element) {
-    if (!highlightOverlay) return
-    const rect = element.getBoundingClientRect()
-    highlightOverlay.style.display = 'block'
-    highlightOverlay.style.top = rect.top + 'px'
-    highlightOverlay.style.left = rect.left + 'px'
-    highlightOverlay.style.width = rect.width + 'px'
-    highlightOverlay.style.height = rect.height + 'px'
+  function showPanel() {
+    createHost();
+
+    // Clear existing content (keep style)
+    var existing = shadow.querySelector('.tg-panel');
+    if (existing) existing.remove();
+
+    var card = document.createElement('div');
+    card.className = 'tg-panel';
+
+    var statusDot, statusText, statusClass, bodyHTML, actionsHTML;
+
+    if (mode === 'pick') {
+      statusDot = '<span class="tg-dot tg-dot--pick"></span>';
+      statusText = 'Pick Mode';
+      statusClass = 'tg-status tg-status--pick';
+      bodyHTML =
+        '<div class="tg-hint">Click any element to select it.<br>Press <strong style="color:#e2e8f0">Esc</strong> to cancel.</div>';
+      actionsHTML = '';
+    } else if (paused) {
+      statusDot = '<span class="tg-dot tg-dot--pause"></span>';
+      statusText = 'Paused';
+      statusClass = 'tg-status tg-status--pause';
+      bodyHTML =
+        '<div class="tg-counter">' +
+          '<span class="tg-count" id="tg-count">' + stepCount + '</span>' +
+          '<span class="tg-count-label" id="tg-count-label">step' + (stepCount === 1 ? '' : 's') + ' captured</span>' +
+        '</div>' +
+        '<div class="tg-hint">Interact with the page freely.<br>Resume when ready to pick more.</div>';
+      actionsHTML =
+        '<div class="tg-divider"></div>' +
+        '<div class="tg-actions">' +
+          '<button class="tg-btn tg-btn--resume" id="tg-resume">Resume</button>' +
+          '<button class="tg-btn tg-btn--done" id="tg-done">Done</button>' +
+        '</div>';
+    } else {
+      statusDot = '<span class="tg-dot tg-dot--rec"></span>';
+      statusText = 'Recording';
+      statusClass = 'tg-status tg-status--rec';
+      bodyHTML =
+        '<div class="tg-counter">' +
+          '<span class="tg-count" id="tg-count">' + stepCount + '</span>' +
+          '<span class="tg-count-label" id="tg-count-label">step' + (stepCount === 1 ? '' : 's') + ' captured</span>' +
+        '</div>' +
+        '<div class="tg-hint">Click elements to capture steps.</div>';
+      actionsHTML =
+        '<div class="tg-divider"></div>' +
+        '<div class="tg-actions">' +
+          '<button class="tg-btn tg-btn--pause" id="tg-pause">Pause</button>' +
+          '<button class="tg-btn tg-btn--done" id="tg-done">Done</button>' +
+        '</div>';
+    }
+
+    card.innerHTML =
+      '<div class="tg-header" id="tg-drag">' +
+        '<div class="tg-logo">T</div>' +
+        '<div>' +
+          '<div class="tg-brand-title">Trailguide</div>' +
+          '<div class="' + statusClass + '">' + statusDot + statusText + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="tg-body">' + bodyHTML + '</div>' +
+      actionsHTML;
+
+    shadow.appendChild(card);
+    bindPanelEvents(card);
+    bindDrag(card);
   }
 
-  // Hide overlay
-  function hideOverlay() {
-    if (highlightOverlay) {
-      highlightOverlay.style.display = 'none'
+  function bindPanelEvents(card) {
+    var doneBtn = card.querySelector('#tg-done');
+    if (doneBtn) {
+      doneBtn.addEventListener('click', function (e) {
+        e.preventDefault(); e.stopPropagation();
+        stop();
+        chrome.runtime.sendMessage({ action: 'recordingStopped' });
+      });
+    }
+    var pauseBtn = card.querySelector('#tg-pause');
+    if (pauseBtn) {
+      pauseBtn.addEventListener('click', function (e) {
+        e.preventDefault(); e.stopPropagation();
+        pauseRecording();
+      });
+    }
+    var resumeBtn = card.querySelector('#tg-resume');
+    if (resumeBtn) {
+      resumeBtn.addEventListener('click', function (e) {
+        e.preventDefault(); e.stopPropagation();
+        resumeRecording();
+      });
     }
   }
 
-  // Generate stable selector for element
+  function bindDrag(card) {
+    var handle = card.querySelector('#tg-drag');
+    if (!handle) return;
+
+    handle.addEventListener('mousedown', function (e) {
+      if (!panel) return;
+      isDragging = true;
+      var rect = panel.getBoundingClientRect();
+      dragOffsetX = e.clientX - rect.left;
+      dragOffsetY = e.clientY - rect.top;
+      panel.style.left = rect.left + 'px';
+      panel.style.top = rect.top + 'px';
+      panel.style.right = 'auto';
+      panel.style.bottom = 'auto';
+      e.preventDefault();
+    });
+  }
+
+  function globalDragMove(e) {
+    if (!isDragging || !panel) return;
+    var x = e.clientX - dragOffsetX;
+    var y = e.clientY - dragOffsetY;
+    x = Math.max(0, Math.min(x, window.innerWidth - 256));
+    y = Math.max(0, Math.min(y, window.innerHeight - panel.offsetHeight));
+    panel.style.left = x + 'px';
+    panel.style.top = y + 'px';
+  }
+
+  function globalDragEnd() {
+    isDragging = false;
+  }
+
+  // Always listen for drag at document level
+  document.addEventListener('mousemove', globalDragMove, true);
+  document.addEventListener('mouseup', globalDragEnd, true);
+
+  function updateStepCount() {
+    if (!shadow) return;
+    var countEl = shadow.querySelector('#tg-count');
+    if (countEl) {
+      countEl.textContent = stepCount;
+    }
+    var labelEl = shadow.querySelector('#tg-count-label');
+    if (labelEl) {
+      labelEl.textContent = 'step' + (stepCount === 1 ? '' : 's') + ' captured';
+    }
+  }
+
+  function hidePanel() {
+    if (panel) { panel.remove(); panel = null; shadow = null; }
+    isDragging = false;
+  }
+
+  // ── Selector generation ──────────────────────────────────────────────
+
+  function cssEscape(value) {
+    if (typeof CSS !== 'undefined' && CSS.escape) return CSS.escape(value);
+    return value.replace(/([^\w-])/g, '\\$1');
+  }
+
+  function classifySelectorQuality(selector) {
+    if (/^#/.test(selector) || /\[data-trail-id=/.test(selector) ||
+        /\[data-testid=/.test(selector) || /\[data-tour-target=/.test(selector)) {
+      return { quality: 'stable', qualityHint: '' };
+    }
+    if (/\[aria-label=/.test(selector) || /\[name=/.test(selector) ||
+        /^\./.test(selector) || /\.\w/.test(selector)) {
+      return { quality: 'moderate', qualityHint: 'Add a `data-trail-id` attribute for a more stable selector.' };
+    }
+    return {
+      quality: 'fragile',
+      qualityHint: 'This selector may break when the page changes. Add a `data-trail-id` attribute for stability.',
+    };
+  }
+
   function generateSelector(element) {
-    // Priority 1: ID
-    if (element.id && !element.id.match(/^\d|^[0-9]/)) {
-      const selector = `#${CSS.escape(element.id)}`
-      if (document.querySelectorAll(selector).length === 1) {
-        return selector
+    if (!element || element === document.body || element === document.documentElement) return 'body';
+
+    if (element.id) return '#' + cssEscape(element.id);
+
+    var dataAttrs = ['data-trail-id', 'data-testid', 'data-cy', 'data-test', 'data-tour-target'];
+    for (var i = 0; i < dataAttrs.length; i++) {
+      var val = element.getAttribute(dataAttrs[i]);
+      if (val) {
+        var sel = '[' + dataAttrs[i] + '="' + cssEscape(val) + '"]';
+        if (document.querySelectorAll(sel).length === 1) return sel;
       }
     }
 
-    // Priority 2: Data attributes
-    const dataAttrs = ['data-testid', 'data-cy', 'data-test', 'data-trail-id', 'data-tour-target']
-    for (const attr of dataAttrs) {
-      const value = element.getAttribute(attr)
-      if (value) {
-        const selector = `[${attr}="${CSS.escape(value)}"]`
-        if (document.querySelectorAll(selector).length === 1) {
-          return selector
-        }
-      }
-    }
-
-    // Priority 3: aria-label
-    const ariaLabel = element.getAttribute('aria-label')
+    var ariaLabel = element.getAttribute('aria-label');
     if (ariaLabel) {
-      const selector = `${element.tagName.toLowerCase()}[aria-label="${CSS.escape(ariaLabel)}"]`
-      if (document.querySelectorAll(selector).length === 1) {
-        return selector
-      }
+      var aSel = element.tagName.toLowerCase() + '[aria-label="' + cssEscape(ariaLabel) + '"]';
+      if (document.querySelectorAll(aSel).length === 1) return aSel;
     }
 
-    // Priority 4: Button/link with unique text
-    if (['BUTTON', 'A'].includes(element.tagName)) {
-      const text = element.textContent.trim()
-      if (text && text.length < 50) {
-        const tag = element.tagName.toLowerCase()
-        const allSame = Array.from(document.querySelectorAll(tag))
-          .filter(el => el.textContent.trim() === text)
-        if (allSame.length === 1) {
-          // Use a more compatible selector
-          const selector = `${tag}:contains("${text.slice(0, 30)}")`
-          // Fallback to class-based or path-based
-        }
-      }
+    var name = element.getAttribute('name');
+    if (name) {
+      var nSel = '[name="' + cssEscape(name) + '"]';
+      if (document.querySelectorAll(nSel).length === 1) return nSel;
     }
 
-    // Priority 5: Unique class
     if (element.className && typeof element.className === 'string') {
-      const classes = element.className.split(/\s+/).filter(c =>
-        c && !c.match(/^(hover|active|focus|selected|open|closed|visible|hidden|ng-|_|css-)/i)
-      )
-
-      for (const cls of classes) {
-        const selector = `.${CSS.escape(cls)}`
-        if (document.querySelectorAll(selector).length === 1) {
-          return selector
-        }
+      var classes = element.className.split(/\s+/).filter(function (c) {
+        return c && !c.match(/^(hover|focus|active|disabled|hidden|visible|flex|grid|block|inline|p-|m-|w-|h-|text-|bg-|border-|ng-|_|css-)/);
+      });
+      for (var j = 0; j < classes.length; j++) {
+        var cSel = '.' + cssEscape(classes[j]);
+        if (document.querySelectorAll(cSel).length === 1) return cSel;
       }
-
-      // Try class combinations
-      if (classes.length >= 2) {
-        const selector = classes.slice(0, 3).map(c => `.${CSS.escape(c)}`).join('')
-        if (document.querySelectorAll(selector).length === 1) {
-          return selector
-        }
+      var tag = element.tagName.toLowerCase();
+      for (var k = 0; k < classes.length; k++) {
+        var tcSel = tag + '.' + cssEscape(classes[k]);
+        if (document.querySelectorAll(tcSel).length === 1) return tcSel;
       }
     }
 
-    // Priority 6: Path-based selector
-    const path = []
-    let current = element
-
-    while (current && current !== document.body && path.length < 5) {
-      let selector = current.tagName.toLowerCase()
-
-      if (current.id && !current.id.match(/^\d/)) {
-        path.unshift(`#${CSS.escape(current.id)}`)
-        break
-      }
-
-      const parent = current.parentElement
+    var path = [];
+    var cur = element;
+    while (cur && cur !== document.body && cur !== document.documentElement) {
+      var s = cur.tagName.toLowerCase();
+      if (cur.id) { path.unshift('#' + cssEscape(cur.id)); break; }
+      var parent = cur.parentElement;
       if (parent) {
-        const siblings = Array.from(parent.children).filter(el => el.tagName === current.tagName)
-        if (siblings.length > 1) {
-          const index = siblings.indexOf(current) + 1
-          selector += `:nth-of-type(${index})`
-        }
+        var siblings = Array.from(parent.children).filter(function (ch) { return ch.tagName === cur.tagName; });
+        if (siblings.length > 1) s += ':nth-of-type(' + (siblings.indexOf(cur) + 1) + ')';
       }
-
-      path.unshift(selector)
-      current = parent
+      path.unshift(s);
+      cur = parent;
+      if (path.length > 5) break;
     }
-
-    return path.join(' > ')
+    return path.join(' > ');
   }
 
-  // Mouse move handler
+  // ── Trailguide element check ──────────────────────────────────────────
+
+  function isTrailguideElement(el) {
+    while (el) {
+      if (el.id && typeof el.id === 'string' && el.id.startsWith('__trailguide')) return true;
+      el = el.parentElement;
+    }
+    return false;
+  }
+
+  // ── Event handlers ───────────────────────────────────────────────────
+
   function handleMouseMove(e) {
-    if (!isPickingMode) return
-
-    // Ignore our own elements
-    if (e.target.id && e.target.id.startsWith('__trailguide')) return
-
-    hoveredElement = e.target
-    positionOverlay(hoveredElement)
+    if (!mode || paused) return;
+    if (isDragging) return;
+    var t = e.target;
+    if (isTrailguideElement(t)) return;
+    if (t === currentTarget) return;
+    currentTarget = t;
+    positionOverlay(t);
   }
 
-  // Click handler
+  function handleMouseDown(e) {
+    if (!mode || paused) return;
+    if (isDragging) return;
+    if (isTrailguideElement(e.target)) return;
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+    return false;
+  }
+
+  function handleMouseUp(e) {
+    if (!mode || paused) return;
+    if (isDragging) return;
+    if (isTrailguideElement(e.target)) return;
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+    return false;
+  }
+
   function handleClick(e) {
-    if (!isPickingMode) return
+    if (!mode || paused) return;
+    var t = e.target;
+    if (isTrailguideElement(t)) return;
 
-    // Ignore our own elements
-    if (e.target.id && e.target.id.startsWith('__trailguide')) return
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
 
-    e.preventDefault()
-    e.stopPropagation()
-    e.stopImmediatePropagation()
+    var selector = generateSelector(t);
+    var qi = classifySelectorQuality(selector);
 
-    const selector = generateSelector(e.target)
-
-    // Send to extension
     chrome.runtime.sendMessage({
       action: 'selectorPicked',
       selector: selector,
-      tagName: e.target.tagName.toLowerCase(),
-      text: e.target.textContent?.slice(0, 50).trim() || ''
-    })
+      quality: qi.quality,
+      qualityHint: qi.qualityHint,
+    });
 
-    stopPicking()
-    return false
-  }
-
-  // Start picking mode
-  function startPicking() {
-    isPickingMode = true
-    highlightOverlay = createOverlay()
-    createIndicator()
-
-    document.addEventListener('mousemove', handleMouseMove, true)
-    document.addEventListener('click', handleClick, true)
-    document.body.style.cursor = 'crosshair'
-  }
-
-  // Stop picking mode
-  function stopPicking() {
-    isPickingMode = false
-    window.__trailguidePickerActive = false
-
-    document.removeEventListener('mousemove', handleMouseMove, true)
-    document.removeEventListener('click', handleClick, true)
-    document.body.style.cursor = ''
-
-    // Remove overlay
-    const overlay = document.getElementById('__trailguide-highlight')
-    if (overlay) overlay.remove()
-
-    // Remove indicator
-    const indicator = document.getElementById('__trailguide-indicator')
-    if (indicator) indicator.remove()
-
-    highlightOverlay = null
-  }
-
-  // Listen for messages from popup
-  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.action === 'startPicking') {
-      startPicking()
-    } else if (message.action === 'stopPicking') {
-      stopPicking()
+    if (mode === 'pick') {
+      stop();
+    } else {
+      stepCount++;
+      updateStepCount();
     }
-  })
-})()
+
+    return false;
+  }
+
+  function handleKeyDown(e) {
+    if (!mode) return;
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      var wasRecording = mode === 'record';
+      stop();
+      if (wasRecording) {
+        chrome.runtime.sendMessage({ action: 'recordingStopped' });
+      }
+    }
+  }
+
+  // ── Pause / Resume ──────────────────────────────────────────────────
+
+  function pauseRecording() {
+    if (mode !== 'record' || paused) return;
+    paused = true;
+    hideOverlay();
+    document.body.style.cursor = '';
+    showPanel();
+  }
+
+  function resumeRecording() {
+    if (mode !== 'record' || !paused) return;
+    paused = false;
+    document.body.style.cursor = 'crosshair';
+    showPanel();
+  }
+
+  // ── Start / Stop ─────────────────────────────────────────────────────
+
+  function startPicking() {
+    if (mode) stop();
+    mode = 'pick';
+    paused = false;
+    if (!overlay) overlay = createOverlay();
+    showPanel();
+    attachListeners();
+    document.body.style.cursor = 'crosshair';
+  }
+
+  function startRecording() {
+    if (mode) stop();
+    mode = 'record';
+    paused = false;
+    stepCount = 0;
+    if (!overlay) overlay = createOverlay();
+    showPanel();
+    attachListeners();
+    document.body.style.cursor = 'crosshair';
+  }
+
+  function stop() {
+    mode = null;
+    paused = false;
+    stepCount = 0;
+    hideOverlay();
+    hidePanel();
+    detachListeners();
+    document.body.style.cursor = '';
+    window.__trailguideActive = false;
+  }
+
+  function attachListeners() {
+    document.addEventListener('mousemove', handleMouseMove, true);
+    document.addEventListener('mousedown', handleMouseDown, true);
+    document.addEventListener('mouseup', handleMouseUp, true);
+    document.addEventListener('click', handleClick, true);
+    document.addEventListener('keydown', handleKeyDown, true);
+  }
+
+  function detachListeners() {
+    document.removeEventListener('mousemove', handleMouseMove, true);
+    document.removeEventListener('mousedown', handleMouseDown, true);
+    document.removeEventListener('mouseup', handleMouseUp, true);
+    document.removeEventListener('click', handleClick, true);
+    document.removeEventListener('keydown', handleKeyDown, true);
+  }
+
+  // ── Listen for commands from the background script ───────────────────
+
+  chrome.runtime.onMessage.addListener((message) => {
+    if (message.action === 'startPicking') startPicking();
+    if (message.action === 'startRecording') startRecording();
+    if (message.action === 'stopRecording') stop();
+  });
+})();

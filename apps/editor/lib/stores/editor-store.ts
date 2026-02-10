@@ -33,7 +33,7 @@ interface EditorState {
   history: HistoryState
 
   // Preview state
-  previewMode: 'edit' | 'play' | 'pick' | 'record'
+  previewMode: 'edit' | 'play' | 'record'
   previewUrl: string
 
   // UI state
@@ -68,7 +68,7 @@ interface EditorState {
   pushHistory: () => void
 
   // Preview
-  setPreviewMode: (mode: 'edit' | 'play' | 'pick' | 'record') => void
+  setPreviewMode: (mode: 'edit' | 'play' | 'record') => void
   setPreviewUrl: (url: string) => void
 }
 

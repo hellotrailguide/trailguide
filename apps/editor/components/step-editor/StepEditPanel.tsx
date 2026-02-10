@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Target, MousePointer2 } from 'lucide-react'
+import { Target } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -49,7 +49,7 @@ function SelectorQualityBadge({ step }: { step: EditorStep }) {
 }
 
 export function StepEditPanel() {
-  const { trail, selectedStepIndex, updateStep, setPreviewMode, previewMode, previewUrl } = useEditorStore()
+  const { trail, selectedStepIndex, updateStep, previewUrl } = useEditorStore()
   const [selectorStatus, setSelectorStatus] = useState<SelectorStatus>({
     isBroken: false,
     suggestions: [],
@@ -109,17 +109,9 @@ export function StepEditPanel() {
               placeholder="CSS selector (e.g., #my-button)"
               className="font-mono text-sm"
             />
-            <Button
-              variant={previewMode === 'pick' ? 'secondary' : 'outline'}
-              size="icon"
-              onClick={() => setPreviewMode(previewMode === 'pick' ? 'edit' : 'pick')}
-              title="Pick element visually"
-            >
-              <MousePointer2 className="h-4 w-4" />
-            </Button>
           </div>
           <p className="text-xs text-muted-foreground">
-            Click the picker button, then click an element in the preview
+            Use &ldquo;Start Recording&rdquo; to visually select elements
           </p>
           <SelectorQualityBadge step={step} />
           {step.target && previewUrl && (

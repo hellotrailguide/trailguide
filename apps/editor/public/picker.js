@@ -8,6 +8,8 @@
   // Capture the parent origin for secure postMessage communication.
   // The picker runs inside a proxied iframe served from the editor's origin.
   var editorOrigin = window.location.origin;
+  // Communicate with opener (popup window) or parent (iframe)
+  var messageTarget = window.opener || window.parent;
 
   let isPickingMode = false;
   let isRecordingMode = false;
@@ -54,8 +56,8 @@
         /\[data-testid=/.test(selector) || /\[data-tour-target=/.test(selector)) {
       return { quality: 'stable', qualityHint: '' };
     }
-    // Moderate: aria-label, name, unique class
-    if (/\[aria-label=/.test(selector) || /\[name=/.test(selector) || /^\./.test(selector) || /\.\w/.test(selector)) {
+    // Moderate: aria-label, name, unique class, text-based
+    if (/\[aria-label=/.test(selector) || /\[name=/.test(selector) || /^\./.test(selector) || /\.\w/.test(selector) || /\[data-tg-text=/.test(selector)) {
       return { quality: 'moderate', qualityHint: 'Add a `data-trail-id` attribute for a more stable selector.' };
     }
     // Fragile: path-based fallback
@@ -65,7 +67,7 @@
     };
   }
 
-  // Generate CSS selector - same algorithm as recorder selectorGenerator.ts
+  // Generate CSS selector - improved algorithm
   function generateSelector(element) {
     if (!element || element === document.body || element === document.documentElement) {
       return 'body';
@@ -110,14 +112,72 @@
       }
     }
 
-    // Priority 5: Unique class combination
+    // Priority 5: Button/link with unique text content
+    var textSelector = getTextBasedSelector(element);
+    if (textSelector) {
+      return textSelector;
+    }
+
+    // Priority 6: Unique class combination
     var uniqueClassSelector = getUniqueClassSelector(element);
     if (uniqueClassSelector) {
       return uniqueClassSelector;
     }
 
-    // Priority 6: Build path-based selector (least stable)
+    // Priority 7: Build path-based selector (least stable)
     return buildPathSelector(element);
+  }
+
+  function getTextBasedSelector(element) {
+    var tag = element.tagName.toLowerCase();
+
+    // Only for interactive elements where text is meaningful
+    if (!['button', 'a', 'label'].includes(tag)) {
+      return null;
+    }
+
+    var text = element.textContent?.trim();
+    if (!text || text.length > 50) return null; // Skip long/empty text
+
+    // Try tag + text content approach using a parent context
+    // Find a stable parent (with id or data attribute) and use relative selector
+    var parent = element.parentElement;
+    var depth = 0;
+
+    while (parent && depth < 5) {
+      var parentSelector = '';
+
+      if (parent.id) {
+        parentSelector = '#' + cssEscape(parent.id);
+      } else if (parent.getAttribute('data-trail-id')) {
+        parentSelector = '[data-trail-id="' + cssEscape(parent.getAttribute('data-trail-id')) + '"]';
+      }
+
+      if (parentSelector) {
+        // Find all matching tags under this parent
+        var candidates = Array.from(parent.querySelectorAll(tag));
+        var matchingIndex = candidates.findIndex(
+          function(el) { return el.textContent?.trim() === text; }
+        );
+
+        if (matchingIndex !== -1) {
+          // If there's only one button with this text under the stable parent
+          var sameTextCount = candidates.filter(
+            function(el) { return el.textContent?.trim() === text; }
+          ).length;
+
+          if (sameTextCount === 1) {
+            // Use a data attribute to capture text for stability, in case text changes
+            return parentSelector + ' ' + tag + '[data-tg-text="' + cssEscape(text) + '"]';
+          }
+        }
+      }
+
+      parent = parent.parentElement;
+      depth++;
+    }
+
+    return null;
   }
 
   function getUniqueClassSelector(element) {
@@ -146,6 +206,11 @@
       var tagSelector = tag + '.' + cssEscape(classes[j]);
       if (document.querySelectorAll(tagSelector).length === 1) {
         return tagSelector;
+      }
+      // If tag and class is not unique, try tag + text content
+      var textSelector = getTextBasedSelector(element);
+      if (textSelector) {
+        return textSelector;
       }
     }
 
@@ -241,7 +306,7 @@
     var qualityInfo = classifySelectorQuality(selector);
 
     // Send selector to parent (editor)
-    window.parent.postMessage({
+    messageTarget.postMessage({
       type: 'TRAILGUIDE_SELECTOR',
       selector: selector,
       quality: qualityInfo.quality,
@@ -264,10 +329,10 @@
       e.preventDefault();
       if (isRecordingMode) {
         stopRecording();
-        window.parent.postMessage({ type: 'TRAILGUIDE_RECORDER_STOPPED' }, editorOrigin);
+        messageTarget.postMessage({ type: 'TRAILGUIDE_RECORDER_STOPPED' }, editorOrigin);
       } else {
         stopPicking();
-        window.parent.postMessage({ type: 'TRAILGUIDE_PICKER_STOPPED' }, editorOrigin);
+        messageTarget.postMessage({ type: 'TRAILGUIDE_PICKER_STOPPED' }, editorOrigin);
       }
     }
   }
@@ -531,7 +596,7 @@
     // Reset transform if previously centered
     if (playbackTooltip) playbackTooltip.style.transform = '';
     renderPlaybackStep();
-    window.parent.postMessage({ type: 'TRAILGUIDE_PLAY_STEP_CHANGED', stepIndex: playbackIndex }, editorOrigin);
+    messageTarget.postMessage({ type: 'TRAILGUIDE_PLAY_STEP_CHANGED', stepIndex: playbackIndex }, editorOrigin);
   }
 
   function playPrev() {
@@ -539,7 +604,7 @@
     playbackIndex--;
     if (playbackTooltip) playbackTooltip.style.transform = '';
     renderPlaybackStep();
-    window.parent.postMessage({ type: 'TRAILGUIDE_PLAY_STEP_CHANGED', stepIndex: playbackIndex }, editorOrigin);
+    messageTarget.postMessage({ type: 'TRAILGUIDE_PLAY_STEP_CHANGED', stepIndex: playbackIndex }, editorOrigin);
   }
 
   function startPlayback(trail) {
@@ -560,7 +625,7 @@
       playbackTooltip.style.display = 'none';
       playbackTooltip.style.transform = '';
     }
-    window.parent.postMessage({ type: 'TRAILGUIDE_PLAY_ENDED' }, editorOrigin);
+    messageTarget.postMessage({ type: 'TRAILGUIDE_PLAY_ENDED' }, editorOrigin);
   }
 
   function escapeHtml(str) {
@@ -646,7 +711,7 @@
 
   // Signal ready to parent when DOM is loaded
   function signalReady() {
-    window.parent.postMessage({ type: 'TRAILGUIDE_IFRAME_READY' }, editorOrigin);
+    messageTarget.postMessage({ type: 'TRAILGUIDE_IFRAME_READY' }, editorOrigin);
   }
 
   if (document.readyState === 'loading') {
