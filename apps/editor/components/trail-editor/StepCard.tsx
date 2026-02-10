@@ -3,13 +3,13 @@
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { GripVertical, Trash2, Target, AlertCircle } from 'lucide-react'
-import type { Step } from '@/lib/types/trail'
+import type { EditorStep } from '@/lib/stores/editor-store'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { useEditorStore } from '@/lib/stores/editor-store'
 
 interface StepCardProps {
-  step: Step
+  step: EditorStep
   index: number
 }
 
@@ -47,10 +47,28 @@ export function StepCard({ step, index }: StepCardProps) {
         <GripVertical className="h-4 w-4" />
       </div>
 
-      {/* Step number */}
-      <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-medium flex items-center justify-center">
-        {index + 1}
-      </div>
+      {/* Thumbnail or step number */}
+      {step.screenshot ? (
+        <div className="flex-shrink-0 w-16 h-12 rounded overflow-hidden border border-border bg-muted">
+          <img
+            src={step.screenshot}
+            alt={`Step ${index + 1}`}
+            className="w-full h-full object-cover"
+            style={
+              step.elementRect && step.viewportSize
+                ? {
+                    objectPosition: `${((step.elementRect.x + step.elementRect.width / 2) / step.viewportSize.width) * 100}% ${((step.elementRect.y + step.elementRect.height / 2) / step.viewportSize.height) * 100}%`,
+                  }
+                : undefined
+            }
+            draggable={false}
+          />
+        </div>
+      ) : (
+        <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-medium flex items-center justify-center">
+          {index + 1}
+        </div>
+      )}
 
       {/* Content */}
       <div className="flex-1 min-w-0">
