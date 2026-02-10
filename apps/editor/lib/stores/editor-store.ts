@@ -1,12 +1,16 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { Trail, Step, Placement } from '@/lib/types/trail'
+import type { Trail, Step, Placement, ElementRect } from '@/lib/types/trail'
+import { saveScreenshots, loadScreenshots, deleteScreenshots } from './screenshot-db'
 
 export type SelectorQuality = 'stable' | 'moderate' | 'fragile'
 
 export interface EditorStep extends Step {
   selectorQuality?: SelectorQuality
   selectorQualityHint?: string
+  screenshot?: string
+  elementRect?: ElementRect
+  viewportSize?: { width: number; height: number }
 }
 
 export interface EditorTrail extends Trail {
@@ -33,7 +37,7 @@ interface EditorState {
   history: HistoryState
 
   // Preview state
-  previewMode: 'edit' | 'play' | 'record'
+  previewMode: 'edit' | 'record'
   previewUrl: string
 
   // UI state
@@ -46,7 +50,7 @@ interface EditorState {
 
   // Step actions
   addStep: (step: Omit<Step, 'id'>) => void
-  updateStep: (index: number, updates: Partial<Step>) => void
+  updateStep: (index: number, updates: Partial<EditorStep>) => void
   removeStep: (index: number) => void
   reorderSteps: (fromIndex: number, toIndex: number) => void
 
@@ -68,12 +72,19 @@ interface EditorState {
   pushHistory: () => void
 
   // Preview
-  setPreviewMode: (mode: 'edit' | 'play' | 'record') => void
+  setPreviewMode: (mode: 'edit' | 'record') => void
   setPreviewUrl: (url: string) => void
 }
 
 function generateId(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
+}
+
+function stripScreenshots(trail: EditorTrail): EditorTrail {
+  return {
+    ...trail,
+    steps: trail.steps.map(({ screenshot, elementRect, viewportSize, ...rest }) => rest) as EditorStep[],
+  }
 }
 
 function createEmptyTrail(): EditorTrail {
@@ -152,6 +163,7 @@ export const useEditorStore = create<EditorState>()(
 
         pushHistory()
 
+        const removedStep = trail.steps[index]
         const newSteps = trail.steps.filter((_, i) => i !== index)
         let newSelectedIndex = selectedStepIndex
 
@@ -172,6 +184,9 @@ export const useEditorStore = create<EditorState>()(
           selectedStepIndex: newSelectedIndex,
           isDirty: true,
         })
+
+        // Clean up screenshot from IndexedDB
+        deleteScreenshots([removedStep.id]).catch(() => {})
       },
 
       reorderSteps: (fromIndex, toIndex) => {
@@ -249,6 +264,9 @@ export const useEditorStore = create<EditorState>()(
           trail: updatedTrail,
           isDirty: false,
         })
+
+        // Persist screenshots to IndexedDB (fire-and-forget)
+        saveScreenshots(updatedTrail.steps).catch(() => {})
       },
 
       loadTrail: (id) => {
@@ -262,16 +280,37 @@ export const useEditorStore = create<EditorState>()(
             previewUrl: trail.previewUrl || '',
             isDirty: false,
           })
+
+          // Hydrate screenshots from IndexedDB
+          loadScreenshots(trail.steps.map((s) => s.id))
+            .then((screenshots) => {
+              const { trail: currentTrail } = get()
+              if (currentTrail?.id !== id) return // trail changed since load started
+              if (screenshots.size === 0) return
+
+              const hydratedSteps = currentTrail.steps.map((s) => {
+                const data = screenshots.get(s.id)
+                return data ? { ...s, ...data } : s
+              })
+              set({ trail: { ...currentTrail, steps: hydratedSteps } })
+            })
+            .catch(() => {})
         }
       },
 
       deleteTrail: (id) => {
         const { trails, trail } = get()
+        const toDelete = trails.find((t) => t.id === id)
         const newTrails = trails.filter((t) => t.id !== id)
         set({
           trails: newTrails,
           trail: trail?.id === id ? null : trail,
         })
+
+        // Clean up screenshots from IndexedDB
+        if (toDelete) {
+          deleteScreenshots(toDelete.steps.map((s) => s.id)).catch(() => {})
+        }
       },
 
       createNewTrail: () => {
@@ -317,7 +356,7 @@ export const useEditorStore = create<EditorState>()(
           id: trail.id,
           title: trail.title,
           version: trail.version,
-          steps: trail.steps.map(({ selectorQuality, selectorQualityHint, ...step }) => step),
+          steps: trail.steps.map(({ selectorQuality, selectorQualityHint, screenshot, elementRect, viewportSize, ...step }) => step),
         }
 
         return JSON.stringify(exportData, null, 2)
@@ -367,7 +406,7 @@ export const useEditorStore = create<EditorState>()(
 
         set({
           history: {
-            past: [...history.past.slice(-49), trail],
+            past: [...history.past.slice(-49), stripScreenshots(trail)],
             future: [],
           },
         })
@@ -420,7 +459,7 @@ export const useEditorStore = create<EditorState>()(
     {
       name: 'trailguide-editor',
       partialize: (state) => ({
-        trails: state.trails,
+        trails: state.trails.map(stripScreenshots),
       }),
     }
   )

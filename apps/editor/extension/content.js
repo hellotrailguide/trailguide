@@ -500,11 +500,31 @@
     var selector = generateSelector(t);
     var qi = classifySelectorQuality(selector);
 
-    chrome.runtime.sendMessage({
-      action: 'selectorPicked',
-      selector: selector,
-      quality: qi.quality,
-      qualityHint: qi.qualityHint,
+    // Capture element rect and viewport size before hiding UI
+    var rect = t.getBoundingClientRect();
+    var elementRect = { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
+    var viewportSize = { width: window.innerWidth, height: window.innerHeight };
+
+    // Hide overlay and panel so screenshot is clean
+    if (overlay) overlay.style.display = 'none';
+    if (panel) panel.style.display = 'none';
+
+    // Wait for repaint, then send message (background.js will capture screenshot)
+    requestAnimationFrame(function () {
+      chrome.runtime.sendMessage({
+        action: 'selectorPicked',
+        selector: selector,
+        quality: qi.quality,
+        qualityHint: qi.qualityHint,
+        elementRect: elementRect,
+        viewportSize: viewportSize,
+      });
+
+      // Restore overlay and panel after a short delay
+      setTimeout(function () {
+        if (overlay && mode) overlay.style.display = 'block';
+        if (panel) panel.style.display = '';
+      }, 200);
     });
 
     if (mode === 'pick') {

@@ -23,6 +23,8 @@ export interface Trail {
   steps: Step[];
 }
 
+export interface ElementRect { x: number; y: number; width: number; height: number }
+
 export interface TrailguideOptions {
   onComplete?: () => void;
   onSkip?: () => void;

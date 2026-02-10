@@ -93,6 +93,7 @@ export function StepEditPanel() {
         <div className="space-y-2">
           <Label htmlFor="content">Content</Label>
           <RichTextEditor
+            key={step.id}
             value={step.content}
             onChange={(value) => handleUpdate('content', value)}
           />

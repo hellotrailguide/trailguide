@@ -44,13 +44,21 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
   // ── From content script: selector picked ──
   if (message.action === 'selectorPicked' && recording) {
-    chrome.tabs.sendMessage(recording.editorTabId, {
-      type: 'TRAILGUIDE_SELECTOR',
-      selector: message.selector,
-      quality: message.quality,
-      qualityHint: message.qualityHint,
-    }).catch(() => {});
-    return false;
+    chrome.tabs.captureVisibleTab(null, { format: 'jpeg', quality: 50 }, (screenshot) => {
+      if (chrome.runtime.lastError) {
+        console.warn('[Trailguide] Screenshot capture failed:', chrome.runtime.lastError.message);
+      }
+      chrome.tabs.sendMessage(recording.editorTabId, {
+        type: 'TRAILGUIDE_SELECTOR',
+        selector: message.selector,
+        quality: message.quality,
+        qualityHint: message.qualityHint,
+        screenshot: screenshot || null,
+        elementRect: message.elementRect || null,
+        viewportSize: message.viewportSize || null,
+      }).catch(() => {});
+    });
+    return true; // keep message channel open for async captureVisibleTab
   }
 
   // ── From content script: recording stopped (Escape or Done button) ──

@@ -3,30 +3,32 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import {
   ExternalLink,
-  RefreshCw,
-  AlertCircle,
   Video,
   Square,
-  Play,
-  ChevronLeft,
-  ChevronRight,
+  ImageOff,
+  MousePointer,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useEditorStore } from '@/lib/stores/editor-store'
-import type { SelectorQuality } from '@/lib/stores/editor-store'
+import type { SelectorQuality, EditorStep } from '@/lib/stores/editor-store'
 import { toast } from '@/components/ui/toast'
 
 export function PreviewPane() {
-  const iframeRef = useRef<HTMLIFrameElement>(null)
   const recordWindowRef = useRef<Window | null>(null)
-  const [isLoaded, setIsLoaded] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
   const [urlInput, setUrlInput] = useState('')
   const [recordedCount, setRecordedCount] = useState(0)
-  const [playbackStep, setPlaybackStep] = useState(0)
-  const [pendingStep, setPendingStep] = useState<{ selector: string; quality: SelectorQuality; qualityHint: string } | null>(null);
-  const [extensionInstalled, setExtensionInstalled] = useState(false);
+  const [pendingStep, setPendingStep] = useState<{
+    selector: string
+    quality: SelectorQuality
+    qualityHint: string
+    screenshot?: string
+    elementRect?: { x: number; y: number; width: number; height: number }
+    viewportSize?: { width: number; height: number }
+  } | null>(null)
+  const [extensionInstalled, setExtensionInstalled] = useState(false)
+  const [containerSize, setContainerSize] = useState({ width: 0, height: 0 })
 
   const {
     trail,
@@ -40,25 +42,33 @@ export function PreviewPane() {
     createNewTrail,
   } = useEditorStore()
 
-  // Send message to iframe (for playback)
-  const postToIframe = useCallback((message: object) => {
-    if (iframeRef.current?.contentWindow) {
-      iframeRef.current.contentWindow.postMessage(message, '*')
-    }
-  }, [])
-
   // Ping for extension on mount
   useEffect(() => {
     window.postMessage({ type: 'TRAILGUIDE_EXT_PING' }, '*')
   }, [])
 
-  // Handle messages from iframe, recording window, or extension bridge
+  // Track container size for responsive screenshot scaling
+  useEffect(() => {
+    const container = containerRef.current
+    if (!container) return
+
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setContainerSize({
+          width: entry.contentRect.width,
+          height: entry.contentRect.height,
+        })
+      }
+    })
+    observer.observe(container)
+    return () => observer.disconnect()
+  }, [])
+
+  // Handle messages from extension bridge
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       if (!event.data?.type) return
 
-      // Extension bridge messages come from same page (origin matches)
-      // Proxy iframe/window messages come from our origin too
       if (event.origin !== window.location.origin && event.origin !== 'null') return
 
       switch (event.data.type) {
@@ -66,24 +76,12 @@ export function PreviewPane() {
           setExtensionInstalled(true)
           break
 
-        case 'TRAILGUIDE_IFRAME_READY':
-          // If this is from the proxy recording window, auto-start recording
-          if (recordWindowRef.current && event.source === recordWindowRef.current) {
-            console.log('[PreviewPane] Recording window ready, starting recording')
-            recordWindowRef.current.postMessage({ type: 'TRAILGUIDE_EDITOR_CONFIRM' }, window.location.origin)
-            recordWindowRef.current.postMessage({ type: 'TRAILGUIDE_START_RECORDING' }, window.location.origin)
-          } else {
-            console.log('[PreviewPane] Iframe picker ready')
-            postToIframe({ type: 'TRAILGUIDE_EDITOR_CONFIRM' })
-          }
-          break
-
         case 'TRAILGUIDE_SELECTOR': {
-          const { selector, quality, qualityHint } = event.data
+          const { selector, quality, qualityHint, screenshot, elementRect, viewportSize } = event.data
           if (!selector) return
 
           console.log('[PreviewPane] Received selector:', selector, 'quality:', quality)
-          setPendingStep({ selector, quality, qualityHint });
+          setPendingStep({ selector, quality, qualityHint, screenshot, elementRect, viewportSize })
           break
         }
 
@@ -98,33 +96,22 @@ export function PreviewPane() {
             toast.success(`${stoppedCount} step${stoppedCount === 1 ? '' : 's'} captured`)
           }
           break
-
-        case 'TRAILGUIDE_PLAY_ENDED':
-          setPreviewMode('edit')
-          setPlaybackStep(0)
-          break
-
-        case 'TRAILGUIDE_PLAY_STEP_CHANGED':
-          if (typeof event.data.stepIndex === 'number') {
-            setPlaybackStep(event.data.stepIndex)
-          }
-          break
       }
     }
 
     window.addEventListener('message', handleMessage)
     return () => window.removeEventListener('message', handleMessage)
-  }, [postToIframe, setPreviewMode, recordedCount, toast])
+  }, [setPreviewMode, recordedCount, toast])
 
   // Process received selectors — add steps during recording
   useEffect(() => {
-    if (!pendingStep) return;
+    if (!pendingStep) return
 
-    const { selector, quality, qualityHint } = pendingStep;
-    const currentTrail = useEditorStore.getState().trail;
+    const { selector, quality, qualityHint, screenshot, elementRect, viewportSize } = pendingStep
 
+    const currentTrail = useEditorStore.getState().trail
     if (!currentTrail) {
-      createNewTrail();
+      createNewTrail()
     }
 
     addStep({
@@ -132,35 +119,24 @@ export function PreviewPane() {
       content: 'Describe this step...',
       target: selector,
       placement: 'bottom',
-    });
+    })
 
-    const trailNow = useEditorStore.getState().trail;
-    if (trailNow && quality) {
-      const newIdx = trailNow.steps.length - 1;
+    const trailNow = useEditorStore.getState().trail
+    if (trailNow) {
+      const newIdx = trailNow.steps.length - 1
       updateStep(newIdx, {
         selectorQuality: quality as SelectorQuality,
         selectorQualityHint: qualityHint || '',
-      } as any);
+        screenshot: screenshot || undefined,
+        elementRect: elementRect || undefined,
+        viewportSize: viewportSize || undefined,
+      })
     }
-    setRecordedCount((c) => c + 1);
+    setRecordedCount((c) => c + 1)
 
-    toast.success(`Element selected: ${selector.slice(0, 35)}${selector.length > 35 ? '...' : ''}`);
-    setPendingStep(null);
-  }, [pendingStep, updateStep, addStep, createNewTrail, toast]);
-
-  // Handle highlighting in iframe for playback/edit
-  useEffect(() => {
-    if (!isLoaded) return
-
-    if (previewMode === 'edit' && trail && selectedStepIndex !== null) {
-      const step = trail.steps[selectedStepIndex]
-      if (step?.target) {
-        postToIframe({ type: 'TRAILGUIDE_HIGHLIGHT', selector: step.target })
-      } else {
-        postToIframe({ type: 'TRAILGUIDE_CLEAR_HIGHLIGHT' })
-      }
-    }
-  }, [isLoaded, previewMode, trail, selectedStepIndex, postToIframe])
+    toast.success(`Element selected: ${selector.slice(0, 35)}${selector.length > 35 ? '...' : ''}`)
+    setPendingStep(null)
+  }, [pendingStep, updateStep, addStep, createNewTrail, toast])
 
   // Detect recording window close
   useEffect(() => {
@@ -188,23 +164,6 @@ export function PreviewPane() {
       url = 'https://' + url
     }
     setPreviewUrl(url)
-    setIsLoaded(false)
-    setError(null)
-  }
-
-  const handleRefresh = () => {
-    if (iframeRef.current) {
-      iframeRef.current.src = iframeRef.current.src
-      setIsLoaded(false)
-    }
-  }
-
-  const handleIframeLoad = () => {
-    setIsLoaded(true)
-  }
-
-  const handleIframeError = () => {
-    setError('Failed to load preview. The site may not allow embedding.')
   }
 
   const handleStartRecording = () => {
@@ -219,10 +178,8 @@ export function PreviewPane() {
     setPreviewMode('record')
 
     if (extensionInstalled) {
-      // Extension opens the real site and injects the picker
       window.postMessage({ type: 'TRAILGUIDE_EXT_START_RECORDING', url: previewUrl }, '*')
     } else {
-      // Fallback: open proxied site in a new window
       const proxyUrl = `/api/proxy?url=${encodeURIComponent(previewUrl)}`
       const win = window.open(proxyUrl, 'trailguide-recorder', 'width=1280,height=800')
       if (win) {
@@ -236,7 +193,6 @@ export function PreviewPane() {
 
   const handleStopRecording = () => {
     if (extensionInstalled) {
-      // Tell the extension to stop and close the recording tab
       window.postMessage({ type: 'TRAILGUIDE_EXT_STOP_RECORDING' }, '*')
     } else if (recordWindowRef.current && !recordWindowRef.current.closed) {
       recordWindowRef.current.postMessage({ type: 'TRAILGUIDE_STOP_RECORDING' }, window.location.origin)
@@ -251,28 +207,30 @@ export function PreviewPane() {
     }
   }
 
-  const handleStartPlayback = () => {
-    if (!trail || trail.steps.length === 0) return
-    setPlaybackStep(0)
-    setPreviewMode('play')
-    postToIframe({ type: 'TRAILGUIDE_PLAY_TRAIL', trail })
-  }
-
-  const handleStopPlayback = () => {
-    postToIframe({ type: 'TRAILGUIDE_STOP_TRAIL' })
-    setPreviewMode('edit')
-    setPlaybackStep(0)
-  }
-
-  const handlePlayPrev = () => {
-    postToIframe({ type: 'TRAILGUIDE_PLAY_PREV' })
-  }
-
-  const handlePlayNext = () => {
-    postToIframe({ type: 'TRAILGUIDE_PLAY_NEXT' })
-  }
-
   const totalSteps = trail?.steps.length ?? 0
+  const selectedStep: EditorStep | null =
+    trail && selectedStepIndex !== null ? trail.steps[selectedStepIndex] ?? null : null
+
+  // Compute screenshot scaling
+  const computeScale = useCallback(() => {
+    if (!selectedStep?.screenshot || !selectedStep.viewportSize) return null
+    const { width: vw, height: vh } = selectedStep.viewportSize
+    if (!containerSize.width || !containerSize.height) return null
+
+    const scaleX = containerSize.width / vw
+    const scaleY = containerSize.height / vh
+    const scale = Math.min(scaleX, scaleY)
+
+    return {
+      scale,
+      imgWidth: vw * scale,
+      imgHeight: vh * scale,
+      offsetX: (containerSize.width - vw * scale) / 2,
+      offsetY: (containerSize.height - vh * scale) / 2,
+    }
+  }, [selectedStep, containerSize])
+
+  const scaleInfo = computeScale()
 
   return (
     <div className="flex flex-col h-full bg-muted/30">
@@ -296,9 +254,6 @@ export function PreviewPane() {
             Load
           </Button>
         </form>
-        <Button variant="ghost" size="icon" onClick={handleRefresh} disabled={!previewUrl}>
-          <RefreshCw className="h-4 w-4" />
-        </Button>
         {previewUrl && (
           <Button
             variant="ghost"
@@ -317,9 +272,7 @@ export function PreviewPane() {
           className={`flex items-center gap-2 px-4 py-2 text-sm ${
             previewMode === 'record'
               ? 'bg-red-50 text-red-800 border-b border-red-200'
-              : previewMode === 'play'
-                ? 'bg-violet-50 text-violet-800 border-b border-violet-200'
-                : 'bg-muted border-b border-border'
+              : 'bg-muted border-b border-border'
           }`}
         >
           {previewMode === 'record' ? (
@@ -339,63 +292,18 @@ export function PreviewPane() {
                 Stop Recording
               </Button>
             </>
-          ) : previewMode === 'play' ? (
-            <>
-              <Play className="h-4 w-4" />
-              <span className="font-medium">
-                Step {playbackStep + 1} of {totalSteps}
-              </span>
-              <div className="ml-auto flex gap-1">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={handlePlayPrev}
-                  disabled={playbackStep === 0}
-                  className="bg-white"
-                >
-                  <ChevronLeft className="h-3 w-3" />
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={handlePlayNext}
-                  disabled={playbackStep >= totalSteps - 1}
-                  className="bg-white"
-                >
-                  <ChevronRight className="h-3 w-3" />
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={handleStopPlayback}
-                  className="bg-white"
-                >
-                  <Square className="h-3 w-3 mr-1" />
-                  Stop
-                </Button>
-              </div>
-            </>
           ) : (
             <>
               <span className="text-muted-foreground">
-                {isLoaded ? 'Preview loaded' : 'Loading preview...'}
+                {selectedStepIndex !== null
+                  ? `Step ${selectedStepIndex + 1} of ${totalSteps}`
+                  : `${totalSteps} step${totalSteps === 1 ? '' : 's'}`}
               </span>
               <div className="ml-auto flex gap-2">
                 <Button size="sm" variant="default" onClick={handleStartRecording}>
                   <Video className="h-3 w-3 mr-1" />
                   Start Recording
                 </Button>
-                {isLoaded && (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={handleStartPlayback}
-                    disabled={totalSteps === 0}
-                  >
-                    <Play className="h-3 w-3 mr-1" />
-                    Preview Trail
-                  </Button>
-                )}
               </div>
             </>
           )}
@@ -403,7 +311,7 @@ export function PreviewPane() {
       )}
 
       {/* Preview content */}
-      <div className="flex-1 relative">
+      <div ref={containerRef} className="flex-1 relative overflow-hidden">
         {!previewUrl ? (
           <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-8">
             <div className="max-w-md">
@@ -431,36 +339,51 @@ export function PreviewPane() {
               )}
             </div>
           </div>
-        ) : error ? (
+        ) : selectedStep === null ? (
           <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-8">
-            <AlertCircle className="h-8 w-8 text-destructive mb-2" />
-            <h3 className="font-medium mb-2">Failed to load preview</h3>
-            <p className="text-sm text-muted-foreground mb-4">{error}</p>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => window.open(previewUrl, '_blank')}
-            >
-              <ExternalLink className="h-3 w-3 mr-1" />
-              Open Site in New Tab
-            </Button>
+            <MousePointer className="h-8 w-8 text-muted-foreground mb-3" />
+            <p className="text-sm text-muted-foreground">Select a step to see its screenshot</p>
+          </div>
+        ) : !selectedStep.screenshot ? (
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-8">
+            <ImageOff className="h-8 w-8 text-muted-foreground mb-3" />
+            <p className="text-sm font-medium mb-1">No screenshot available</p>
+            <p className="text-xs text-muted-foreground max-w-xs">
+              Screenshots are captured automatically when recording with the Chrome extension.
+              Re-record this step to capture a screenshot.
+            </p>
           </div>
         ) : (
-          <>
-            {!isLoaded && (
-              <div className="absolute inset-0 flex items-center justify-center bg-muted/50">
-                <RefreshCw className="h-6 w-6 animate-spin text-muted-foreground" />
-              </div>
-            )}
-            <iframe
-              ref={iframeRef}
-              src={`/api/proxy?url=${encodeURIComponent(previewUrl)}`}
-              className="w-full h-full border-0"
-              sandbox="allow-scripts allow-forms allow-popups allow-same-origin allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation"
-              onLoad={handleIframeLoad}
-              onError={handleIframeError}
+          <div className="absolute inset-0 flex items-center justify-center bg-muted/20">
+            {/* Screenshot image */}
+            <img
+              src={selectedStep.screenshot}
+              alt={`Screenshot for ${selectedStep.title || 'step'}`}
+              style={{
+                width: scaleInfo?.imgWidth ?? '100%',
+                height: scaleInfo?.imgHeight ?? 'auto',
+                objectFit: 'contain',
+              }}
+              className="block"
+              draggable={false}
             />
-          </>
+            {/* Highlight overlay on target element */}
+            {scaleInfo && selectedStep.elementRect && (
+              <div
+                style={{
+                  position: 'absolute',
+                  left: scaleInfo.offsetX + selectedStep.elementRect.x * scaleInfo.scale,
+                  top: scaleInfo.offsetY + selectedStep.elementRect.y * scaleInfo.scale,
+                  width: selectedStep.elementRect.width * scaleInfo.scale,
+                  height: selectedStep.elementRect.height * scaleInfo.scale,
+                  boxShadow: '0 0 0 4000px rgba(0,0,0,0.15)',
+                  border: '2px solid #3b82f6',
+                  borderRadius: 4,
+                  pointerEvents: 'none',
+                }}
+              />
+            )}
+          </div>
         )}
       </div>
     </div>
