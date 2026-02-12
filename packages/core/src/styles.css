@@ -19,7 +19,7 @@
 .trailguide-highlight {
   position: fixed;
   border-radius: 4px;
-  box-shadow: 0 0 0 2px #3b82f6, 0 0 0 4px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 0 0 2px #1a91a2, 0 0 0 4px rgba(26, 145, 162, 0.3);
   transition: all 0.2s ease-out;
   pointer-events: none;
 }
@@ -114,12 +114,12 @@
 
 .trailguide-btn-primary {
   border: none;
-  background: #3b82f6;
+  background: #1a91a2;
   color: white;
 }
 
 .trailguide-btn-primary:hover {
-  background: #2563eb;
+  background: #158292;
 }
 
 .trailguide-tooltip-arrow {

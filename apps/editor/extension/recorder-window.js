@@ -23,8 +23,8 @@
       overlay.style.cssText = `
         position: fixed;
         pointer-events: none;
-        border: 3px solid #3b82f6;
-        background: rgba(59, 130, 246, 0.1);
+        border: 3px solid #1a91a2;
+        background: rgba(26, 145, 162, 0.1);
         z-index: 2147483647;
         border-radius: 4px;
         transition: all 0.05s ease;
@@ -72,7 +72,7 @@
           font-size: 13px;
         ">Pause</button>
         <button id="__trailguide-done" style="
-          background: #3b82f6;
+          background: #1a91a2;
           border: none;
           color: white;
           padding: 6px 12px;

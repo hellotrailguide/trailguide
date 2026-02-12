@@ -28,8 +28,8 @@
     overlay.style.cssText = `
       position: fixed;
       pointer-events: none;
-      border: 2px solid #3b82f6;
-      background: rgba(59, 130, 246, 0.15);
+      border: 2px solid #1a91a2;
+      background: rgba(26, 145, 162, 0.15);
       z-index: 2147483647;
       border-radius: 4px;
       transition: all 0.05s ease;

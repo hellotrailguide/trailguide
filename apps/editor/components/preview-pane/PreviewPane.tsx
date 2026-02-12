@@ -377,7 +377,7 @@ export function PreviewPane() {
                   width: selectedStep.elementRect.width * scaleInfo.scale,
                   height: selectedStep.elementRect.height * scaleInfo.scale,
                   boxShadow: '0 0 0 4000px rgba(0,0,0,0.15)',
-                  border: '2px solid #3b82f6',
+                  border: '2px solid #1a91a2',
                   borderRadius: 4,
                   pointerEvents: 'none',
                 }}

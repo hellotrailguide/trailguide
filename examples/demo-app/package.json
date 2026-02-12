@@ -10,9 +10,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@trailguide/core": "^0.0.1",
-    "@trailguide/runtime": "^0.0.1",
-    "@trailguide/recorder": "^0.0.1",
+    "@trailguide/core": "workspace:*",
+    "@trailguide/runtime": "workspace:*",
+    "@trailguide/recorder": "workspace:*",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
