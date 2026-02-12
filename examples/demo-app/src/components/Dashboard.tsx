@@ -7,14 +7,14 @@ export function Dashboard({ children }: DashboardProps) {
     <div
       style={{
         minHeight: '100vh',
-        background: '#f8fafc',
+        background: '#0f172a',
       }}
     >
       {/* Header */}
       <header
         style={{
-          background: 'white',
-          borderBottom: '1px solid #e2e8f0',
+          background: '#0f172a',
+          borderBottom: '1px solid rgba(255,255,255,0.06)',
           padding: '16px 24px',
           display: 'flex',
           alignItems: 'center',
@@ -25,34 +25,31 @@ export function Dashboard({ children }: DashboardProps) {
         }}
       >
         <a
-          href="https://gettrailguide.vercel.app"
+          href="https://gettrailguide.com"
           target="_blank"
           rel="noopener noreferrer"
           style={{
             display: 'flex',
             alignItems: 'center',
+            gap: '10px',
             textDecoration: 'none',
           }}
         >
-          <object
-            type="image/svg+xml"
-            data="/trailguide-logo-animated.svg"
-            style={{ height: '40px', pointerEvents: 'none' }}
-            aria-label="Trailguide"
-          >
+          <img src="/favicon.svg" alt="" style={{ height: '32px', width: '32px' }} />
+          <span style={{ fontSize: '18px', fontWeight: 600, color: '#f8fafc', letterSpacing: '-0.01em' }}>
             Trailguide
-          </object>
+          </span>
         </a>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <span
             style={{
               fontSize: '12px',
               fontWeight: 500,
-              color: '#3b82f6',
-              background: '#eff6ff',
+              color: '#1a91a2',
+              background: 'rgba(26,145,162,0.15)',
               padding: '4px 10px',
               borderRadius: '12px',
-              border: '1px solid #bfdbfe',
+              border: '1px solid rgba(26,145,162,0.3)',
             }}
           >
             Live Demo
@@ -65,10 +62,10 @@ export function Dashboard({ children }: DashboardProps) {
               padding: '8px 14px',
               fontSize: '13px',
               fontWeight: 500,
-              border: '1px solid #e2e8f0',
+              border: '1px solid rgba(255,255,255,0.1)',
               borderRadius: '6px',
-              background: 'white',
-              color: '#334155',
+              background: 'rgba(255,255,255,0.06)',
+              color: '#e2e8f0',
               textDecoration: 'none',
               display: 'flex',
               alignItems: 'center',

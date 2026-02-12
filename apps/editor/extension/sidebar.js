@@ -67,12 +67,12 @@
           align-items: center;
           gap: 8px;
           font-weight: 600;
-          color: #3b82f6;
+          color: #1a91a2;
         }
         .__tg-logo-icon {
           width: 24px;
           height: 24px;
-          background: #3b82f6;
+          background: #1a91a2;
           border-radius: 6px;
           display: flex;
           align-items: center;
@@ -101,7 +101,7 @@
         }
         .__tg-title-input:focus {
           outline: none;
-          border-color: #3b82f6;
+          border-color: #1a91a2;
         }
         .__tg-toolbar {
           padding: 12px 16px;
@@ -122,7 +122,7 @@
           transition: all 0.15s;
         }
         .__tg-btn-primary {
-          background: #3b82f6;
+          background: #1a91a2;
           color: white;
         }
         .__tg-btn-primary:hover {
@@ -166,8 +166,8 @@
           border-color: #cbd5e1;
         }
         .__tg-step.selected {
-          border-color: #3b82f6;
-          background: #eff6ff;
+          border-color: #1a91a2;
+          background: #edfcfe;
         }
         .__tg-step-header {
           display: flex;
@@ -178,7 +178,7 @@
         .__tg-step-num {
           width: 20px;
           height: 20px;
-          background: #3b82f6;
+          background: #1a91a2;
           color: white;
           border-radius: 50%;
           font-size: 11px;
@@ -240,7 +240,7 @@
         }
         .__tg-input:focus, .__tg-textarea:focus, .__tg-select:focus {
           outline: none;
-          border-color: #3b82f6;
+          border-color: #1a91a2;
         }
         .__tg-textarea {
           min-height: 60px;
@@ -259,7 +259,7 @@
         .__tg-highlight {
           position: fixed;
           pointer-events: none;
-          border: 2px solid #3b82f6;
+          border: 2px solid #1a91a2;
           background: rgba(59, 130, 246, 0.1);
           z-index: 2147483646;
           border-radius: 4px;
@@ -270,7 +270,7 @@
           top: 0;
           left: 0;
           right: 320px;
-          background: #3b82f6;
+          background: #1a91a2;
           color: white;
           padding: 10px 16px;
           font-size: 13px;
@@ -348,7 +348,7 @@
           background: #e2e8f0;
         }
         .__tg-tooltip-btn-primary {
-          background: #3b82f6;
+          background: #1a91a2;
           color: white;
         }
         .__tg-tooltip-btn-primary:hover {
@@ -361,7 +361,7 @@
         .__tg-playback-highlight {
           position: fixed;
           pointer-events: none;
-          border: 3px solid #3b82f6;
+          border: 3px solid #1a91a2;
           background: rgba(59, 130, 246, 0.15);
           z-index: 2147483645;
           border-radius: 4px;
@@ -373,11 +373,11 @@
       <div class="__tg-header">
         <div class="__tg-header-top">
           <div class="__tg-logo">
-            <div class="__tg-logo-icon">T</div>
+            <div class="__tg-logo-icon"><svg width="16" height="16" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 40 C 16 36, 28 44, 38 40 S 54 38, 58 40" stroke="#fff" stroke-width="5" stroke-linecap="round"/><circle cx="58" cy="40" r="4.5" fill="#fff"/></svg></div>
             <span>Trailguide</span>
           </div>
           <div style="display: flex; gap: 4px;">
-            <button class="__tg-close" id="__tg-dashboard" title="Open Dashboard" style="color: #3b82f6;">
+            <button class="__tg-close" id="__tg-dashboard" title="Open Dashboard" style="color: #1a91a2;">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="3" y="3" width="7" height="7"></rect>
                 <rect x="14" y="3" width="7" height="7"></rect>

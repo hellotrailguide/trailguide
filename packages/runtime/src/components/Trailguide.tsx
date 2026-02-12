@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { Trailguide as TrailguideCore } from '@trailguide/core';
-import type { Trail, Step } from '@trailguide/core';
+import type { Trail, Step, AnalyticsConfig } from '@trailguide/core';
 
 // Note: Styles are bundled with @trailguide/core automatically
 
@@ -9,6 +9,7 @@ export interface TrailguideProps {
   onComplete?: () => void;
   onStepChange?: (step: Step, index: number) => void;
   onSkip?: () => void;
+  analytics?: AnalyticsConfig;
 }
 
 export function Trailguide({
@@ -16,6 +17,7 @@ export function Trailguide({
   onComplete,
   onStepChange,
   onSkip,
+  analytics,
 }: TrailguideProps) {
   const instanceRef = useRef<TrailguideCore | null>(null);
 
@@ -25,6 +27,7 @@ export function Trailguide({
       onComplete,
       onStepChange,
       onSkip,
+      analytics,
     });
 
     instanceRef.current.start(trail);
@@ -33,7 +36,7 @@ export function Trailguide({
     return () => {
       instanceRef.current?.stop();
     };
-  }, [trail, onComplete, onStepChange, onSkip]);
+  }, [trail, onComplete, onStepChange, onSkip, analytics]);
 
   // This component doesn't render anything - the core handles DOM
   return null;

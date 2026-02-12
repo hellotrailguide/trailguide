@@ -178,7 +178,7 @@ export function highlightElement(element: HTMLElement): () => void {
   const originalOutline = element.style.outline;
   const originalOutlineOffset = element.style.outlineOffset;
 
-  element.style.outline = '2px solid #3b82f6';
+  element.style.outline = '2px solid #1a91a2';
   element.style.outlineOffset = '2px';
 
   return () => {

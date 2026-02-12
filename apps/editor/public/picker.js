@@ -30,8 +30,8 @@
     el.style.cssText = [
       'position: fixed',
       'pointer-events: none',
-      'border: 2px solid #3b82f6',
-      'background: rgba(59, 130, 246, 0.1)',
+      'border: 2px solid #1a91a2',
+      'background: rgba(26, 145, 162, 0.1)',
       'z-index: 2147483646',
       'border-radius: 4px',
       'transition: all 0.05s ease-out',
@@ -541,7 +541,7 @@
 
     // Build tooltip HTML
     var btnStyle = 'padding:6px 14px;border-radius:4px;border:none;cursor:pointer;font-size:13px;';
-    var primaryBtn = btnStyle + 'background:#3b82f6;color:white;';
+    var primaryBtn = btnStyle + 'background:#1a91a2;color:white;';
     var ghostBtn = btnStyle + 'background:transparent;color:#6b7280;';
 
     var html = '';

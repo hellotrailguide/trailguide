@@ -58,9 +58,10 @@ export function RecorderOverlay({ recorder }: RecorderOverlayProps) {
       {/* Main Panel */}
       <div
         style={{
-          background: 'white',
+          background: '#0f172a',
           borderRadius: '12px',
-          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.4)',
+          border: '1px solid rgba(255,255,255,0.08)',
           overflow: 'hidden',
           width: '300px',
         }}
@@ -69,8 +70,8 @@ export function RecorderOverlay({ recorder }: RecorderOverlayProps) {
         <div
           style={{
             padding: '12px 16px',
-            background: isRecording ? '#fef2f2' : '#f9fafb',
-            borderBottom: '1px solid #e5e7eb',
+            background: isRecording ? 'rgba(248,113,113,0.1)' : '#1e293b',
+            borderBottom: '1px solid rgba(255,255,255,0.06)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
@@ -86,7 +87,7 @@ export function RecorderOverlay({ recorder }: RecorderOverlayProps) {
                 animation: isRecording ? 'pulse 1.5s infinite' : 'none',
               }}
             />
-            <span style={{ fontWeight: 600, fontSize: '14px', color: '#111827' }}>
+            <span style={{ fontWeight: 600, fontSize: '14px', color: '#f8fafc' }}>
               Trail Recording
             </span>
           </div>
@@ -98,7 +99,7 @@ export function RecorderOverlay({ recorder }: RecorderOverlayProps) {
               fontWeight: 500,
               border: 'none',
               borderRadius: '6px',
-              background: isRecording ? '#ef4444' : '#3b82f6',
+              background: isRecording ? '#ef4444' : '#1a91a2',
               color: 'white',
               cursor: 'pointer',
             }}
@@ -119,7 +120,7 @@ export function RecorderOverlay({ recorder }: RecorderOverlayProps) {
               style={{
                 padding: '24px 16px',
                 textAlign: 'center',
-                color: '#6b7280',
+                color: '#94a3b8',
                 fontSize: '13px',
               }}
             >
@@ -134,7 +135,7 @@ export function RecorderOverlay({ recorder }: RecorderOverlayProps) {
                   key={step.id}
                   style={{
                     padding: '10px 16px',
-                    borderBottom: '1px solid #f3f4f6',
+                    borderBottom: '1px solid rgba(255,255,255,0.06)',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '10px',
@@ -145,13 +146,13 @@ export function RecorderOverlay({ recorder }: RecorderOverlayProps) {
                       width: '20px',
                       height: '20px',
                       borderRadius: '50%',
-                      background: '#e5e7eb',
+                      background: 'rgba(255,255,255,0.1)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       fontSize: '11px',
                       fontWeight: 600,
-                      color: '#374151',
+                      color: '#cbd5e1',
                       flexShrink: 0,
                     }}
                   >
@@ -162,7 +163,7 @@ export function RecorderOverlay({ recorder }: RecorderOverlayProps) {
                       style={{
                         fontSize: '13px',
                         fontWeight: 500,
-                        color: '#111827',
+                        color: '#f8fafc',
                         whiteSpace: 'nowrap',
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
@@ -173,7 +174,7 @@ export function RecorderOverlay({ recorder }: RecorderOverlayProps) {
                     <code
                       style={{
                         fontSize: '10px',
-                        color: '#6b7280',
+                        color: '#94a3b8',
                         whiteSpace: 'nowrap',
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
@@ -188,7 +189,7 @@ export function RecorderOverlay({ recorder }: RecorderOverlayProps) {
                     style={{
                       background: 'none',
                       border: 'none',
-                      color: '#9ca3af',
+                      color: '#64748b',
                       cursor: 'pointer',
                       padding: '4px',
                       fontSize: '16px',
@@ -209,7 +210,7 @@ export function RecorderOverlay({ recorder }: RecorderOverlayProps) {
           <div
             style={{
               padding: '12px 16px',
-              borderTop: '1px solid #e5e7eb',
+              borderTop: '1px solid rgba(255,255,255,0.06)',
               display: 'flex',
               gap: '8px',
             }}
@@ -220,10 +221,10 @@ export function RecorderOverlay({ recorder }: RecorderOverlayProps) {
                 flex: 1,
                 padding: '8px',
                 fontSize: '12px',
-                border: '1px solid #d1d5db',
+                border: '1px solid rgba(255,255,255,0.1)',
                 borderRadius: '6px',
-                background: 'white',
-                color: '#374151',
+                background: 'rgba(255,255,255,0.06)',
+                color: '#e2e8f0',
                 cursor: 'pointer',
               }}
             >

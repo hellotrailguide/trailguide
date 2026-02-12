@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Trailguide } from '@trailguide/runtime';
-import type { Trail } from '@trailguide/runtime';
+import type { Trail, AnalyticsConfig } from '@trailguide/runtime';
 import { RecorderOverlay, useRecorder } from '@trailguide/recorder';
 import '@trailguide/core/dist/style.css';
 import { Dashboard } from './components/Dashboard';
@@ -68,6 +68,7 @@ function App() {
 
   const startRecording = () => {
     setShowRecorder(true);
+    recorder.startRecording();
     setToastMessage('Trail recording started');
   };
 
@@ -78,6 +79,12 @@ function App() {
       setTrailSource('recorded');
       setShowTour(true);
     }
+  };
+
+  const analyticsConfig: AnalyticsConfig = {
+    endpoint: 'http://localhost:3000/api/analytics',
+    userId: '00000000-0000-0000-0000-000000000000', // matches seed script demo user
+    debug: true,
   };
 
   const isRecording = showRecorder;
@@ -106,9 +113,9 @@ function App() {
 
         {/* Recording Banner */}
         {isRecording && (
-          <div style={{
-            background: '#fef2f2',
-            border: '1px solid #fecaca',
+          <div data-recorder-ui style={{
+            background: 'rgba(239,68,68,0.1)',
+            border: '1px solid rgba(239,68,68,0.3)',
             borderRadius: '8px',
             padding: '12px 16px',
             marginBottom: '24px',
@@ -124,12 +131,12 @@ function App() {
                 borderRadius: '50%',
                 animation: 'pulse 1.5s infinite',
               }}/>
-              <span style={{ fontSize: '14px', color: '#991b1b', fontWeight: 500 }}>
+              <span style={{ fontSize: '14px', color: '#fca5a5', fontWeight: 500 }}>
                 Recording — click any element below to add it to your trail
               </span>
             </div>
             <button
-              onClick={() => setShowRecorder(false)}
+              onClick={() => { recorder.stopRecording(); setShowRecorder(false); }}
               style={{
                 padding: '6px 12px',
                 fontSize: '13px',
@@ -148,27 +155,27 @@ function App() {
 
         {/* Main Card */}
         <div style={{
-          background: 'white',
+          background: '#1e293b',
           borderRadius: '12px',
-          border: '1px solid #e2e8f0',
+          border: '1px solid rgba(255,255,255,0.06)',
           overflow: 'hidden',
           marginBottom: '24px',
         }}>
           {/* Card Header */}
           <div style={{
             padding: '20px 24px',
-            borderBottom: '1px solid #e2e8f0',
-            background: 'linear-gradient(135deg, #eff6ff 0%, #f8fafc 100%)',
+            borderBottom: '1px solid rgba(255,255,255,0.06)',
+            background: 'linear-gradient(135deg, rgba(26,145,162,0.1) 0%, #1e293b 100%)',
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
-              <h1 style={{ margin: 0, fontSize: '20px', fontWeight: 600, color: '#0f172a' }}>
+              <h1 style={{ margin: 0, fontSize: '20px', fontWeight: 600, color: '#f8fafc' }}>
                 Blaze a Trail
               </h1>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2.5" strokeLinecap="round">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a91a2" strokeWidth="2.5" strokeLinecap="round">
                 <path d="M5 12h4l2-6 3 12 2-6h3"/>
               </svg>
             </div>
-            <p style={{ margin: 0, fontSize: '14px', color: '#64748b' }}>
+            <p style={{ margin: 0, fontSize: '14px', color: '#94a3b8' }}>
               Click elements to record steps, then save as JSON to use in your app
             </p>
           </div>
@@ -184,7 +191,7 @@ function App() {
                     padding: '10px 20px',
                     fontSize: '14px',
                     fontWeight: 500,
-                    background: '#3b82f6',
+                    background: '#1a91a2',
                     color: 'white',
                     border: 'none',
                     borderRadius: '8px',
@@ -204,7 +211,7 @@ function App() {
                           padding: '10px 20px',
                           fontSize: '14px',
                           fontWeight: 500,
-                          background: '#3b82f6',
+                          background: '#1a91a2',
                           color: 'white',
                           border: 'none',
                           borderRadius: '8px',
@@ -241,9 +248,9 @@ function App() {
                   padding: '10px 20px',
                   fontSize: '14px',
                   fontWeight: 500,
-                  background: 'white',
-                  color: '#334155',
-                  border: '1px solid #e2e8f0',
+                  background: 'rgba(255,255,255,0.06)',
+                  color: '#e2e8f0',
+                  border: '1px solid rgba(255,255,255,0.1)',
                   borderRadius: '8px',
                   cursor: 'pointer',
                 }}
@@ -259,9 +266,9 @@ function App() {
                     padding: '10px 20px',
                     fontSize: '14px',
                     fontWeight: 500,
-                    background: 'white',
-                    color: '#334155',
-                    border: '1px solid #e2e8f0',
+                    background: 'rgba(255,255,255,0.06)',
+                    color: '#e2e8f0',
+                    border: '1px solid rgba(255,255,255,0.1)',
                     borderRadius: '8px',
                     cursor: 'pointer',
                   }}
@@ -275,11 +282,11 @@ function App() {
               <div style={{
                 marginTop: '16px',
                 padding: '10px 14px',
-                background: '#f0fdf4',
-                border: '1px solid #bbf7d0',
+                background: 'rgba(16,185,129,0.1)',
+                border: '1px solid rgba(16,185,129,0.3)',
                 borderRadius: '6px',
                 fontSize: '13px',
-                color: '#166534',
+                color: '#6ee7b7',
               }}>
                 Loaded: <strong>{trail.title}</strong> ({trail.steps?.length || 0} steps)
               </div>
@@ -298,19 +305,19 @@ function App() {
 
         {/* Sample App Section */}
         <div style={{
-          background: 'white',
+          background: '#1e293b',
           borderRadius: '12px',
-          border: '1px solid #e2e8f0',
+          border: '1px solid rgba(255,255,255,0.06)',
           overflow: 'hidden',
           opacity: isRecording ? 1 : 0.7,
           transition: 'opacity 0.2s',
         }}>
           <div style={{
             padding: '16px 24px',
-            borderBottom: '1px solid #e2e8f0',
-            background: isRecording ? '#fefce8' : '#f8fafc',
+            borderBottom: '1px solid rgba(255,255,255,0.06)',
+            background: isRecording ? 'rgba(234,179,8,0.1)' : 'rgba(255,255,255,0.03)',
           }}>
-            <h2 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: '#0f172a' }}>
+            <h2 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: '#f8fafc' }}>
               {isRecording ? 'Click any element to add a waypoint' : 'Your App (sample UI for demo)'}
             </h2>
           </div>
@@ -333,14 +340,14 @@ function App() {
                   data-trail-id={stat.data}
                   style={{
                     padding: '16px',
-                    background: '#f8fafc',
+                    background: '#0f172a',
                     borderRadius: '8px',
-                    border: '1px solid #e2e8f0',
+                    border: '1px solid rgba(255,255,255,0.06)',
                     cursor: isRecording ? 'pointer' : 'default',
                   }}
                 >
-                  <div style={{ fontSize: '24px', fontWeight: 600, color: '#0f172a' }}>{stat.value}</div>
-                  <div style={{ fontSize: '13px', color: '#64748b' }}>{stat.label}</div>
+                  <div style={{ fontSize: '24px', fontWeight: 600, color: '#f8fafc' }}>{stat.value}</div>
+                  <div style={{ fontSize: '13px', color: '#94a3b8' }}>{stat.label}</div>
                 </div>
               ))}
             </div>
@@ -353,7 +360,7 @@ function App() {
                   padding: '10px 20px',
                   fontSize: '14px',
                   fontWeight: 500,
-                  background: '#3b82f6',
+                  background: '#1a91a2',
                   color: 'white',
                   border: 'none',
                   borderRadius: '8px',
@@ -368,9 +375,9 @@ function App() {
                   padding: '10px 20px',
                   fontSize: '14px',
                   fontWeight: 500,
-                  background: 'white',
-                  color: '#334155',
-                  border: '1px solid #e2e8f0',
+                  background: 'rgba(255,255,255,0.06)',
+                  color: '#e2e8f0',
+                  border: '1px solid rgba(255,255,255,0.1)',
                   borderRadius: '8px',
                   cursor: 'pointer',
                 }}
@@ -383,9 +390,9 @@ function App() {
                   padding: '10px 20px',
                   fontSize: '14px',
                   fontWeight: 500,
-                  background: 'white',
-                  color: '#334155',
-                  border: '1px solid #e2e8f0',
+                  background: 'rgba(255,255,255,0.06)',
+                  color: '#e2e8f0',
+                  border: '1px solid rgba(255,255,255,0.1)',
                   borderRadius: '8px',
                   cursor: 'pointer',
                 }}
@@ -398,9 +405,9 @@ function App() {
                   padding: '10px 20px',
                   fontSize: '14px',
                   fontWeight: 500,
-                  background: 'white',
-                  color: '#334155',
-                  border: '1px solid #e2e8f0',
+                  background: 'rgba(255,255,255,0.06)',
+                  color: '#e2e8f0',
+                  border: '1px solid rgba(255,255,255,0.1)',
                   borderRadius: '8px',
                   cursor: 'pointer',
                 }}
@@ -415,15 +422,15 @@ function App() {
         <div style={{
           marginTop: '24px',
           padding: '16px 20px',
-          background: 'linear-gradient(90deg, #eff6ff 0%, #f1f5f9 100%)',
+          background: 'linear-gradient(90deg, rgba(26,145,162,0.1) 0%, rgba(15,23,42,0.5) 100%)',
           borderRadius: '8px',
           fontSize: '13px',
-          color: '#475569',
+          color: '#cbd5e1',
           lineHeight: 1.6,
-          borderLeft: '3px solid #3b82f6',
+          borderLeft: '3px solid #1a91a2',
         }}>
           <strong>Trails are just JSON.</strong> Record waypoints here, download the file, drop it in your repo.
-          Load it with <code style={{ background: '#e2e8f0', padding: '2px 6px', borderRadius: '4px' }}>Trailguide.start(trail)</code> and you're guiding users.
+          Load it with <code style={{ background: 'rgba(255,255,255,0.1)', padding: '2px 6px', borderRadius: '4px' }}>Trailguide.start(trail)</code> and you're guiding users.
         </div>
       </Dashboard>
 
@@ -431,6 +438,7 @@ function App() {
       {showTour && trail && (
         <Trailguide
           trail={trail}
+          analytics={analyticsConfig}
           onComplete={() => {
             setShowTour(false);
             setToastMessage('Trail completed');
@@ -452,6 +460,7 @@ function App() {
             margin: 0;
             font-family: Inter, system-ui, -apple-system, sans-serif;
             -webkit-font-smoothing: antialiased;
+            background: #0f172a;
           }
           @keyframes pulse {
             0%, 100% { opacity: 1; }

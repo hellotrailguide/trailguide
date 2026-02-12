@@ -5,7 +5,7 @@
 [![npm](https://img.shields.io/npm/v/@trailguide/core)](https://www.npmjs.com/package/@trailguide/core)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-[Live Demo](https://trailguidedemo.vercel.app) · [Website](https://gettrailguide.vercel.app) · [Documentation](docs/)
+[Live Demo](https://demo.gettrailguide.com) · [Website](https://gettrailguide.com) · [Documentation](docs/)
 
 ---
 
@@ -283,7 +283,7 @@ See [docs/api-reference.md](docs/api-reference.md) for complete documentation.
 
 ## Live Demo
 
-Try it now: **[trailguidedemo.vercel.app](https://trailguidedemo.vercel.app)**
+Try it now: **[demo.gettrailguide.com](https://demo.gettrailguide.com)**
 
 Or run locally:
 

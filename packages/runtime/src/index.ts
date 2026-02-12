@@ -6,6 +6,7 @@ export type {
   StepAction,
   NextTrigger,
   TrailguideOptions,
+  AnalyticsConfig,
 } from '@trailguide/core';
 
 // Re-export core utilities

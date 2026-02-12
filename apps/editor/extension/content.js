@@ -24,8 +24,8 @@
     var el = document.createElement('div');
     el.id = '__trailguide-overlay';
     el.style.cssText =
-      'position:fixed;pointer-events:none;border:2px solid #3b82f6;' +
-      'background:rgba(59,130,246,0.08);z-index:2147483646;border-radius:4px;' +
+      'position:fixed;pointer-events:none;border:2px solid #1a91a2;' +
+      'background:rgba(26,145,162,0.08);z-index:2147483646;border-radius:4px;' +
       'transition:all 0.05s ease-out;display:none';
     document.body.appendChild(el);
     return el;
@@ -92,7 +92,7 @@
     .tg-logo {
       width: 32px;
       height: 32px;
-      background: #3b82f6;
+      background: #1a91a2;
       border-radius: 8px;
       display: flex;
       align-items: center;
@@ -187,7 +187,7 @@
       gap: 5px;
     }
     .tg-btn--resume {
-      background: #3b82f6;
+      background: #1a91a2;
       color: #fff;
     }
     .tg-btn--resume:hover { background: #2563eb }
@@ -274,7 +274,7 @@
 
     card.innerHTML =
       '<div class="tg-header" id="tg-drag">' +
-        '<div class="tg-logo">T</div>' +
+        '<div class="tg-logo"><svg width="18" height="18" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 40 C 16 36, 28 44, 38 40 S 54 38, 58 40" stroke="#fff" stroke-width="5" stroke-linecap="round"/><circle cx="58" cy="40" r="4.5" fill="#fff"/></svg></div>' +
         '<div>' +
           '<div class="tg-brand-title">Trailguide</div>' +
           '<div class="' + statusClass + '">' + statusDot + statusText + '</div>' +

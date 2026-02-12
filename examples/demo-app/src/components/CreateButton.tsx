@@ -8,7 +8,7 @@ export function CreateButton() {
         fontWeight: 500,
         border: 'none',
         borderRadius: '8px',
-        background: '#3b82f6',
+        background: '#1a91a2',
         color: 'white',
         cursor: 'pointer',
         display: 'inline-flex',
