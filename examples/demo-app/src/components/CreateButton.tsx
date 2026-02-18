@@ -1,3 +1,5 @@
+import { theme } from '@trailguide/core';
+
 export function CreateButton() {
   return (
     <button
@@ -8,7 +10,7 @@ export function CreateButton() {
         fontWeight: 500,
         border: 'none',
         borderRadius: '8px',
-        background: '#1a91a2',
+        background: theme.accent,
         color: 'white',
         cursor: 'pointer',
         display: 'inline-flex',

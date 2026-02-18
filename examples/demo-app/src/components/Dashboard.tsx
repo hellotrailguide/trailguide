@@ -1,3 +1,5 @@
+import { theme } from '@trailguide/core';
+
 interface DashboardProps {
   children: React.ReactNode;
 }
@@ -7,14 +9,14 @@ export function Dashboard({ children }: DashboardProps) {
     <div
       style={{
         minHeight: '100vh',
-        background: '#0f172a',
+        background: theme.bgBase,
       }}
     >
       {/* Header */}
       <header
         style={{
-          background: '#0f172a',
-          borderBottom: '1px solid rgba(255,255,255,0.06)',
+          background: theme.bgBase,
+          borderBottom: `1px solid ${theme.borderSubtle}`,
           padding: '16px 24px',
           display: 'flex',
           alignItems: 'center',
@@ -36,7 +38,7 @@ export function Dashboard({ children }: DashboardProps) {
           }}
         >
           <img src="/favicon.svg" alt="" style={{ height: '32px', width: '32px' }} />
-          <span style={{ fontSize: '18px', fontWeight: 600, color: '#f8fafc', letterSpacing: '-0.01em' }}>
+          <span style={{ fontSize: '18px', fontWeight: 600, color: theme.textPrimary, letterSpacing: '-0.01em' }}>
             Trailguide
           </span>
         </a>
@@ -45,11 +47,11 @@ export function Dashboard({ children }: DashboardProps) {
             style={{
               fontSize: '12px',
               fontWeight: 500,
-              color: '#1a91a2',
-              background: 'rgba(26,145,162,0.15)',
+              color: theme.accent,
+              background: theme.accentBg,
               padding: '4px 10px',
               borderRadius: '12px',
-              border: '1px solid rgba(26,145,162,0.3)',
+              border: `1px solid ${theme.accentBorder}`,
             }}
           >
             Live Demo
@@ -62,10 +64,10 @@ export function Dashboard({ children }: DashboardProps) {
               padding: '8px 14px',
               fontSize: '13px',
               fontWeight: 500,
-              border: '1px solid rgba(255,255,255,0.1)',
+              border: `1px solid ${theme.borderControl}`,
               borderRadius: '6px',
-              background: 'rgba(255,255,255,0.06)',
-              color: '#e2e8f0',
+              background: theme.bgGlass,
+              color: theme.textSecondary,
               textDecoration: 'none',
               display: 'flex',
               alignItems: 'center',

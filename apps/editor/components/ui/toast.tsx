@@ -85,14 +85,14 @@ export function ToastContainer() {
           className={`
             flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg min-w-[300px] max-w-[400px]
             animate-in slide-in-from-right-5 fade-in duration-200
-            ${t.type === 'success' ? 'bg-green-50 text-green-800 border border-green-200' : ''}
-            ${t.type === 'error' ? 'bg-red-50 text-red-800 border border-red-200' : ''}
-            ${t.type === 'info' ? 'bg-blue-50 text-blue-800 border border-blue-200' : ''}
+            ${t.type === 'success' ? 'bg-green-50 text-green-800 border border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800' : ''}
+            ${t.type === 'error' ? 'bg-red-50 text-red-800 border border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800' : ''}
+            ${t.type === 'info' ? 'bg-blue-50 text-blue-800 border border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800' : ''}
           `}
         >
-          {t.type === 'success' && <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" />}
-          {t.type === 'error' && <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0" />}
-          {t.type === 'info' && <Info className="h-5 w-5 text-blue-600 flex-shrink-0" />}
+          {t.type === 'success' && <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0" />}
+          {t.type === 'error' && <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400 flex-shrink-0" />}
+          {t.type === 'info' && <Info className="h-5 w-5 text-blue-600 dark:text-blue-400 flex-shrink-0" />}
           <span className="text-sm flex-1">{t.message}</span>
           <button
             onClick={() => {

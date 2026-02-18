@@ -24,6 +24,8 @@ export {
   scrollToElement,
 } from './dom';
 
+export { theme } from './theme';
+
 // Validation utilities
 export {
   validateTrail,

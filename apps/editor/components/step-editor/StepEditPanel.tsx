@@ -22,15 +22,15 @@ function SelectorQualityBadge({ step }: { step: EditorStep }) {
   const config = {
     stable: {
       label: 'Stable',
-      className: 'bg-green-100 text-green-800',
+      className: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
     },
     moderate: {
       label: 'Moderate',
-      className: 'bg-yellow-100 text-yellow-800',
+      className: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
     },
     fragile: {
       label: 'Fragile — may break',
-      className: 'bg-red-100 text-red-800',
+      className: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
     },
   }[step.selectorQuality]
 
@@ -42,7 +42,7 @@ function SelectorQualityBadge({ step }: { step: EditorStep }) {
         {config.label}
       </span>
       {step.selectorQuality === 'fragile' && step.selectorQualityHint && (
-        <p className="text-xs text-red-600">{step.selectorQualityHint}</p>
+        <p className="text-xs text-destructive">{step.selectorQualityHint}</p>
       )}
     </div>
   )
