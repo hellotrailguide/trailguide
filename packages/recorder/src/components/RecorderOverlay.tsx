@@ -1,3 +1,4 @@
+import { theme } from '@trailguide/core';
 import type { UseRecorderReturn } from '../hooks/useRecorder';
 import { StepForm } from './StepForm';
 
@@ -35,7 +36,7 @@ export function RecorderOverlay({ recorder }: RecorderOverlayProps) {
           style={{
             position: 'fixed',
             inset: 0,
-            background: 'rgba(0, 0, 0, 0.3)',
+            background: theme.shadowOverlay,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -58,10 +59,10 @@ export function RecorderOverlay({ recorder }: RecorderOverlayProps) {
       {/* Main Panel */}
       <div
         style={{
-          background: '#0f172a',
+          background: theme.bgBase,
           borderRadius: '12px',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.4)',
-          border: '1px solid rgba(255,255,255,0.08)',
+          boxShadow: theme.shadowMedium,
+          border: `1px solid ${theme.borderPanel}`,
           overflow: 'hidden',
           width: '300px',
         }}
@@ -70,8 +71,8 @@ export function RecorderOverlay({ recorder }: RecorderOverlayProps) {
         <div
           style={{
             padding: '12px 16px',
-            background: isRecording ? 'rgba(248,113,113,0.1)' : '#1e293b',
-            borderBottom: '1px solid rgba(255,255,255,0.06)',
+            background: isRecording ? theme.errorLight : theme.bgCard,
+            borderBottom: `1px solid ${theme.borderSubtle}`,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
@@ -83,11 +84,11 @@ export function RecorderOverlay({ recorder }: RecorderOverlayProps) {
                 width: '10px',
                 height: '10px',
                 borderRadius: '50%',
-                background: isRecording ? '#ef4444' : '#9ca3af',
+                background: isRecording ? theme.error : theme.disabled,
                 animation: isRecording ? 'pulse 1.5s infinite' : 'none',
               }}
             />
-            <span style={{ fontWeight: 600, fontSize: '14px', color: '#f8fafc' }}>
+            <span style={{ fontWeight: 600, fontSize: '14px', color: theme.textPrimary }}>
               Trail Recording
             </span>
           </div>
@@ -99,7 +100,7 @@ export function RecorderOverlay({ recorder }: RecorderOverlayProps) {
               fontWeight: 500,
               border: 'none',
               borderRadius: '6px',
-              background: isRecording ? '#ef4444' : '#1a91a2',
+              background: isRecording ? theme.error : theme.accent,
               color: 'white',
               cursor: 'pointer',
             }}
@@ -120,7 +121,7 @@ export function RecorderOverlay({ recorder }: RecorderOverlayProps) {
               style={{
                 padding: '24px 16px',
                 textAlign: 'center',
-                color: '#94a3b8',
+                color: theme.textMuted,
                 fontSize: '13px',
               }}
             >
@@ -135,7 +136,7 @@ export function RecorderOverlay({ recorder }: RecorderOverlayProps) {
                   key={step.id}
                   style={{
                     padding: '10px 16px',
-                    borderBottom: '1px solid rgba(255,255,255,0.06)',
+                    borderBottom: `1px solid ${theme.borderSubtle}`,
                     display: 'flex',
                     alignItems: 'center',
                     gap: '10px',
@@ -146,13 +147,13 @@ export function RecorderOverlay({ recorder }: RecorderOverlayProps) {
                       width: '20px',
                       height: '20px',
                       borderRadius: '50%',
-                      background: 'rgba(255,255,255,0.1)',
+                      background: theme.borderControl,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       fontSize: '11px',
                       fontWeight: 600,
-                      color: '#cbd5e1',
+                      color: theme.textTertiary,
                       flexShrink: 0,
                     }}
                   >
@@ -163,7 +164,7 @@ export function RecorderOverlay({ recorder }: RecorderOverlayProps) {
                       style={{
                         fontSize: '13px',
                         fontWeight: 500,
-                        color: '#f8fafc',
+                        color: theme.textPrimary,
                         whiteSpace: 'nowrap',
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
@@ -174,7 +175,7 @@ export function RecorderOverlay({ recorder }: RecorderOverlayProps) {
                     <code
                       style={{
                         fontSize: '10px',
-                        color: '#94a3b8',
+                        color: theme.textMuted,
                         whiteSpace: 'nowrap',
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
@@ -189,7 +190,7 @@ export function RecorderOverlay({ recorder }: RecorderOverlayProps) {
                     style={{
                       background: 'none',
                       border: 'none',
-                      color: '#64748b',
+                      color: theme.textFaint,
                       cursor: 'pointer',
                       padding: '4px',
                       fontSize: '16px',
@@ -210,7 +211,7 @@ export function RecorderOverlay({ recorder }: RecorderOverlayProps) {
           <div
             style={{
               padding: '12px 16px',
-              borderTop: '1px solid rgba(255,255,255,0.06)',
+              borderTop: `1px solid ${theme.borderSubtle}`,
               display: 'flex',
               gap: '8px',
             }}
@@ -221,10 +222,10 @@ export function RecorderOverlay({ recorder }: RecorderOverlayProps) {
                 flex: 1,
                 padding: '8px',
                 fontSize: '12px',
-                border: '1px solid rgba(255,255,255,0.1)',
+                border: `1px solid ${theme.borderControl}`,
                 borderRadius: '6px',
-                background: 'rgba(255,255,255,0.06)',
-                color: '#e2e8f0',
+                background: theme.bgGlass,
+                color: theme.textSecondary,
                 cursor: 'pointer',
               }}
             >
@@ -238,7 +239,7 @@ export function RecorderOverlay({ recorder }: RecorderOverlayProps) {
                 fontSize: '12px',
                 border: 'none',
                 borderRadius: '6px',
-                background: '#10b981',
+                background: theme.success,
                 color: 'white',
                 cursor: 'pointer',
                 fontWeight: 500,

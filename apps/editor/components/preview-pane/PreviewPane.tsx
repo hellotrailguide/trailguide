@@ -271,21 +271,21 @@ export function PreviewPane() {
         <div
           className={`flex items-center gap-2 px-4 py-2 text-sm ${
             previewMode === 'record'
-              ? 'bg-red-50 text-red-800 border-b border-red-200'
+              ? 'bg-destructive/10 text-destructive border-b border-destructive/20'
               : 'bg-muted border-b border-border'
           }`}
         >
           {previewMode === 'record' ? (
             <>
-              <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+              <div className="w-2 h-2 bg-destructive rounded-full animate-pulse" />
               <span className="font-medium">Recording{extensionInstalled ? '' : ' (proxy)'}</span>
-              <span className="text-red-600">
+              <span className="text-destructive">
                 {recordedCount} step{recordedCount === 1 ? '' : 's'} captured
               </span>
               <Button
                 size="sm"
                 variant="outline"
-                className="ml-auto bg-white"
+                className="ml-auto bg-background"
                 onClick={handleStopRecording}
               >
                 <Square className="h-3 w-3 mr-1" />

@@ -151,3 +151,51 @@
   left: -5px;
   box-shadow: -1px 1px 1px rgba(0, 0, 0, 0.05);
 }
+
+/* Dark mode */
+.dark .trailguide-tooltip-content {
+  background: #1e293b;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+}
+
+.dark .trailguide-tooltip-header {
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+.dark .trailguide-tooltip-title {
+  color: #f8fafc;
+}
+
+.dark .trailguide-tooltip-close {
+  color: #94a3b8;
+}
+
+.dark .trailguide-tooltip-close:hover {
+  color: #e2e8f0;
+}
+
+.dark .trailguide-tooltip-body {
+  color: #cbd5e1;
+}
+
+.dark .trailguide-tooltip-footer {
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+.dark .trailguide-tooltip-progress {
+  color: #94a3b8;
+}
+
+.dark .trailguide-btn-secondary {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.06);
+  color: #e2e8f0;
+}
+
+.dark .trailguide-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.dark .trailguide-tooltip-arrow {
+  background: #1e293b;
+}

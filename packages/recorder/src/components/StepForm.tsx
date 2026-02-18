@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { Placement } from '@trailguide/core';
+import { theme } from '@trailguide/core';
 import type { PendingStep } from '../hooks/useRecorder';
 
 interface StepFormProps {
@@ -29,14 +30,14 @@ export function StepForm({ pendingStep, onConfirm, onCancel }: StepFormProps) {
       onSubmit={handleSubmit}
       data-recorder-ui
       style={{
-        background: '#0f172a',
+        background: theme.bgBase,
         borderRadius: '12px',
         padding: '20px',
-        boxShadow: '0 4px 20px rgba(0,0,0,0.4)',
-        border: '1px solid rgba(255,255,255,0.08)',
+        boxShadow: theme.shadowMedium,
+        border: `1px solid ${theme.borderPanel}`,
       }}
     >
-      <h3 style={{ margin: '0 0 16px 0', fontSize: '16px', fontWeight: 600, color: '#f8fafc' }}>
+      <h3 style={{ margin: '0 0 16px 0', fontSize: '16px', fontWeight: 600, color: theme.textPrimary }}>
         Add Step to Trail
       </h3>
 
@@ -48,7 +49,7 @@ export function StepForm({ pendingStep, onConfirm, onCancel }: StepFormProps) {
             fontSize: '13px',
             fontWeight: 500,
             marginBottom: '6px',
-            color: '#cbd5e1',
+            color: theme.textTertiary,
           }}
         >
           What should the user do?
@@ -62,12 +63,12 @@ export function StepForm({ pendingStep, onConfirm, onCancel }: StepFormProps) {
           style={{
             width: '100%',
             padding: '10px 12px',
-            border: '1px solid rgba(255,255,255,0.1)',
+            border: `1px solid ${theme.borderControl}`,
             borderRadius: '6px',
             fontSize: '14px',
             boxSizing: 'border-box',
-            background: 'rgba(255,255,255,0.03)',
-            color: '#f8fafc',
+            background: theme.bgInput,
+            color: theme.textPrimary,
           }}
           autoFocus
         />
@@ -81,7 +82,7 @@ export function StepForm({ pendingStep, onConfirm, onCancel }: StepFormProps) {
             fontSize: '13px',
             fontWeight: 500,
             marginBottom: '6px',
-            color: '#cbd5e1',
+            color: theme.textTertiary,
           }}
         >
           What should they know?
@@ -95,13 +96,13 @@ export function StepForm({ pendingStep, onConfirm, onCancel }: StepFormProps) {
           style={{
             width: '100%',
             padding: '10px 12px',
-            border: '1px solid rgba(255,255,255,0.1)',
+            border: `1px solid ${theme.borderControl}`,
             borderRadius: '6px',
             fontSize: '14px',
             resize: 'vertical',
             boxSizing: 'border-box',
-            background: 'rgba(255,255,255,0.03)',
-            color: '#f8fafc',
+            background: theme.bgInput,
+            color: theme.textPrimary,
           }}
         />
       </div>
@@ -113,7 +114,7 @@ export function StepForm({ pendingStep, onConfirm, onCancel }: StepFormProps) {
             fontSize: '13px',
             fontWeight: 500,
             marginBottom: '6px',
-            color: '#cbd5e1',
+            color: theme.textTertiary,
           }}
         >
           Tooltip position
@@ -128,10 +129,10 @@ export function StepForm({ pendingStep, onConfirm, onCancel }: StepFormProps) {
                 flex: 1,
                 padding: '8px 12px',
                 fontSize: '13px',
-                border: placement === p ? '2px solid #1a91a2' : '1px solid rgba(255,255,255,0.1)',
+                border: placement === p ? `2px solid ${theme.accent}` : `1px solid ${theme.borderControl}`,
                 borderRadius: '6px',
-                background: placement === p ? 'rgba(26,145,162,0.15)' : 'rgba(255,255,255,0.06)',
-                color: placement === p ? '#1a91a2' : '#cbd5e1',
+                background: placement === p ? theme.accentBg : theme.bgGlass,
+                color: placement === p ? theme.accent : theme.textTertiary,
                 cursor: 'pointer',
                 fontWeight: placement === p ? 600 : 400,
               }}
@@ -147,7 +148,7 @@ export function StepForm({ pendingStep, onConfirm, onCancel }: StepFormProps) {
         <summary
           style={{
             fontSize: '12px',
-            color: '#94a3b8',
+            color: theme.textMuted,
             cursor: 'pointer',
             userSelect: 'none',
           }}
@@ -159,11 +160,11 @@ export function StepForm({ pendingStep, onConfirm, onCancel }: StepFormProps) {
             display: 'block',
             marginTop: '8px',
             padding: '8px',
-            background: 'rgba(255,255,255,0.06)',
+            background: theme.bgGlass,
             borderRadius: '4px',
             fontSize: '11px',
             wordBreak: 'break-all',
-            color: '#cbd5e1',
+            color: theme.textTertiary,
           }}
         >
           {pendingStep.selector}
@@ -177,10 +178,10 @@ export function StepForm({ pendingStep, onConfirm, onCancel }: StepFormProps) {
           style={{
             padding: '10px 18px',
             fontSize: '14px',
-            border: '1px solid rgba(255,255,255,0.1)',
+            border: `1px solid ${theme.borderControl}`,
             borderRadius: '6px',
-            background: 'rgba(255,255,255,0.06)',
-            color: '#e2e8f0',
+            background: theme.bgGlass,
+            color: theme.textSecondary,
             cursor: 'pointer',
           }}
         >
@@ -194,7 +195,7 @@ export function StepForm({ pendingStep, onConfirm, onCancel }: StepFormProps) {
             fontSize: '14px',
             border: 'none',
             borderRadius: '6px',
-            background: title.trim() ? '#1a91a2' : '#4b5563',
+            background: title.trim() ? theme.accent : theme.disabledBg,
             color: 'white',
             cursor: title.trim() ? 'pointer' : 'not-allowed',
             fontWeight: 500,
