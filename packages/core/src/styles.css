@@ -1,4 +1,71 @@
 /* Trailguide Core Styles */
+
+/* ============================================================
+   CSS Custom Properties — override these to match your brand.
+
+   Usage:
+     :root {
+       --trailguide-accent: #6366f1;
+       --trailguide-radius: 12px;
+     }
+
+   Dark mode is auto-detected via .dark on html/body,
+   or you can set variables under .dark {} yourself.
+   ============================================================ */
+
+:root {
+  /* Accent / brand color */
+  --trailguide-accent: #1a91a2;
+  --trailguide-accent-hover: #158292;
+
+  /* Tooltip background and text */
+  --trailguide-bg: #ffffff;
+  --trailguide-text: #374151;
+  --trailguide-title: #111827;
+  --trailguide-text-muted: #6b7280;
+
+  /* Borders */
+  --trailguide-border: #e5e7eb;
+
+  /* Buttons */
+  --trailguide-btn-bg: #ffffff;
+  --trailguide-btn-text: #374151;
+  --trailguide-btn-border: #d1d5db;
+  --trailguide-btn-hover: #f9fafb;
+
+  /* Shape */
+  --trailguide-radius: 8px;
+  --trailguide-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+
+  /* Overlay */
+  --trailguide-overlay: rgba(0, 0, 0, 0.5);
+
+  /* Sizing */
+  --trailguide-max-width: 320px;
+  --trailguide-min-width: 280px;
+
+  /* Font */
+  --trailguide-font: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Dark mode defaults — auto-applied when .dark is on html/body */
+.dark {
+  --trailguide-bg: #1e293b;
+  --trailguide-text: #cbd5e1;
+  --trailguide-title: #f8fafc;
+  --trailguide-text-muted: #94a3b8;
+  --trailguide-border: rgba(255, 255, 255, 0.08);
+  --trailguide-btn-bg: rgba(255, 255, 255, 0.06);
+  --trailguide-btn-text: #e2e8f0;
+  --trailguide-btn-border: rgba(255, 255, 255, 0.1);
+  --trailguide-btn-hover: rgba(255, 255, 255, 0.1);
+  --trailguide-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+}
+
+/* ============================================================
+   Layout
+   ============================================================ */
+
 .trailguide-overlay {
   position: fixed;
   inset: 0;
@@ -16,32 +83,40 @@
   height: 100%;
 }
 
+.trailguide-spotlight svg rect[mask] {
+  fill: var(--trailguide-overlay);
+}
+
 .trailguide-highlight {
   position: fixed;
-  border-radius: 4px;
-  box-shadow: 0 0 0 2px #1a91a2, 0 0 0 4px rgba(26, 145, 162, 0.3);
+  border-radius: calc(var(--trailguide-radius) / 2);
+  box-shadow: 0 0 0 2px var(--trailguide-accent), 0 0 0 4px color-mix(in srgb, var(--trailguide-accent) 30%, transparent);
   transition: all 0.2s ease-out;
   pointer-events: none;
 }
+
+/* ============================================================
+   Tooltip
+   ============================================================ */
 
 .trailguide-tooltip {
   position: fixed;
   z-index: 9999;
   pointer-events: auto;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: var(--trailguide-font);
 }
 
 .trailguide-tooltip-content {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-  max-width: 320px;
-  min-width: 280px;
+  background: var(--trailguide-bg);
+  border-radius: var(--trailguide-radius);
+  box-shadow: var(--trailguide-shadow);
+  max-width: var(--trailguide-max-width);
+  min-width: var(--trailguide-min-width);
 }
 
 .trailguide-tooltip-header {
   padding: 12px 16px;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--trailguide-border);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -50,7 +125,7 @@
 .trailguide-tooltip-title {
   font-size: 14px;
   font-weight: 600;
-  color: #111827;
+  color: var(--trailguide-title);
   margin: 0;
 }
 
@@ -59,25 +134,25 @@
   border: none;
   cursor: pointer;
   padding: 4px;
-  color: #6b7280;
+  color: var(--trailguide-text-muted);
   font-size: 18px;
   line-height: 1;
 }
 
 .trailguide-tooltip-close:hover {
-  color: #374151;
+  color: var(--trailguide-title);
 }
 
 .trailguide-tooltip-body {
   padding: 16px;
   font-size: 14px;
   line-height: 1.5;
-  color: #374151;
+  color: var(--trailguide-text);
 }
 
 .trailguide-tooltip-footer {
   padding: 12px 16px;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--trailguide-border);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -85,7 +160,7 @@
 
 .trailguide-tooltip-progress {
   font-size: 12px;
-  color: #6b7280;
+  color: var(--trailguide-text-muted);
 }
 
 .trailguide-tooltip-nav {
@@ -93,45 +168,52 @@
   gap: 8px;
 }
 
+/* ============================================================
+   Buttons
+   ============================================================ */
+
 .trailguide-btn {
   padding: 6px 12px;
   font-size: 13px;
   font-weight: 500;
-  border-radius: 6px;
+  border-radius: calc(var(--trailguide-radius) - 2px);
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .trailguide-btn-secondary {
-  border: 1px solid #d1d5db;
-  background: white;
-  color: #374151;
+  border: 1px solid var(--trailguide-btn-border);
+  background: var(--trailguide-btn-bg);
+  color: var(--trailguide-btn-text);
 }
 
 .trailguide-btn-secondary:hover {
-  background: #f9fafb;
+  background: var(--trailguide-btn-hover);
 }
 
 .trailguide-btn-primary {
   border: none;
-  background: #1a91a2;
+  background: var(--trailguide-accent);
   color: white;
 }
 
 .trailguide-btn-primary:hover {
-  background: #158292;
+  background: var(--trailguide-accent-hover);
 }
+
+/* ============================================================
+   Arrow
+   ============================================================ */
 
 .trailguide-tooltip-arrow {
   position: absolute;
   width: 10px;
   height: 10px;
-  background: white;
+  background: var(--trailguide-bg);
   transform: rotate(45deg);
   box-shadow: -1px -1px 1px rgba(0, 0, 0, 0.05);
 }
 
-/* Arrow positioning based on tooltip placement */
 .trailguide-tooltip[data-placement^="top"] .trailguide-tooltip-arrow {
   bottom: -5px;
   box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.05);
@@ -150,52 +232,4 @@
 .trailguide-tooltip[data-placement^="right"] .trailguide-tooltip-arrow {
   left: -5px;
   box-shadow: -1px 1px 1px rgba(0, 0, 0, 0.05);
-}
-
-/* Dark mode */
-.dark .trailguide-tooltip-content {
-  background: #1e293b;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-}
-
-.dark .trailguide-tooltip-header {
-  border-bottom-color: rgba(255, 255, 255, 0.08);
-}
-
-.dark .trailguide-tooltip-title {
-  color: #f8fafc;
-}
-
-.dark .trailguide-tooltip-close {
-  color: #94a3b8;
-}
-
-.dark .trailguide-tooltip-close:hover {
-  color: #e2e8f0;
-}
-
-.dark .trailguide-tooltip-body {
-  color: #cbd5e1;
-}
-
-.dark .trailguide-tooltip-footer {
-  border-top-color: rgba(255, 255, 255, 0.08);
-}
-
-.dark .trailguide-tooltip-progress {
-  color: #94a3b8;
-}
-
-.dark .trailguide-btn-secondary {
-  border-color: rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.06);
-  color: #e2e8f0;
-}
-
-.dark .trailguide-btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.dark .trailguide-tooltip-arrow {
-  background: #1e293b;
 }

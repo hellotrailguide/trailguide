@@ -96,7 +96,7 @@ export class Trailguide {
             <rect class="trailguide-cutout" rx="4" fill="black" />
           </mask>
         </defs>
-        <rect x="0" y="0" width="100%" height="100%" fill="rgba(0,0,0,0.5)" mask="url(#trailguide-mask)" />
+        <rect x="0" y="0" width="100%" height="100%" mask="url(#trailguide-mask)" />
       </svg>
     `;
 
