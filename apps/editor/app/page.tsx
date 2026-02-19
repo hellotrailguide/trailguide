@@ -12,6 +12,12 @@ export default function Home() {
           </div>
           <div className="flex items-center gap-4">
             <Link
+              href="/demo"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Live Demo
+            </Link>
+            <Link
               href="/login"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >

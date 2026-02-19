@@ -21,6 +21,7 @@
     "@tiptap/react": "^2.2.4",
     "@tiptap/starter-kit": "^2.2.4",
     "@trailguide/core": "workspace:*",
+    "@trailguide/recorder": "workspace:*",
     "@trailguide/runtime": "workspace:*",
     "@upstash/ratelimit": "^2.0.8",
     "@upstash/redis": "^1.36.2",

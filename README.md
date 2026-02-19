@@ -5,7 +5,7 @@
 [![npm](https://img.shields.io/npm/v/@trailguide/core)](https://www.npmjs.com/package/@trailguide/core)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-[Live Demo](https://demo.gettrailguide.com) · [Website](https://gettrailguide.com) · [Documentation](docs/)
+[Live Demo](https://app.gettrailguide.com/demo) · [Website](https://gettrailguide.com) · [Documentation](docs/)
 
 ---
 
@@ -283,7 +283,7 @@ See [docs/api-reference.md](docs/api-reference.md) for complete documentation.
 
 ## Live Demo
 
-Try it now: **[demo.gettrailguide.com](https://demo.gettrailguide.com)**
+Try it now: **[demo.gettrailguide.com](https://app.gettrailguide.com/demo)**
 
 Or run locally:
 
