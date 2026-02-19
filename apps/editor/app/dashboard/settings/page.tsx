@@ -241,10 +241,19 @@ function SettingsContent() {
               )}
             </CardContent>
             <CardFooter>
-              {subscription.isPro ? (
+              {subscription.status === 'active' ? (
                 <Button variant="outline" onClick={handleManageSubscription}>
                   <ExternalLink className="h-4 w-4 mr-2" />
                   Manage Subscription
+                </Button>
+              ) : subscription.isTrialing ? (
+                <Button onClick={handleUpgrade} disabled={isCheckingOut}>
+                  {isCheckingOut ? (
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  ) : (
+                    <CreditCard className="h-4 w-4 mr-2" />
+                  )}
+                  Upgrade to Pro
                 </Button>
               ) : (
                 <div className="space-y-2">

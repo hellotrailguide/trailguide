@@ -6,13 +6,20 @@ export const dynamic = 'force-dynamic'
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url)
   const code = requestUrl.searchParams.get('code')
+  const next = requestUrl.searchParams.get('next') || '/dashboard'
   const origin = requestUrl.origin
 
   if (code) {
     const supabase = createClient()
     const { data, error } = await supabase.auth.exchangeCodeForSession(code)
 
-    if (!error && data.user) {
+    if (error) {
+      console.error('Auth callback error:', error)
+      // Redirect to login with error
+      return NextResponse.redirect(`${origin}/login?error=${encodeURIComponent(error.message)}`)
+    }
+
+    if (data.user) {
       // Create or update profile with GitHub info
       const { data: profile } = await supabase
         .from('profiles')
@@ -45,9 +52,12 @@ export async function GET(request: Request) {
           current_period_end: trialEnd.toISOString(),
         })
       }
+
+      // Redirect to intended destination
+      return NextResponse.redirect(`${origin}${next}`)
     }
   }
 
-  // Redirect to dashboard after auth
-  return NextResponse.redirect(`${origin}/dashboard`)
+  // No code or auth failed - redirect to login
+  return NextResponse.redirect(`${origin}/login`)
 }
