@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      width: 260px;
+      padding: 16px;
+      background: #fff;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .logo {
+      width: 32px; height: 32px;
+      background: #1a91a2; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-weight: bold; font-size: 14px;
+    }
+    .title { font-size: 15px; font-weight: 600; color: #111; }
+    .subtitle { font-size: 11px; color: #64748b; }
+    .info {
+      font-size: 13px; color: #475569; line-height: 1.5;
+      margin-bottom: 12px;
+    }
+    .btn {
+      width: 100%; padding: 10px 16px; border: none; border-radius: 8px;
+      font-size: 13px; font-weight: 500; cursor: pointer;
+      background: #f1f5f9; color: #475569;
+    }
+    .btn:hover { background: #e2e8f0; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo"><svg width="18" height="18" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 40 C 16 36, 28 44, 38 40 S 54 38, 58 40" stroke="#fff" stroke-width="5" stroke-linecap="round"/><circle cx="58" cy="40" r="4.5" fill="#fff"/></svg></div>
+    <div>
+      <div class="title">Trailguide</div>
+      <div class="subtitle">Recorder Extension</div>
+    </div>
+  </div>
+  <p class="info">
+    Use the <strong>Start Recording</strong> button in the Trailguide editor to begin capturing steps on any site.
+  </p>
+  <button class="btn" id="openDashboard">Open Editor</button>
+  <script src="popup.js"></script>
+</body>
+</html>
