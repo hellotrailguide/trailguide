@@ -31,12 +31,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/brandenlanghals/trailguide.git",
+    "url": "git+https://github.com/hellotrailguide/trailguide.git",
     "directory": "packages/recorder"
   },
-  "homepage": "https://github.com/brandenlanghals/trailguide#readme",
+  "homepage": "https://github.com/hellotrailguide/trailguide#readme",
   "bugs": {
-    "url": "https://github.com/brandenlanghals/trailguide/issues"
+    "url": "https://github.com/hellotrailguide/trailguide/issues"
   },
   "peerDependencies": {
     "react": "^18.0.0",

@@ -283,12 +283,12 @@ See [docs/api-reference.md](docs/api-reference.md) for complete documentation.
 
 ## Live Demo
 
-Try it now: **[demo.gettrailguide.com](https://app.gettrailguide.com/demo)**
+Try it now: **[app.gettrailguide.com/demo](https://app.gettrailguide.com/demo)**
 
 Or run locally:
 
 ```bash
-git clone https://github.com/brandenlanghals/trailguide.git
+git clone https://github.com/hellotrailguide/trailguide.git
 cd trailguide
 pnpm install
 pnpm dev
