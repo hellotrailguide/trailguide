@@ -109,7 +109,7 @@ export default function DemoPage() {
           }}
         >
           <a
-            href="https://www.gettrailguide.com"
+            href="https://gettrailguide.com"
             style={{
               display: 'flex',
               alignItems: 'center',
