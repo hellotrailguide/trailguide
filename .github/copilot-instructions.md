@@ -9,7 +9,7 @@ Trailguide is a Git-native product tour library for web apps. Tours are JSON fil
 pnpm install          # Install all dependencies
 pnpm build            # Build all packages
 pnpm typecheck        # Type-check all packages
-pnpm dev              # Run demo-app (default dev environment)
+pnpm dev              # Run editor (Next.js dev server)
 pnpm clean            # Remove all dist and node_modules
 ```
 
@@ -26,7 +26,7 @@ pnpm --filter @trailguide/editor dev         # Run Pro Editor (Next.js)
 pnpm dev:editor       # Run Pro Editor in dev mode
 pnpm dev:vanilla      # Serve vanilla JS demo
 pnpm dev:website      # Serve marketing website
-pnpm dev:demo         # Run editor and demo-app in parallel
+pnpm dev:demo         # Run editor (demo lives at /demo route)
 ```
 
 ### Individual package commands
@@ -48,7 +48,6 @@ packages/
 apps/
   editor/     - Pro Editor (Next.js + Supabase + Stripe)
 examples/
-  demo-app/   - Example React app
   vanilla-demo/ - Plain HTML/JS example
 ```
 
@@ -56,7 +55,7 @@ examples/
 - `@trailguide/core` - Base runtime, no dependencies on React
 - `@trailguide/runtime` - React wrapper, depends on `core`
 - `@trailguide/recorder` - React-based recorder, depends on `core`
-- `@trailguide/editor` - Next.js app using `core` and `runtime`
+- `@trailguide/editor` - Next.js app using `core`, `runtime`, and `recorder`
 
 **Key principle**: Core is framework-agnostic. React-specific code lives in `runtime` and `recorder`.
 
@@ -168,7 +167,7 @@ Run `pnpm seed:analytics` to populate demo analytics data.
 ### Testing changes locally
 1. Make changes in a package
 2. Run `pnpm --filter <package-name> build`
-3. Test in `demo-app` with `pnpm dev`
+3. Test in the editor at `/demo` with `pnpm dev`
 4. Or test in vanilla demo with `pnpm dev:vanilla`
 
 ### Working with the editor

@@ -4,8 +4,7 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "dev": "pnpm --filter demo-app dev",
-    "dev:editor": "pnpm --filter @trailguide/editor dev",
+    "dev": "pnpm --filter @trailguide/editor dev",
     "dev:vanilla": "npx serve examples/vanilla-demo",
     "dev:website": "npx serve website",
     "build": "pnpm -r build",
@@ -14,7 +13,7 @@
     "build:recorder": "pnpm --filter @trailguide/recorder build",
     "build:editor": "pnpm --filter @trailguide/editor build",
     "typecheck": "pnpm -r typecheck",
-    "dev:demo": "pnpm --filter @trailguide/editor dev & pnpm --filter demo-app dev",
+    "dev:demo": "pnpm --filter @trailguide/editor dev",
     "seed:analytics": "pnpm --filter @trailguide/editor seed:analytics",
     "clean": "pnpm -r exec rm -rf dist node_modules"
   },

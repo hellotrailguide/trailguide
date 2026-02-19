@@ -28,6 +28,3 @@ coverage/
 .env.local
 .env.*.local
 .vercel
-
-# Claude Code
-.claude
