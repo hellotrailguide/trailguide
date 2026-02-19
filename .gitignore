@@ -1,6 +1,9 @@
 # Dependencies
 node_modules/
 
+# Editor (private repository)
+apps/editor/
+
 # Build outputs
 dist/
 *.tsbuildinfo
