@@ -7,31 +7,26 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { createClient } from '@/lib/supabase/client'
+import { useSubscription } from '@/lib/hooks/use-subscription'
 
 interface UserInfo {
   email: string | null
   githubUsername: string | null
 }
 
-interface SubscriptionInfo {
-  isPro: boolean
-  status: string | null
-  currentPeriodEnd: string | null
-}
-
 function SettingsContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const subscription = useSubscription()
   const [user, setUser] = useState<UserInfo | null>(null)
-  const [subscription, setSubscription] = useState<SubscriptionInfo | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoadingUser, setIsLoadingUser] = useState(true)
   const [isCheckingOut, setIsCheckingOut] = useState(false)
 
   const success = searchParams?.get('success')
   const canceled = searchParams?.get('canceled')
 
   useEffect(() => {
-    async function loadUserData() {
+    async function loadUser() {
       const supabase = createClient()
 
       const { data: { user } } = await supabase.auth.getUser()
@@ -45,23 +40,10 @@ function SettingsContent() {
         githubUsername: user.user_metadata?.user_name || null,
       })
 
-      // Load subscription status
-      const { data: sub } = await supabase
-        .from('subscriptions')
-        .select('status, current_period_end')
-        .eq('user_id', user.id)
-        .single()
-
-      setSubscription({
-        isPro: sub?.status === 'active',
-        status: sub?.status || null,
-        currentPeriodEnd: sub?.current_period_end || null,
-      })
-
-      setIsLoading(false)
+      setIsLoadingUser(false)
     }
 
-    loadUserData()
+    loadUser()
   }, [router])
 
   const handleUpgrade = async () => {
@@ -105,7 +87,7 @@ function SettingsContent() {
     router.push('/login')
   }
 
-  if (isLoading) {
+  if (isLoadingUser || subscription.isLoading) {
     return (
       <div className="flex items-center justify-center h-full">
         <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
@@ -181,16 +163,18 @@ function SettingsContent() {
               <CardDescription>Manage your Trailguide Pro subscription</CardDescription>
             </CardHeader>
             <CardContent>
-              {subscription?.isPro ? (
+              {subscription.isPro ? (
                 <div className="space-y-4">
                   <div className="flex items-center gap-2">
                     <Badge className="bg-green-100 text-green-800">Pro</Badge>
-                    <span className="text-sm text-muted-foreground">Active subscription</span>
+                    <span className="text-sm text-muted-foreground">
+                      {subscription.isTrialing ? 'Trial active' : 'Active subscription'}
+                    </span>
                   </div>
                   {subscription.currentPeriodEnd && (
                     <p className="text-sm text-muted-foreground">
-                      Next billing date:{' '}
-                      {new Date(subscription.currentPeriodEnd).toLocaleDateString()}
+                      {subscription.isTrialing ? 'Trial ends' : 'Next billing date'}:{' '}
+                      {subscription.currentPeriodEnd.toLocaleDateString()}
                     </p>
                   )}
                   <div className="pt-2">
@@ -257,7 +241,7 @@ function SettingsContent() {
               )}
             </CardContent>
             <CardFooter>
-              {subscription?.isPro ? (
+              {subscription.isPro ? (
                 <Button variant="outline" onClick={handleManageSubscription}>
                   <ExternalLink className="h-4 w-4 mr-2" />
                   Manage Subscription

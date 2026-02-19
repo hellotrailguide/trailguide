@@ -1,0 +1,1 @@
+# trailguide-editor
