@@ -174,6 +174,80 @@ Use `data-trail-id` attributes for selectors that won't break when classes chang
 
 ---
 
+## Theming
+
+Trailguide ships with CSS custom properties so tooltips match your app, not ours. Override a few variables and you're done — no class hunting, no `!important`.
+
+### Quick customization
+
+```css
+:root {
+  --trailguide-accent: #6366f1;        /* your brand color */
+  --trailguide-accent-hover: #4f46e5;
+  --trailguide-radius: 12px;           /* rounder corners */
+}
+```
+
+### Full variable reference
+
+| Variable | Default (light) | Description |
+|----------|----------------|-------------|
+| `--trailguide-accent` | `#1a91a2` | Primary/brand color for buttons and highlights |
+| `--trailguide-accent-hover` | `#158292` | Hover state for primary buttons |
+| `--trailguide-bg` | `#ffffff` | Tooltip background |
+| `--trailguide-text` | `#374151` | Body text color |
+| `--trailguide-title` | `#111827` | Step title color |
+| `--trailguide-text-muted` | `#6b7280` | Progress counter, close button |
+| `--trailguide-border` | `#e5e7eb` | Header/footer dividers |
+| `--trailguide-btn-bg` | `#ffffff` | Secondary button background |
+| `--trailguide-btn-text` | `#374151` | Secondary button text |
+| `--trailguide-btn-border` | `#d1d5db` | Secondary button border |
+| `--trailguide-btn-hover` | `#f9fafb` | Secondary button hover |
+| `--trailguide-radius` | `8px` | Border radius for tooltips and buttons |
+| `--trailguide-shadow` | `0 10px 25px rgba(0,0,0,0.15)` | Tooltip box shadow |
+| `--trailguide-overlay` | `rgba(0,0,0,0.5)` | Backdrop overlay color |
+| `--trailguide-max-width` | `320px` | Tooltip max width |
+| `--trailguide-min-width` | `280px` | Tooltip min width |
+| `--trailguide-font` | `system-ui, ...` | Font family |
+
+### Dark mode
+
+Dark mode is automatic when `.dark` is on your `<html>` or `<body>` — the defaults flip to dark backgrounds and light text. You can also override the dark values directly:
+
+```css
+.dark {
+  --trailguide-bg: #1a1a2e;
+  --trailguide-accent: #818cf8;
+}
+```
+
+### Example: brand-matched tooltip
+
+```css
+/* Stripe-style purple theme */
+:root {
+  --trailguide-accent: #635bff;
+  --trailguide-accent-hover: #5147e5;
+  --trailguide-radius: 12px;
+  --trailguide-shadow: 0 12px 40px rgba(99, 91, 255, 0.15);
+}
+
+/* Vercel-style minimal dark theme */
+.dark {
+  --trailguide-bg: #111111;
+  --trailguide-text: #a1a1a1;
+  --trailguide-title: #ededed;
+  --trailguide-border: #333333;
+  --trailguide-accent: #0070f3;
+  --trailguide-accent-hover: #0060df;
+  --trailguide-radius: 6px;
+}
+```
+
+No ejecting, no custom render functions, no build step — just CSS.
+
+---
+
 ## Using the Recorder
 
 The recorder is a **developer capture tool** — not a full visual editor. It generates clean, reviewable JSON that you own.

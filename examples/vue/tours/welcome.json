@@ -1,0 +1,35 @@
+{
+  "id": "welcome",
+  "title": "Welcome Tour",
+  "version": "1.0.0",
+  "steps": [
+    {
+      "id": "step-1",
+      "target": "#dashboard-header",
+      "placement": "bottom",
+      "title": "Welcome!",
+      "content": "This is your dashboard. Let's take a quick tour."
+    },
+    {
+      "id": "step-2",
+      "target": "[data-trail-id='create-btn']",
+      "placement": "bottom",
+      "title": "Create something",
+      "content": "Click here to create new projects, tasks, or documents."
+    },
+    {
+      "id": "step-3",
+      "target": "#stats-panel",
+      "placement": "top",
+      "title": "Your statistics",
+      "content": "View your activity and progress at a glance."
+    },
+    {
+      "id": "step-4",
+      "target": "[data-trail-id='settings']",
+      "placement": "left",
+      "title": "Settings",
+      "content": "Customize your preferences here. You're all set!"
+    }
+  ]
+}
