@@ -109,7 +109,7 @@ export default function DemoPage() {
           }}
         >
           <a
-            href="/"
+            href="https://www.gettrailguide.com"
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -123,19 +123,20 @@ export default function DemoPage() {
             </span>
           </a>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <span
+            <a
+              href="/signup"
               style={{
-                fontSize: '12px',
+                fontSize: '13px',
                 fontWeight: 500,
-                color: theme.accent,
-                background: theme.accentBg,
-                padding: '4px 10px',
-                borderRadius: '12px',
-                border: `1px solid ${theme.accentBorder}`,
+                color: 'white',
+                background: theme.accent,
+                padding: '8px 16px',
+                borderRadius: '6px',
+                textDecoration: 'none',
               }}
             >
-              Live Demo
-            </span>
+              Get Started
+            </a>
             <a
               href="https://github.com/brandenlanghals/trailguide"
               target="_blank"
