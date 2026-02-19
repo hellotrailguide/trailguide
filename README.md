@@ -398,6 +398,8 @@ pnpm dev
 
 For teams who want **speed, safety, and insights** — without changing how trails are stored or shipped.
 
+> **Note:** The Pro Editor is a hosted service available at [app.gettrailguide.com](https://app.gettrailguide.com). The open-source packages contain everything needed to build and run guided tours.
+
 ### Visual Editor
 - **Point-and-click element selection** — click any element on your site to capture it as a step, no CSS selectors to write
 - **Inline flow recording** — hit Record, click through your app, and every click becomes a trail step in real time
@@ -432,6 +434,8 @@ For teams who want **speed, safety, and insights** — without changing how trai
 
 **MIT** — free for personal and commercial use.
 
-Trailguide is and will always be open source. Use it, fork it, build on it.
+The Trailguide open-source packages (`@trailguide/runtime`, `@trailguide/recorder`, `@trailguide/core`) are and will always be open source under the MIT license. Use them, fork them, build on them.
+
+The Pro Editor is a proprietary hosted service.
 
 Made by [Branden Langhals](https://github.com/brandenlanghals)
