@@ -138,7 +138,7 @@ export default function DemoPage() {
               Get Started
             </a>
             <a
-              href="https://github.com/brandenlanghals/trailguide"
+              href="https://github.com/hellotrailguide/trailguide"
               target="_blank"
               rel="noopener noreferrer"
               style={{
