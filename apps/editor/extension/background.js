@@ -1,7 +1,17 @@
 // Background service worker for Trailguide Recorder extension.
 // Manages recording sessions: opens target site, injects picker, routes selectors.
 
-let recording = null; // { tabId, editorTabId, editorWindowId }
+let recording = null; // { tabId, editorTabId, editorWindowId, stepCount, navListener }
+
+function stopRecording() {
+  if (!recording) return;
+  if (recording.navListener) {
+    chrome.tabs.onUpdated.removeListener(recording.navListener);
+  }
+  chrome.tabs.sendMessage(recording.tabId, { action: 'stopRecording' }).catch(() => {});
+  chrome.tabs.remove(recording.tabId).catch(() => {});
+  recording = null;
+}
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   // ── From editor-bridge: start recording ──
@@ -10,22 +20,26 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     const editorWindowId = sender.tab.windowId;
 
     chrome.tabs.create({ url: message.url, active: true }, (tab) => {
-      recording = { tabId: tab.id, editorTabId, editorWindowId };
+      recording = { tabId: tab.id, editorTabId, editorWindowId, stepCount: 0, navListener: null };
 
-      // Inject content script once the page finishes loading
-      const onUpdated = (tabId, info) => {
+      // Persistent listener — re-injects content script on every navigation within the recording tab
+      const navListener = (tabId, info) => {
         if (tabId !== tab.id || info.status !== 'complete') return;
-        chrome.tabs.onUpdated.removeListener(onUpdated);
 
         chrome.scripting.executeScript(
           { target: { tabId: tab.id }, files: ['content.js'] },
           () => {
-            // Auto-start recording
-            chrome.tabs.sendMessage(tab.id, { action: 'startRecording' });
+            if (chrome.runtime.lastError) return;
+            chrome.tabs.sendMessage(tab.id, {
+              action: 'startRecording',
+              stepCount: recording ? recording.stepCount : 0,
+            });
           }
         );
       };
-      chrome.tabs.onUpdated.addListener(onUpdated);
+
+      recording.navListener = navListener;
+      chrome.tabs.onUpdated.addListener(navListener);
     });
 
     sendResponse({ success: true });
@@ -34,16 +48,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
   // ── From editor-bridge: stop recording ──
   if (message.type === 'TRAILGUIDE_EXT_STOP_RECORDING') {
-    if (recording) {
-      chrome.tabs.sendMessage(recording.tabId, { action: 'stopRecording' }).catch(() => {});
-      chrome.tabs.remove(recording.tabId).catch(() => {});
-      recording = null;
-    }
+    stopRecording();
     return false;
   }
 
   // ── From content script: selector picked ──
   if (message.action === 'selectorPicked' && recording) {
+    recording.stepCount++;
     chrome.tabs.captureVisibleTab(null, { format: 'jpeg', quality: 50 }, (screenshot) => {
       if (chrome.runtime.lastError) {
         console.warn('[Trailguide] Screenshot capture failed:', chrome.runtime.lastError.message);
@@ -63,7 +74,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
   // ── From content script: recording stopped (Escape or Done button) ──
   if (message.action === 'recordingStopped' && recording) {
-    const { editorTabId, editorWindowId, tabId: recordTabId } = recording;
+    const { editorTabId, editorWindowId, tabId: recordTabId, navListener } = recording;
+    if (navListener) chrome.tabs.onUpdated.removeListener(navListener);
     recording = null;
 
     // Notify editor that recording ended
@@ -89,7 +101,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 // Detect when the recording tab is closed
 chrome.tabs.onRemoved.addListener((tabId) => {
   if (recording && tabId === recording.tabId) {
-    const { editorTabId, editorWindowId } = recording;
+    const { editorTabId, editorWindowId, navListener } = recording;
+    if (navListener) chrome.tabs.onUpdated.removeListener(navListener);
     recording = null;
 
     chrome.tabs.sendMessage(editorTabId, { type: 'TRAILGUIDE_RECORDER_STOPPED' }).catch(() => {});
