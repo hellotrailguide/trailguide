@@ -7,6 +7,7 @@ import {
   Square,
   ImageOff,
   MousePointer,
+  PuzzleIcon,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -15,7 +16,6 @@ import type { SelectorQuality, EditorStep } from '@/lib/stores/editor-store'
 import { toast } from '@/components/ui/toast'
 
 export function PreviewPane() {
-  const recordWindowRef = useRef<Window | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const [urlInput, setUrlInput] = useState('')
   const [recordedCount, setRecordedCount] = useState(0)
@@ -68,7 +68,6 @@ export function PreviewPane() {
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       if (!event.data?.type) return
-
       if (event.origin !== window.location.origin && event.origin !== 'null') return
 
       switch (event.data.type) {
@@ -79,16 +78,11 @@ export function PreviewPane() {
         case 'TRAILGUIDE_SELECTOR': {
           const { selector, quality, qualityHint, screenshot, elementRect, viewportSize } = event.data
           if (!selector) return
-
-          console.log('[PreviewPane] Received selector:', selector, 'quality:', quality)
           setPendingStep({ selector, quality, qualityHint, screenshot, elementRect, viewportSize })
           break
         }
 
         case 'TRAILGUIDE_RECORDER_STOPPED':
-          if (recordWindowRef.current) {
-            recordWindowRef.current = null
-          }
           setPreviewMode('edit')
           const stoppedCount = recordedCount
           setRecordedCount(0)
@@ -101,7 +95,7 @@ export function PreviewPane() {
 
     window.addEventListener('message', handleMessage)
     return () => window.removeEventListener('message', handleMessage)
-  }, [setPreviewMode, recordedCount, toast])
+  }, [setPreviewMode, recordedCount])
 
   // Process received selectors — add steps during recording
   useEffect(() => {
@@ -109,8 +103,7 @@ export function PreviewPane() {
 
     const { selector, quality, qualityHint, screenshot, elementRect, viewportSize } = pendingStep
 
-    const currentTrail = useEditorStore.getState().trail
-    if (!currentTrail) {
+    if (!useEditorStore.getState().trail) {
       createNewTrail()
     }
 
@@ -136,26 +129,7 @@ export function PreviewPane() {
 
     toast.success(`Element selected: ${selector.slice(0, 35)}${selector.length > 35 ? '...' : ''}`)
     setPendingStep(null)
-  }, [pendingStep, updateStep, addStep, createNewTrail, toast])
-
-  // Detect recording window close
-  useEffect(() => {
-    if (previewMode !== 'record' || !recordWindowRef.current) return
-
-    const interval = setInterval(() => {
-      if (recordWindowRef.current?.closed) {
-        recordWindowRef.current = null
-        setPreviewMode('edit')
-        const count = recordedCount
-        setRecordedCount(0)
-        if (count > 0) {
-          toast.success(`${count} step${count === 1 ? '' : 's'} captured`)
-        }
-      }
-    }, 500)
-
-    return () => clearInterval(interval)
-  }, [previewMode, recordedCount, setPreviewMode, toast])
+  }, [pendingStep, updateStep, addStep, createNewTrail])
 
   const handleLoadUrl = () => {
     if (!urlInput) return
@@ -171,34 +145,14 @@ export function PreviewPane() {
       toast.error('Enter a URL first')
       return
     }
-    if (!trail) {
-      createNewTrail()
-    }
+    if (!trail) createNewTrail()
     setRecordedCount(0)
     setPreviewMode('record')
-
-    if (extensionInstalled) {
-      window.postMessage({ type: 'TRAILGUIDE_EXT_START_RECORDING', url: previewUrl }, '*')
-    } else {
-      const proxyUrl = `/api/proxy?url=${encodeURIComponent(previewUrl)}`
-      const win = window.open(proxyUrl, 'trailguide-recorder', 'width=1280,height=800')
-      if (win) {
-        recordWindowRef.current = win
-      } else {
-        toast.error('Popup blocked. Please allow popups for this site.')
-        setPreviewMode('edit')
-      }
-    }
+    window.postMessage({ type: 'TRAILGUIDE_EXT_START_RECORDING', url: previewUrl }, '*')
   }
 
   const handleStopRecording = () => {
-    if (extensionInstalled) {
-      window.postMessage({ type: 'TRAILGUIDE_EXT_STOP_RECORDING' }, '*')
-    } else if (recordWindowRef.current && !recordWindowRef.current.closed) {
-      recordWindowRef.current.postMessage({ type: 'TRAILGUIDE_STOP_RECORDING' }, window.location.origin)
-      recordWindowRef.current.close()
-    }
-    recordWindowRef.current = null
+    window.postMessage({ type: 'TRAILGUIDE_EXT_STOP_RECORDING' }, '*')
     setPreviewMode('edit')
     const count = recordedCount
     setRecordedCount(0)
@@ -211,7 +165,6 @@ export function PreviewPane() {
   const selectedStep: EditorStep | null =
     trail && selectedStepIndex !== null ? trail.steps[selectedStepIndex] ?? null : null
 
-  // Compute screenshot scaling
   const computeScale = useCallback(() => {
     if (!selectedStep?.screenshot || !selectedStep.viewportSize) return null
     const { width: vw, height: vh } = selectedStep.viewportSize
@@ -267,7 +220,7 @@ export function PreviewPane() {
       </div>
 
       {/* Status bar */}
-      {previewUrl && (
+      {previewUrl && extensionInstalled && (
         <div
           className={`flex items-center gap-2 px-4 py-2 text-sm ${
             previewMode === 'record'
@@ -278,7 +231,7 @@ export function PreviewPane() {
           {previewMode === 'record' ? (
             <>
               <div className="w-2 h-2 bg-destructive rounded-full animate-pulse" />
-              <span className="font-medium">Recording{extensionInstalled ? '' : ' (proxy)'}</span>
+              <span className="font-medium">Recording</span>
               <span className="text-destructive">
                 {recordedCount} step{recordedCount === 1 ? '' : 's'} captured
               </span>
@@ -299,12 +252,10 @@ export function PreviewPane() {
                   ? `Step ${selectedStepIndex + 1} of ${totalSteps}`
                   : `${totalSteps} step${totalSteps === 1 ? '' : 's'}`}
               </span>
-              <div className="ml-auto flex gap-2">
-                <Button size="sm" variant="default" onClick={handleStartRecording}>
-                  <Video className="h-3 w-3 mr-1" />
-                  Start Recording
-                </Button>
-              </div>
+              <Button size="sm" variant="default" className="ml-auto" onClick={handleStartRecording}>
+                <Video className="h-3 w-3 mr-1" />
+                Start Recording
+              </Button>
             </>
           )}
         </div>
@@ -312,31 +263,43 @@ export function PreviewPane() {
 
       {/* Preview content */}
       <div ref={containerRef} className="flex-1 relative overflow-hidden">
-        {!previewUrl ? (
+        {!extensionInstalled ? (
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-8">
+            <div className="max-w-sm">
+              <PuzzleIcon className="h-12 w-12 mx-auto mb-4 text-primary" />
+              <h3 className="text-lg font-medium mb-2">Install the Trailguide Extension</h3>
+              <p className="text-sm text-muted-foreground mb-6">
+                Recording requires the Trailguide Chrome extension. It opens your app in a new tab and lets you click elements to capture steps.
+              </p>
+              <Button
+                onClick={() => window.open('https://chrome.google.com/webstore', '_blank')}
+                className="w-full"
+              >
+                Install Chrome Extension
+              </Button>
+              <p className="text-xs text-muted-foreground mt-4">
+                Already installed? Try refreshing the page.
+              </p>
+            </div>
+          </div>
+        ) : !previewUrl ? (
           <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-8">
             <div className="max-w-md">
               <Video className="h-12 w-12 mx-auto mb-4 text-primary" />
               <h3 className="text-lg font-medium mb-2">Create your product tour</h3>
               <p className="text-sm text-muted-foreground mb-6">
-                Enter your app URL above, then click &ldquo;Start Recording&rdquo; to open your site
-                and capture a flow.
+                Enter your app URL above, then click &ldquo;Start Recording&rdquo; to open your site and capture a flow.
               </p>
               <div className="bg-muted p-4 rounded-lg text-left">
                 <p className="text-sm font-medium mb-2">How it works:</p>
                 <ol className="text-sm text-muted-foreground space-y-1 list-decimal list-inside">
                   <li>Enter your app URL and click Load</li>
-                  <li>Click &ldquo;Start Recording&rdquo; to open your site in a new window</li>
-                  <li>Click elements in the window to capture tour steps</li>
-                  <li>Close the window or click Stop to finish</li>
+                  <li>Click &ldquo;Start Recording&rdquo; — your site opens in a new tab</li>
+                  <li>Click elements to capture tour steps</li>
+                  <li>Hit Done or close the tab when finished</li>
                   <li>Edit step content and reorder in the sidebar</li>
                 </ol>
               </div>
-              {!extensionInstalled && (
-                <p className="text-xs text-muted-foreground mt-4">
-                  Install the <strong>Trailguide Recorder</strong> extension for the best experience
-                  — record on the real site with full fidelity.
-                </p>
-              )}
             </div>
           </div>
         ) : selectedStep === null ? (
@@ -349,13 +312,11 @@ export function PreviewPane() {
             <ImageOff className="h-8 w-8 text-muted-foreground mb-3" />
             <p className="text-sm font-medium mb-1">No screenshot available</p>
             <p className="text-xs text-muted-foreground max-w-xs">
-              Screenshots are captured automatically when recording with the Chrome extension.
-              Re-record this step to capture a screenshot.
+              Screenshots are captured automatically when recording. Re-record this step to capture one.
             </p>
           </div>
         ) : (
           <div className="absolute inset-0 flex items-center justify-center bg-muted/20">
-            {/* Screenshot image */}
             <img
               src={selectedStep.screenshot}
               alt={`Screenshot for ${selectedStep.title || 'step'}`}
@@ -367,7 +328,6 @@ export function PreviewPane() {
               className="block"
               draggable={false}
             />
-            {/* Highlight overlay on target element */}
             {scaleInfo && selectedStep.elementRect && (
               <div
                 style={{
