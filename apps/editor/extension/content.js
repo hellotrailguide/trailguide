@@ -9,11 +9,10 @@
   let paused = false;
   let overlay = null;
   let panel = null;
-  let shadow = null; // Shadow DOM root for style isolation
+  let shadow = null;
   let currentTarget = null;
   let stepCount = 0;
 
-  // Drag state
   let isDragging = false;
   let dragOffsetX = 0;
   let dragOffsetY = 0;
@@ -46,7 +45,12 @@
     currentTarget = null;
   }
 
-  // ── Panel styles (injected into shadow DOM) ─────────────────────────
+  // ── Panel CSS ─────────────────────────────────────────────────────────
+  // NOTE: :host positioning and z-index are set as !important inline styles
+  // in createHost() because shadow :host rules have lower cascade priority
+  // than host-page CSS — any page-level div rule can override them.
+  // pointer-events:none on the host + pointer-events:auto on .tg-panel ensures
+  // the host element never blocks page clicks regardless of how page CSS sizes it.
 
   var PANEL_CSS = `
     @keyframes tg-pulse {
@@ -64,13 +68,10 @@
     }
     :host {
       all: initial;
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      z-index: 2147483647;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
     .tg-panel {
+      pointer-events: auto;
       width: 256px;
       background: #0f172a;
       border-radius: 16px;
@@ -92,14 +93,8 @@
     .tg-logo {
       width: 32px;
       height: 32px;
-      background: #1a91a2;
       border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
-      font-weight: 700;
-      font-size: 15px;
+      overflow: hidden;
       flex-shrink: 0;
     }
     .tg-brand-title {
@@ -130,9 +125,7 @@
     .tg-dot--pick { background: #60a5fa }
 
     /* ── Body ── */
-    .tg-body {
-      padding: 0 16px 14px;
-    }
+    .tg-body { padding: 0 16px 14px }
     .tg-counter {
       display: flex;
       align-items: baseline;
@@ -146,30 +139,14 @@
       line-height: 1;
       font-variant-numeric: tabular-nums;
     }
-    .tg-count-label {
-      font-size: 12px;
-      color: #94a3b8;
-      font-weight: 400;
-    }
-    .tg-hint {
-      font-size: 12px;
-      color: #64748b;
-      line-height: 1.5;
-    }
+    .tg-count-label { font-size: 12px; color: #94a3b8; font-weight: 400 }
+    .tg-hint { font-size: 12px; color: #64748b; line-height: 1.5 }
 
     /* ── Divider ── */
-    .tg-divider {
-      height: 1px;
-      background: rgba(255,255,255,0.06);
-      margin: 0;
-    }
+    .tg-divider { height: 1px; background: rgba(255,255,255,0.06) }
 
     /* ── Actions ── */
-    .tg-actions {
-      display: flex;
-      gap: 8px;
-      padding: 12px 16px;
-    }
+    .tg-actions { display: flex; gap: 8px; padding: 12px 16px }
     .tg-btn {
       flex: 1;
       height: 34px;
@@ -179,17 +156,12 @@
       font-weight: 600;
       cursor: pointer;
       font-family: inherit;
-      text-align: center;
       transition: all 0.15s ease;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 5px;
     }
-    .tg-btn--resume {
-      background: #1a91a2;
-      color: #fff;
-    }
+    .tg-btn--resume { background: #1a91a2; color: #fff }
     .tg-btn--resume:hover { background: #2563eb }
     .tg-btn--pause {
       background: rgba(255,255,255,0.08);
@@ -197,14 +169,18 @@
       border: 1px solid rgba(255,255,255,0.08);
     }
     .tg-btn--pause:hover { background: rgba(255,255,255,0.12) }
-    .tg-btn--done {
-      background: rgba(255,255,255,0.06);
-      color: #94a3b8;
-    }
+    .tg-btn--done { background: rgba(255,255,255,0.06); color: #94a3b8 }
     .tg-btn--done:hover { background: rgba(255,255,255,0.1); color: #f8fafc }
   `;
 
-  // ── Panel rendering ─────────────────────────────────────────────────
+  // ── Panel host ───────────────────────────────────────────────────────
+
+  function setPanelPos(left, top, right, bottom) {
+    panel.style.setProperty('left', left, 'important');
+    panel.style.setProperty('top', top, 'important');
+    panel.style.setProperty('right', right, 'important');
+    panel.style.setProperty('bottom', bottom, 'important');
+  }
 
   function createHost() {
     if (panel) return;
@@ -212,17 +188,22 @@
     panel.id = '__trailguide-panel-host';
     shadow = panel.attachShadow({ mode: 'closed' });
 
+    // !important inline styles override any host-page CSS that might otherwise
+    // resize or reposition this element and block page interaction.
+    panel.style.setProperty('position', 'fixed', 'important');
+    panel.style.setProperty('z-index', '2147483647', 'important');
+    panel.style.setProperty('pointer-events', 'none', 'important');
+    setPanelPos('auto', 'auto', '24px', '24px');
+
     var style = document.createElement('style');
     style.textContent = PANEL_CSS;
     shadow.appendChild(style);
-
     document.body.appendChild(panel);
   }
 
   function showPanel() {
     createHost();
 
-    // Clear existing content (keep style)
     var existing = shadow.querySelector('.tg-panel');
     if (existing) existing.remove();
 
@@ -235,8 +216,7 @@
       statusDot = '<span class="tg-dot tg-dot--pick"></span>';
       statusText = 'Pick Mode';
       statusClass = 'tg-status tg-status--pick';
-      bodyHTML =
-        '<div class="tg-hint">Click any element to select it.<br>Press <strong style="color:#e2e8f0">Esc</strong> to cancel.</div>';
+      bodyHTML = '<div class="tg-hint">Click any element to select it.<br>Press <strong style="color:#e2e8f0">Esc</strong> to cancel.</div>';
       actionsHTML = '';
     } else if (paused) {
       statusDot = '<span class="tg-dot tg-dot--pause"></span>';
@@ -274,7 +254,7 @@
 
     card.innerHTML =
       '<div class="tg-header" id="tg-drag">' +
-        '<div class="tg-logo"><svg width="18" height="18" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 40 C 16 36, 28 44, 38 40 S 54 38, 58 40" stroke="#fff" stroke-width="5" stroke-linecap="round"/><circle cx="58" cy="40" r="4.5" fill="#fff"/></svg></div>' +
+        '<img class="tg-logo" src="' + chrome.runtime.getURL('favicon.svg') + '" width="32" height="32" alt="">' +
         '<div>' +
           '<div class="tg-brand-title">Trailguide</div>' +
           '<div class="' + statusClass + '">' + statusDot + statusText + '</div>' +
@@ -316,49 +296,36 @@
   function bindDrag(card) {
     var handle = card.querySelector('#tg-drag');
     if (!handle) return;
-
     handle.addEventListener('mousedown', function (e) {
       if (!panel) return;
       isDragging = true;
       var rect = panel.getBoundingClientRect();
       dragOffsetX = e.clientX - rect.left;
       dragOffsetY = e.clientY - rect.top;
-      panel.style.left = rect.left + 'px';
-      panel.style.top = rect.top + 'px';
-      panel.style.right = 'auto';
-      panel.style.bottom = 'auto';
+      setPanelPos(rect.left + 'px', rect.top + 'px', 'auto', 'auto');
       e.preventDefault();
     });
   }
 
   function globalDragMove(e) {
     if (!isDragging || !panel) return;
-    var x = e.clientX - dragOffsetX;
-    var y = e.clientY - dragOffsetY;
-    x = Math.max(0, Math.min(x, window.innerWidth - 256));
-    y = Math.max(0, Math.min(y, window.innerHeight - panel.offsetHeight));
-    panel.style.left = x + 'px';
-    panel.style.top = y + 'px';
+    var x = Math.max(0, Math.min(e.clientX - dragOffsetX, window.innerWidth - 256));
+    var y = Math.max(0, Math.min(e.clientY - dragOffsetY, window.innerHeight - panel.offsetHeight));
+    panel.style.setProperty('left', x + 'px', 'important');
+    panel.style.setProperty('top', y + 'px', 'important');
   }
 
-  function globalDragEnd() {
-    isDragging = false;
-  }
+  function globalDragEnd() { isDragging = false; }
 
-  // Always listen for drag at document level
   document.addEventListener('mousemove', globalDragMove, true);
   document.addEventListener('mouseup', globalDragEnd, true);
 
   function updateStepCount() {
     if (!shadow) return;
     var countEl = shadow.querySelector('#tg-count');
-    if (countEl) {
-      countEl.textContent = stepCount;
-    }
     var labelEl = shadow.querySelector('#tg-count-label');
-    if (labelEl) {
-      labelEl.textContent = 'step' + (stepCount === 1 ? '' : 's') + ' captured';
-    }
+    if (countEl) countEl.textContent = stepCount;
+    if (labelEl) labelEl.textContent = 'step' + (stepCount === 1 ? '' : 's') + ' captured';
   }
 
   function hidePanel() {
@@ -446,7 +413,7 @@
     return path.join(' > ');
   }
 
-  // ── Trailguide element check ──────────────────────────────────────────
+  // ── Trailguide element guard ──────────────────────────────────────────
 
   function isTrailguideElement(el) {
     while (el) {
@@ -457,39 +424,33 @@
   }
 
   // ── Event handlers ───────────────────────────────────────────────────
+  // Only attached while actively recording/picking. detachListeners() is called
+  // on pause and stop, so no paused-state guards are needed inside these handlers.
 
   function handleMouseMove(e) {
-    if (!mode || paused) return;
-    if (isDragging) return;
+    if (!mode || isDragging) return;
     var t = e.target;
-    if (isTrailguideElement(t)) return;
-    if (t === currentTarget) return;
+    if (isTrailguideElement(t) || t === currentTarget) return;
     currentTarget = t;
     positionOverlay(t);
   }
 
   function handleMouseDown(e) {
-    if (!mode || paused) return;
-    if (isDragging) return;
-    if (isTrailguideElement(e.target)) return;
+    if (!mode || isDragging || isTrailguideElement(e.target)) return;
     e.preventDefault();
     e.stopPropagation();
     e.stopImmediatePropagation();
-    return false;
   }
 
   function handleMouseUp(e) {
-    if (!mode || paused) return;
-    if (isDragging) return;
-    if (isTrailguideElement(e.target)) return;
+    if (!mode || isDragging || isTrailguideElement(e.target)) return;
     e.preventDefault();
     e.stopPropagation();
     e.stopImmediatePropagation();
-    return false;
   }
 
   function handleClick(e) {
-    if (!mode || paused) return;
+    if (!mode) return;
     var t = e.target;
     if (isTrailguideElement(t)) return;
 
@@ -499,31 +460,24 @@
 
     var selector = generateSelector(t);
     var qi = classifySelectorQuality(selector);
-
-    // Capture element rect and viewport size before hiding UI
     var rect = t.getBoundingClientRect();
-    var elementRect = { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
-    var viewportSize = { width: window.innerWidth, height: window.innerHeight };
 
-    // Hide overlay and panel so screenshot is clean
+    // Hide overlay and panel so they don't appear in the screenshot
     if (overlay) overlay.style.display = 'none';
-    if (panel) panel.style.display = 'none';
+    if (panel) panel.style.setProperty('display', 'none', 'important');
 
-    // Wait for repaint, then send message (background.js will capture screenshot)
     requestAnimationFrame(function () {
       chrome.runtime.sendMessage({
         action: 'selectorPicked',
         selector: selector,
         quality: qi.quality,
         qualityHint: qi.qualityHint,
-        elementRect: elementRect,
-        viewportSize: viewportSize,
+        elementRect: { x: rect.x, y: rect.y, width: rect.width, height: rect.height },
+        viewportSize: { width: window.innerWidth, height: window.innerHeight },
       });
-
-      // Restore overlay and panel after a short delay
       setTimeout(function () {
         if (overlay && mode) overlay.style.display = 'block';
-        if (panel) panel.style.display = '';
+        if (panel) panel.style.removeProperty('display');
       }, 200);
     });
 
@@ -533,20 +487,14 @@
       stepCount++;
       updateStepCount();
     }
-
-    return false;
   }
 
   function handleKeyDown(e) {
-    if (!mode) return;
-    if (e.key === 'Escape') {
-      e.preventDefault();
-      var wasRecording = mode === 'record';
-      stop();
-      if (wasRecording) {
-        chrome.runtime.sendMessage({ action: 'recordingStopped' });
-      }
-    }
+    if (!mode || e.key !== 'Escape') return;
+    e.preventDefault();
+    var wasRecording = mode === 'record';
+    stop();
+    if (wasRecording) chrome.runtime.sendMessage({ action: 'recordingStopped' });
   }
 
   // ── Pause / Resume ──────────────────────────────────────────────────
@@ -581,6 +529,14 @@
   }
 
   function startRecording(initialStepCount = 0) {
+    // SPA navigation: tabs.onUpdated fires for client-side route changes.
+    // If we're already in a recording session (active or paused), just sync
+    // the step count — don't tear down and recreate state.
+    if (mode === 'record') {
+      stepCount = initialStepCount;
+      updateStepCount();
+      return;
+    }
     if (mode) stop();
     mode = 'record';
     paused = false;
@@ -599,7 +555,9 @@
     hidePanel();
     detachListeners();
     document.body.style.cursor = '';
-    window.__trailguideActive = false;
+    // Do NOT reset window.__trailguideActive here. The message listener must
+    // remain the sole handler for this page's lifetime. Resetting it allows a
+    // re-injection to spawn a second IIFE instance with its own panel.
   }
 
   function attachListeners() {
@@ -618,7 +576,7 @@
     document.removeEventListener('keydown', handleKeyDown, true);
   }
 
-  // ── Listen for commands from the background script ───────────────────
+  // ── Commands from background script ──────────────────────────────────
 
   chrome.runtime.onMessage.addListener((message) => {
     if (message.action === 'startPicking') startPicking();
