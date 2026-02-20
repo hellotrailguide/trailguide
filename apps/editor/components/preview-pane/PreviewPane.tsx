@@ -131,24 +131,20 @@ export function PreviewPane() {
     setPendingStep(null)
   }, [pendingStep, updateStep, addStep, createNewTrail])
 
-  const handleLoadUrl = () => {
-    if (!urlInput) return
+  const handleStartRecording = () => {
+    if (!urlInput) {
+      toast.error('Enter a URL first')
+      return
+    }
     let url = urlInput
     if (!url.startsWith('http://') && !url.startsWith('https://')) {
       url = 'https://' + url
     }
     setPreviewUrl(url)
-  }
-
-  const handleStartRecording = () => {
-    if (!previewUrl) {
-      toast.error('Enter a URL first')
-      return
-    }
     if (!trail) createNewTrail()
     setRecordedCount(0)
     setPreviewMode('record')
-    window.postMessage({ type: 'TRAILGUIDE_EXT_START_RECORDING', url: previewUrl }, '*')
+    window.postMessage({ type: 'TRAILGUIDE_EXT_START_RECORDING', url }, '*')
   }
 
   const handleStopRecording = () => {
@@ -189,25 +185,16 @@ export function PreviewPane() {
     <div className="flex flex-col h-full bg-muted/30">
       {/* URL bar */}
       <div className="flex items-center gap-2 p-2 border-b border-border bg-background">
-        <form
-          onSubmit={(e) => {
-            e.preventDefault()
-            handleLoadUrl()
-          }}
-          className="flex-1 flex gap-2"
-        >
-          <Input
-            value={urlInput}
-            onChange={(e) => setUrlInput(e.target.value)}
-            placeholder="Enter your app URL (e.g., https://myapp.com)"
-            className="flex-1"
-            data-tour-target="url-input"
-          />
-          <Button type="submit" variant="secondary" size="sm">
-            Load
-          </Button>
-        </form>
-        {previewUrl && (
+        <Input
+          value={urlInput}
+          onChange={(e) => setUrlInput(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && handleStartRecording()}
+          placeholder="Enter your app URL to start recording"
+          className="flex-1"
+          data-tour-target="url-input"
+          disabled={previewMode === 'record'}
+        />
+        {previewUrl && previewMode !== 'record' && (
           <Button
             variant="ghost"
             size="icon"
