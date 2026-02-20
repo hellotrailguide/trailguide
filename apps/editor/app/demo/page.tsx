@@ -5,6 +5,7 @@ import { Trailguide } from '@trailguide/runtime';
 import type { Trail, AnalyticsConfig } from '@trailguide/runtime';
 import { theme } from '@trailguide/core';
 import { RecorderOverlay, useRecorder } from '@trailguide/recorder';
+import Image from 'next/image';
 
 export default function DemoPage() {
   const [showTour, setShowTour] = useState(false);
@@ -117,7 +118,7 @@ export default function DemoPage() {
               textDecoration: 'none',
             }}
           >
-            <img src="/favicon.svg" alt="" style={{ height: '32px', width: '32px' }} />
+            <Image src="/favicon.svg" alt="" width={32} height={32} />
             <span style={{ fontSize: '18px', fontWeight: 600, color: theme.textPrimary, letterSpacing: '-0.01em' }}>
               Trailguide
             </span>

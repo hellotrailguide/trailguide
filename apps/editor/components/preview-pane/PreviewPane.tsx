@@ -296,6 +296,7 @@ export function PreviewPane() {
           </div>
         ) : (
           <div className="absolute inset-0 flex items-center justify-center bg-muted/20">
+            {/* eslint-disable-next-line @next/next/no-img-element -- screenshot is a data URI from IndexedDB, not compatible with next/image */}
             <img
               src={selectedStep.screenshot}
               alt={`Screenshot for ${selectedStep.title || 'step'}`}
