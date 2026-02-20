@@ -1,7 +1,12 @@
 import Link from 'next/link'
 import { ArrowRight, Github, Zap, BarChart3 } from 'lucide-react'
+import { createClient } from '@/lib/supabase/server'
+import { redirect } from 'next/navigation'
 
-export default function Home() {
+export default async function Home() {
+  const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (user) redirect('/dashboard')
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted">
       <header className="container mx-auto px-4 py-6">
@@ -45,7 +50,7 @@ export default function Home() {
           </p>
           <div className="flex items-center justify-center gap-4 mb-16">
             <Link
-              href="/dashboard/edit/new"
+              href="/signup?redirectTo=/dashboard"
               className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors"
             >
               Start Building
