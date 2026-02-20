@@ -12,6 +12,8 @@
     "build:runtime": "pnpm --filter @trailguide/runtime build",
     "build:recorder": "pnpm --filter @trailguide/recorder build",
     "build:editor": "pnpm --filter @trailguide/editor build",
+    "build:showcase": "pnpm --filter @trailguide/showcase build",
+    "dev:showcase": "pnpm --filter @trailguide/showcase dev",
     "typecheck": "pnpm -r typecheck",
     "dev:demo": "pnpm --filter @trailguide/editor dev",
     "seed:analytics": "pnpm --filter @trailguide/editor seed:analytics",
