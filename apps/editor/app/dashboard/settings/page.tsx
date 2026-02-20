@@ -84,7 +84,7 @@ function SettingsContent() {
   const handleSignOut = async () => {
     const supabase = createClient()
     await supabase.auth.signOut()
-    router.push('/login')
+    router.refresh()
   }
 
   if (isLoadingUser || subscription.isLoading) {
