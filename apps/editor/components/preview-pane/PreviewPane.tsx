@@ -204,46 +204,38 @@ export function PreviewPane() {
             <ExternalLink className="h-4 w-4" />
           </Button>
         )}
+        {previewMode === 'record' ? (
+          <Button size="sm" variant="destructive" onClick={handleStopRecording}>
+            <Square className="h-3 w-3 mr-1" />
+            Stop
+          </Button>
+        ) : (
+          <Button size="sm" variant="default" onClick={handleStartRecording} disabled={!extensionInstalled}>
+            <Video className="h-3 w-3 mr-1" />
+            Start Recording
+          </Button>
+        )}
       </div>
 
       {/* Status bar */}
-      {previewUrl && extensionInstalled && (
-        <div
-          className={`flex items-center gap-2 px-4 py-2 text-sm ${
-            previewMode === 'record'
-              ? 'bg-destructive/10 text-destructive border-b border-destructive/20'
-              : 'bg-muted border-b border-border'
-          }`}
-        >
+      {extensionInstalled && (
+        <div className={`flex items-center gap-2 px-4 py-2 text-sm border-b ${
+          previewMode === 'record'
+            ? 'bg-destructive/10 text-destructive border-destructive/20'
+            : 'bg-muted border-border text-muted-foreground'
+        }`}>
           {previewMode === 'record' ? (
             <>
               <div className="w-2 h-2 bg-destructive rounded-full animate-pulse" />
               <span className="font-medium">Recording</span>
-              <span className="text-destructive">
-                {recordedCount} step{recordedCount === 1 ? '' : 's'} captured
-              </span>
-              <Button
-                size="sm"
-                variant="outline"
-                className="ml-auto bg-background"
-                onClick={handleStopRecording}
-              >
-                <Square className="h-3 w-3 mr-1" />
-                Stop Recording
-              </Button>
+              <span>{recordedCount} step{recordedCount === 1 ? '' : 's'} captured</span>
             </>
           ) : (
-            <>
-              <span className="text-muted-foreground">
-                {selectedStepIndex !== null
-                  ? `Step ${selectedStepIndex + 1} of ${totalSteps}`
-                  : `${totalSteps} step${totalSteps === 1 ? '' : 's'}`}
-              </span>
-              <Button size="sm" variant="default" className="ml-auto" onClick={handleStartRecording}>
-                <Video className="h-3 w-3 mr-1" />
-                Start Recording
-              </Button>
-            </>
+            <span>
+              {selectedStepIndex !== null
+                ? `Step ${selectedStepIndex + 1} of ${totalSteps}`
+                : `${totalSteps} step${totalSteps === 1 ? '' : 's'}`}
+            </span>
           )}
         </div>
       )}
