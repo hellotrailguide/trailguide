@@ -555,6 +555,7 @@
     if (mode !== 'record' || paused) return;
     paused = true;
     hideOverlay();
+    detachListeners();
     document.body.style.cursor = '';
     showPanel();
   }
@@ -563,6 +564,7 @@
     if (mode !== 'record' || !paused) return;
     paused = false;
     document.body.style.cursor = 'crosshair';
+    attachListeners();
     showPanel();
   }
 
