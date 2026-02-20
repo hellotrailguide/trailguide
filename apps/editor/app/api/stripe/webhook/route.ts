@@ -104,7 +104,7 @@ export async function POST(request: NextRequest) {
         const { error } = await getSupabaseAdmin()
           .from('subscriptions')
           .update({
-            status: 'cancelled',
+            status: 'canceled',
           })
           .eq('stripe_customer_id', customerId)
 

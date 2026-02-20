@@ -19,7 +19,7 @@ export interface AnalyticsEvent {
 
 // Generate unique session ID per page load
 function generateSessionId(): string {
-  return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  return `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
 }
 
 // Module-level session ID (one per page load)
@@ -49,13 +49,17 @@ export async function sendEvent(
   };
 
   try {
-    await fetch(config.endpoint, {
+    const response = await fetch(config.endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
     if (config.debug) {
-      console.log('[Trailguide Analytics]', payload);
+      if (response.ok) {
+        console.log('[Trailguide Analytics]', payload);
+      } else {
+        console.error(`[Trailguide Analytics] Server error: ${response.status}`);
+      }
     }
   } catch (e) {
     if (config.debug) {

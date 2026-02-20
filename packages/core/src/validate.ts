@@ -10,7 +10,7 @@ export interface ValidationResult {
 export interface ValidationError {
   stepId: string;
   stepIndex: number;
-  type: 'missing_target' | 'invalid_selector' | 'missing_required_field';
+  type: 'missing_target' | 'missing_required_field';
   message: string;
   selector?: string;
 }

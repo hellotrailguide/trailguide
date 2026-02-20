@@ -145,7 +145,7 @@ function buildPathSelector(element: HTMLElement): string {
       break;
     }
 
-    // Add nth-child if needed for uniqueness
+    // Add nth-of-type if needed for uniqueness
     const parent: HTMLElement | null = current.parentElement;
     if (parent) {
       const currentTag = current.tagName;
@@ -154,7 +154,7 @@ function buildPathSelector(element: HTMLElement): string {
       );
       if (siblings.length > 1) {
         const index = siblings.indexOf(current) + 1;
-        selector += `:nth-child(${index})`;
+        selector += `:nth-of-type(${index})`;
       }
     }
 

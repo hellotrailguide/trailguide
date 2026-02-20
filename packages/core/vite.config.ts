@@ -16,6 +16,5 @@ export default defineConfig({
       formats: ['es', 'umd'],
       fileName: (format) => format === 'es' ? 'trailguide.js' : 'trailguide.umd.js',
     },
-    cssFileName: 'trailguide',
   },
 });

@@ -1,17 +1,11 @@
 export type Placement = 'top' | 'bottom' | 'left' | 'right';
 
-export type StepAction = 'click' | 'input' | 'hover' | 'none';
-
-export type NextTrigger = 'click' | 'manual';
-
 export interface Step {
   id: string;
   target: string;
   placement: Placement;
   title: string;
   content: string;
-  action?: StepAction;
-  nextOn?: NextTrigger;
 }
 
 export interface Trail {
@@ -33,10 +27,4 @@ export interface TrailguideOptions {
   onSkip?: () => void;
   onStepChange?: (step: Step, index: number) => void;
   analytics?: AnalyticsConfig;
-}
-
-export interface TrailguideState {
-  trail: Trail | null;
-  currentStepIndex: number;
-  isActive: boolean;
 }

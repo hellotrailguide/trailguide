@@ -3,8 +3,6 @@ export type {
   Trail,
   Step,
   Placement,
-  StepAction,
-  NextTrigger,
   TrailguideOptions,
   AnalyticsConfig,
 } from '@trailguide/core';

@@ -39,7 +39,7 @@ export async function POST() {
 
     const session = await createPortalSession(
       subscription.stripe_customer_id,
-      `${baseUrl}/settings`
+      `${baseUrl}/dashboard/settings`
     )
 
     return NextResponse.json({ url: session.url })

@@ -18,7 +18,7 @@ export default defineConfig({
       fileName: 'index',
     },
     rollupOptions: {
-      external: ['react', 'react-dom', 'react/jsx-runtime', '@trailguide/runtime'],
+      external: ['react', 'react-dom', 'react/jsx-runtime', '@trailguide/core'],
     },
   },
 });
