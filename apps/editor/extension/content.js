@@ -578,11 +578,11 @@
     document.body.style.cursor = 'crosshair';
   }
 
-  function startRecording() {
+  function startRecording(initialStepCount = 0) {
     if (mode) stop();
     mode = 'record';
     paused = false;
-    stepCount = 0;
+    stepCount = initialStepCount;
     if (!overlay) overlay = createOverlay();
     showPanel();
     attachListeners();
@@ -620,7 +620,7 @@
 
   chrome.runtime.onMessage.addListener((message) => {
     if (message.action === 'startPicking') startPicking();
-    if (message.action === 'startRecording') startRecording();
+    if (message.action === 'startRecording') startRecording(message.stepCount || 0);
     if (message.action === 'stopRecording') stop();
   });
 })();
