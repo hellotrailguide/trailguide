@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, Suspense } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Github, Mail, Loader2 } from 'lucide-react'
@@ -71,7 +72,7 @@ function SignupContent() {
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <div className="flex justify-center mb-4">
-              <img src="/favicon.svg" alt="Trailguide" className="h-12 w-12" />
+              <Image src="/favicon.svg" alt="Trailguide" width={48} height={48} priority />
             </div>
             <CardTitle className="text-2xl">Check your email</CardTitle>
             <CardDescription>

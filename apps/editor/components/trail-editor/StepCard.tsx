@@ -50,6 +50,7 @@ export function StepCard({ step, index }: StepCardProps) {
       {/* Thumbnail or step number */}
       {step.screenshot ? (
         <div className="flex-shrink-0 w-16 h-12 rounded overflow-hidden border border-border bg-muted">
+          {/* eslint-disable-next-line @next/next/no-img-element -- screenshot is a data URI from IndexedDB, not compatible with next/image */}
           <img
             src={step.screenshot}
             alt={`Step ${index + 1}`}

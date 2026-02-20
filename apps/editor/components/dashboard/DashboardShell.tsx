@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Home, BarChart3, Settings, LogOut, Sun, Moon } from 'lucide-react'
@@ -38,7 +39,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
           className="h-10 w-10 rounded-lg flex items-center justify-center mb-8"
           data-tour-target="logo"
         >
-          <img src="/favicon.svg" alt="Trailguide" className="h-10 w-10" />
+          <Image src="/favicon.svg" alt="Trailguide" width={40} height={40} priority />
         </Link>
 
         <nav className="flex-1 flex flex-col items-center gap-2">

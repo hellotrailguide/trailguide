@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { ArrowRight, Github, Zap, BarChart3 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
@@ -12,7 +13,7 @@ export default async function Home() {
       <header className="container mx-auto px-4 py-6">
         <nav className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <img src="/favicon.svg" alt="Trailguide" className="h-8 w-8" />
+            <Image src="/favicon.svg" alt="Trailguide" width={32} height={32} priority />
             <span className="font-semibold text-lg">Trailguide Pro</span>
           </div>
           <div className="flex items-center gap-4">
