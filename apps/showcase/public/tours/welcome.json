@@ -1,0 +1,42 @@
+{
+  "id": "crest-welcome",
+  "title": "Welcome to Crest",
+  "version": "1.0.0",
+  "steps": [
+    {
+      "id": "step-1",
+      "target": "[data-trail-id='stat-projects']",
+      "placement": "bottom",
+      "title": "Your workspace at a glance",
+      "content": "These cards show your key metrics — active projects, open tasks, and overall completion rate."
+    },
+    {
+      "id": "step-2",
+      "target": "[data-trail-id='create-project-btn']",
+      "placement": "bottom",
+      "title": "Create your first project",
+      "content": "Click here to kick off a new project. Add a name, description, and invite your team to get going."
+    },
+    {
+      "id": "step-3",
+      "target": "[data-trail-id='projects-list']",
+      "placement": "top",
+      "title": "All your projects in one place",
+      "content": "Every project lives here. Track progress, spot bottlenecks, and keep your team aligned."
+    },
+    {
+      "id": "step-4",
+      "target": "[data-trail-id='nav-team']",
+      "placement": "right",
+      "title": "Manage your team",
+      "content": "Add team members, set roles, and control who has access to each project."
+    },
+    {
+      "id": "step-5",
+      "target": "[data-trail-id='nav-settings']",
+      "placement": "right",
+      "title": "Customise your workspace",
+      "content": "Update your profile, configure notifications, and manage billing from Settings."
+    }
+  ]
+}
