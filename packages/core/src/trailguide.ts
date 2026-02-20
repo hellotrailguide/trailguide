@@ -16,6 +16,8 @@ export class Trailguide {
 
   // Cleanup functions
   private cleanupFns: (() => void)[] = [];
+  private stepCleanupFns: (() => void)[] = [];
+  private instanceId = `trailguide-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 
   constructor(options: TrailguideOptions = {}) {
     this.options = options;
@@ -88,15 +90,16 @@ export class Trailguide {
 
     // Spotlight with SVG mask
     const spotlight = createElement('div', 'trailguide-spotlight', this.overlay);
+    const maskId = `${this.instanceId}-mask`;
     spotlight.innerHTML = `
       <svg width="100%" height="100%">
         <defs>
-          <mask id="trailguide-mask">
+          <mask id="${maskId}">
             <rect x="0" y="0" width="100%" height="100%" fill="white" />
             <rect class="trailguide-cutout" rx="4" fill="black" />
           </mask>
         </defs>
-        <rect x="0" y="0" width="100%" height="100%" mask="url(#trailguide-mask)" />
+        <rect x="0" y="0" width="100%" height="100%" mask="url(#${maskId})" />
       </svg>
     `;
 
@@ -134,6 +137,17 @@ export class Trailguide {
 
   private showStep(): void {
     if (!this.trail || !this.overlay || !this.tooltip) return;
+
+    // Clean up per-step listeners from previous step
+    this.stepCleanupFns.forEach(fn => fn());
+    this.stepCleanupFns = [];
+
+    // Reset any error state styles
+    this.tooltip.style.transform = '';
+    const spotlight = this.overlay.querySelector<HTMLElement>('.trailguide-spotlight');
+    const highlight = this.overlay.querySelector<HTMLElement>('.trailguide-highlight');
+    if (spotlight) spotlight.style.display = '';
+    if (highlight) highlight.style.display = '';
 
     const step = this.trail.steps[this.currentStepIndex];
     if (!step) return;
@@ -240,7 +254,7 @@ export class Trailguide {
 
     window.addEventListener('scroll', updatePosition, true);
     window.addEventListener('resize', updatePosition);
-    this.cleanupFns.push(() => {
+    this.stepCleanupFns.push(() => {
       window.removeEventListener('scroll', updatePosition, true);
       window.removeEventListener('resize', updatePosition);
     });
@@ -266,7 +280,7 @@ export class Trailguide {
     if (nextBtn) nextBtn.textContent = isLast ? 'Finish' : 'Next';
 
     // Position tooltip with Floating UI
-    const { x, y, middlewareData } = await computePosition(target, this.tooltip, {
+    const { x, y, placement, middlewareData } = await computePosition(target, this.tooltip, {
       placement: step.placement as Placement,
       middleware: [
         offset(12),
@@ -278,6 +292,7 @@ export class Trailguide {
 
     this.tooltip.style.left = `${x}px`;
     this.tooltip.style.top = `${y}px`;
+    this.tooltip.dataset.placement = placement;
 
     // Position arrow
     if (middlewareData.arrow && this.arrowEl) {
@@ -310,6 +325,8 @@ export class Trailguide {
   }
 
   private cleanup(): void {
+    this.stepCleanupFns.forEach(fn => fn());
+    this.stepCleanupFns = [];
     this.cleanupFns.forEach(fn => fn());
     this.cleanupFns = [];
 
@@ -317,6 +334,7 @@ export class Trailguide {
     this.tooltip?.remove();
     this.overlay = null;
     this.tooltip = null;
+    this.arrowEl = null;
   }
 
   private emitAnalytics(
@@ -350,6 +368,7 @@ export function start(trail: Trail, options?: TrailguideOptions): Trailguide {
 
 export function stop(): void {
   defaultInstance?.stop();
+  defaultInstance = null;
 }
 
 export function next(): void {
@@ -362,4 +381,5 @@ export function prev(): void {
 
 export function skip(): void {
   defaultInstance?.skip();
+  defaultInstance = null;
 }

@@ -143,47 +143,6 @@ export function StepEditPanel() {
           </Select>
         </div>
 
-        {/* Advanced Options */}
-        <details className="border border-border rounded-lg">
-          <summary className="px-4 py-2 text-sm font-medium cursor-pointer hover:bg-muted">
-            Advanced Options
-          </summary>
-          <div className="p-4 pt-2 space-y-4 border-t border-border">
-            {/* Action */}
-            <div className="space-y-2">
-              <Label htmlFor="action">Action</Label>
-              <Select
-                id="action"
-                value={step.action || 'none'}
-                onChange={(e) => handleUpdate('action', e.target.value)}
-              >
-                <option value="none">None</option>
-                <option value="click">Click</option>
-                <option value="input">Input</option>
-                <option value="hover">Hover</option>
-              </Select>
-              <p className="text-xs text-muted-foreground">
-                Action to simulate when step is shown
-              </p>
-            </div>
-
-            {/* Next Trigger */}
-            <div className="space-y-2">
-              <Label htmlFor="nextOn">Advance On</Label>
-              <Select
-                id="nextOn"
-                value={step.nextOn || 'click'}
-                onChange={(e) => handleUpdate('nextOn', e.target.value)}
-              >
-                <option value="click">Button Click</option>
-                <option value="manual">Manual (User Action)</option>
-              </Select>
-              <p className="text-xs text-muted-foreground">
-                How user advances to next step
-              </p>
-            </div>
-          </div>
-        </details>
       </div>
     </div>
   )

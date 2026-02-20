@@ -6,10 +6,7 @@ export type {
   Trail,
   Step,
   Placement,
-  StepAction,
-  NextTrigger,
   TrailguideOptions,
-  TrailguideState,
   AnalyticsConfig,
 } from './types';
 

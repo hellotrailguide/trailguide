@@ -36,26 +36,34 @@ export function useTrail({
   const [isActive, setIsActive] = useState(false);
   const instanceRef = useRef<TrailguideCore | null>(null);
 
+  // Store callbacks in refs so they don't cause effect re-runs
+  const onCompleteRef = useRef(onComplete);
+  const onStepChangeRef = useRef(onStepChange);
+  const onSkipRef = useRef(onSkip);
+  onCompleteRef.current = onComplete;
+  onStepChangeRef.current = onStepChange;
+  onSkipRef.current = onSkip;
+
   const currentStep = isActive && trail.steps[currentStepIndex]
     ? trail.steps[currentStepIndex]
     : null;
 
   const totalSteps = trail.steps.length;
 
-  // Create instance
+  // Create instance — only re-run when trail or analytics change
   useEffect(() => {
     instanceRef.current = new TrailguideCore({
       onComplete: () => {
         setIsActive(false);
-        onComplete?.();
+        onCompleteRef.current?.();
       },
       onStepChange: (step, index) => {
         setCurrentStepIndex(index);
-        onStepChange?.(step, index);
+        onStepChangeRef.current?.(step, index);
       },
       onSkip: () => {
         setIsActive(false);
-        onSkip?.();
+        onSkipRef.current?.();
       },
       analytics,
     });
@@ -68,7 +76,7 @@ export function useTrail({
     return () => {
       instanceRef.current?.stop();
     };
-  }, [trail, onComplete, onStepChange, onSkip, autoStart, analytics]);
+  }, [trail, autoStart, analytics]);
 
   const start = useCallback(() => {
     if (instanceRef.current) {

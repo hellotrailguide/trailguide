@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import type { Trail, Step, Placement } from '@trailguide/core';
 import { generateSelector, highlightElement } from '../utils/selectorGenerator';
 
@@ -36,14 +36,7 @@ export function useRecorder({
   const [isRecording, setIsRecording] = useState(false);
   const [steps, setSteps] = useState<Step[]>([]);
   const [pendingStep, setPendingStep] = useState<PendingStep | null>(null);
-  const [cleanupHighlight, setCleanupHighlight] = useState<(() => void) | null>(null);
-
-  // Cleanup highlight when pending step changes
-  useEffect(() => {
-    return () => {
-      cleanupHighlight?.();
-    };
-  }, [cleanupHighlight]);
+  const cleanupRef = useRef<(() => void) | null>(null);
 
   // Handle click events while recording
   useEffect(() => {
@@ -61,12 +54,12 @@ export function useRecorder({
       e.stopPropagation();
 
       // Clean up previous highlight
-      cleanupHighlight?.();
+      cleanupRef.current?.();
 
       // Generate selector and highlight element
       const selector = generateSelector(target);
       const cleanup = highlightElement(target);
-      setCleanupHighlight(() => cleanup);
+      cleanupRef.current = cleanup;
 
       setPendingStep({
         selector,
@@ -79,9 +72,10 @@ export function useRecorder({
 
     return () => {
       document.removeEventListener('click', handleClick, true);
-      cleanupHighlight?.();
+      cleanupRef.current?.();
+      cleanupRef.current = null;
     };
-  }, [isRecording, cleanupHighlight]);
+  }, [isRecording]);
 
   const startRecording = useCallback(() => {
     setIsRecording(true);
@@ -90,8 +84,9 @@ export function useRecorder({
   const stopRecording = useCallback(() => {
     setIsRecording(false);
     setPendingStep(null);
-    cleanupHighlight?.();
-  }, [cleanupHighlight]);
+    cleanupRef.current?.();
+    cleanupRef.current = null;
+  }, []);
 
   const toggleRecording = useCallback(() => {
     if (isRecording) {
@@ -132,16 +127,18 @@ export function useRecorder({
         ...details,
       });
 
-      cleanupHighlight?.();
+      cleanupRef.current?.();
+      cleanupRef.current = null;
       setPendingStep(null);
     },
-    [pendingStep, addStep, cleanupHighlight]
+    [pendingStep, addStep]
   );
 
   const cancelPendingStep = useCallback(() => {
-    cleanupHighlight?.();
+    cleanupRef.current?.();
+    cleanupRef.current = null;
     setPendingStep(null);
-  }, [cleanupHighlight]);
+  }, []);
 
   const exportTrail = useCallback((): Trail => {
     return {

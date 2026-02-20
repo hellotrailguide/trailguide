@@ -21,22 +21,28 @@ export function Trailguide({
 }: TrailguideProps) {
   const instanceRef = useRef<TrailguideCore | null>(null);
 
+  // Store callbacks in refs so they don't cause effect re-runs
+  const onCompleteRef = useRef(onComplete);
+  const onStepChangeRef = useRef(onStepChange);
+  const onSkipRef = useRef(onSkip);
+  onCompleteRef.current = onComplete;
+  onStepChangeRef.current = onStepChange;
+  onSkipRef.current = onSkip;
+
   useEffect(() => {
-    // Create instance and start
     instanceRef.current = new TrailguideCore({
-      onComplete,
-      onStepChange,
-      onSkip,
+      onComplete: () => onCompleteRef.current?.(),
+      onStepChange: (step, index) => onStepChangeRef.current?.(step, index),
+      onSkip: () => onSkipRef.current?.(),
       analytics,
     });
 
     instanceRef.current.start(trail);
 
-    // Cleanup on unmount
     return () => {
       instanceRef.current?.stop();
     };
-  }, [trail, onComplete, onStepChange, onSkip, analytics]);
+  }, [trail, analytics]);
 
   // This component doesn't render anything - the core handles DOM
   return null;
