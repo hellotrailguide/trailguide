@@ -71,9 +71,7 @@ function SignupContent() {
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <div className="flex justify-center mb-4">
-              <div className="h-12 w-12 rounded-xl bg-primary flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-xl">T</span>
-              </div>
+              <img src="/favicon.svg" alt="Trailguide" className="h-12 w-12" />
             </div>
             <CardTitle className="text-2xl">Check your email</CardTitle>
             <CardDescription>
@@ -95,9 +93,7 @@ function SignupContent() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
-            <div className="h-12 w-12 rounded-xl bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-xl">T</span>
-            </div>
+            <img src="/favicon.svg" alt="Trailguide" className="h-12 w-12" />
           </div>
           <CardTitle className="text-2xl">Create an account</CardTitle>
           <CardDescription>Start building product tours in minutes</CardDescription>
