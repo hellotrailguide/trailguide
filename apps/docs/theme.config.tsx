@@ -4,11 +4,12 @@ import { DocsThemeConfig } from 'nextra-theme-docs'
 
 const config: DocsThemeConfig = {
   logo: (
-    <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-      <Image src="/logo.svg" alt="Trailguide" width={28} height={28} />
-      <span style={{ fontWeight: 700, fontSize: 16 }}>Trailguide</span>
+    <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+      <Image src="/logo.svg" alt="Trailguide" width={44} height={44} />
+      <span style={{ fontWeight: 700, fontSize: 18 }}>Trailguide</span>
     </span>
   ),
+  logoLink: 'https://gettrailguide.com',
   project: {
     link: 'https://github.com/hellotrailguide/trailguide',
   },
