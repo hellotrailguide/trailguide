@@ -13,9 +13,6 @@ const config: DocsThemeConfig = {
     link: 'https://github.com/hellotrailguide/trailguide',
   },
   docsRepositoryBase: 'https://github.com/hellotrailguide/trailguide/tree/main/apps/docs',
-  useNextSeoProps() {
-    return { titleTemplate: '%s – Trailguide Docs' }
-  },
   head: (
     <>
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -24,13 +21,12 @@ const config: DocsThemeConfig = {
       <meta property="og:description" content="Product tour SDK for web applications" />
     </>
   ),
-  primaryHue: 220,
   sidebar: {
     defaultMenuCollapseLevel: 1,
     toggleButton: true,
   },
   footer: {
-    text: (
+    content: (
       <span>
         MIT {new Date().getFullYear()} ©{' '}
         <a href="https://gettrailguide.com" target="_blank" rel="noopener">
