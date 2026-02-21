@@ -45,7 +45,7 @@ export function HelpMenu({ onStartTour }: HelpMenuProps) {
     {
       icon: MessageCircle,
       label: 'Get Help',
-      description: 'Email us at support@trailguide.com',
+      description: 'Email us at support@gettrailguide.com',
       href: 'mailto:support@gettrailguide.com',
     },
   ]
