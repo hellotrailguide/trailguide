@@ -2,6 +2,13 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { Trail, Step, Placement, ElementRect } from '@/lib/types/trail'
 import { saveScreenshots, loadScreenshots, deleteScreenshots } from './screenshot-db'
+import {
+  uploadScreenshot,
+  downloadScreenshot,
+  deleteCloudScreenshot,
+  deleteCloudScreenshots,
+  getCurrentUserId,
+} from './screenshot-storage'
 
 export type SelectorQuality = 'stable' | 'moderate' | 'fragile'
 
@@ -9,6 +16,7 @@ export interface EditorStep extends Step {
   selectorQuality?: SelectorQuality
   selectorQualityHint?: string
   screenshot?: string
+  screenshotPath?: string
   elementRect?: ElementRect
   viewportSize?: { width: number; height: number }
 }
@@ -83,7 +91,7 @@ function generateId(): string {
 function stripScreenshots(trail: EditorTrail): EditorTrail {
   return {
     ...trail,
-    steps: trail.steps.map(({ screenshot, elementRect, viewportSize, ...rest }) => rest) as EditorStep[],
+    steps: trail.steps.map(({ screenshot: _screenshot, ...rest }) => rest) as EditorStep[],
   }
 }
 
@@ -187,6 +195,9 @@ export const useEditorStore = create<EditorState>()(
 
         // Clean up screenshot from IndexedDB
         deleteScreenshots([removedStep.id]).catch(() => {})
+
+        // Clean up from Supabase Storage
+        if (removedStep.screenshotPath) deleteCloudScreenshot(removedStep.screenshotPath).catch(() => {})
       },
 
       reorderSteps: (fromIndex, toIndex) => {
@@ -267,6 +278,26 @@ export const useEditorStore = create<EditorState>()(
 
         // Persist screenshots to IndexedDB (fire-and-forget)
         saveScreenshots(updatedTrail.steps).catch(() => {})
+
+        // Upload new screenshots to Supabase Storage (fire-and-forget)
+        const stepsNeedingUpload = updatedTrail.steps.filter(s => s.screenshot && !s.screenshotPath)
+        if (stepsNeedingUpload.length > 0) {
+          getCurrentUserId().then(userId => {
+            if (!userId) return
+            Promise.all(stepsNeedingUpload.map(async step => {
+              const path = await uploadScreenshot(userId, updatedTrail.id, step.id, step.screenshot!)
+              if (!path) return
+              set(state => ({
+                trail: state.trail?.id === updatedTrail.id
+                  ? { ...state.trail, steps: state.trail.steps.map(s => s.id === step.id ? { ...s, screenshotPath: path } : s) }
+                  : state.trail,
+                trails: state.trails.map(t => t.id === updatedTrail.id
+                  ? { ...t, steps: t.steps.map(s => s.id === step.id ? { ...s, screenshotPath: path } : s) }
+                  : t),
+              }))
+            })).catch(() => {})
+          }).catch(() => {})
+        }
       },
 
       loadTrail: (id) => {
@@ -281,18 +312,39 @@ export const useEditorStore = create<EditorState>()(
             isDirty: false,
           })
 
-          // Hydrate screenshots from IndexedDB
+          // Phase 1: Hydrate screenshots from IndexedDB
           loadScreenshots(trail.steps.map((s) => s.id))
             .then((screenshots) => {
               const { trail: currentTrail } = get()
               if (currentTrail?.id !== id) return // trail changed since load started
-              if (screenshots.size === 0) return
 
-              const hydratedSteps = currentTrail.steps.map((s) => {
+              const allHydrated = currentTrail.steps.map((s) => {
                 const data = screenshots.get(s.id)
                 return data ? { ...s, ...data } : s
               })
-              set({ trail: { ...currentTrail, steps: hydratedSteps } })
+              if (screenshots.size > 0) {
+                set({ trail: { ...currentTrail, steps: allHydrated } })
+              }
+
+              // Phase 2: Download from Supabase for steps missing from cache
+              const missingFromCache = allHydrated.filter(s => s.screenshotPath && !s.screenshot)
+              if (missingFromCache.length === 0) return
+
+              Promise.all(missingFromCache.map(async step => {
+                const dataUri = await downloadScreenshot(step.screenshotPath!)
+                if (!dataUri) return
+                set(state => {
+                  if (state.trail?.id !== id) return {}
+                  return {
+                    trail: {
+                      ...state.trail,
+                      steps: state.trail.steps.map(s => s.id === step.id ? { ...s, screenshot: dataUri } : s),
+                    },
+                  }
+                })
+                // Warm IndexedDB cache
+                saveScreenshots([{ ...step, screenshot: dataUri }]).catch(() => {})
+              })).catch(() => {})
             })
             .catch(() => {})
         }
@@ -310,6 +362,10 @@ export const useEditorStore = create<EditorState>()(
         // Clean up screenshots from IndexedDB
         if (toDelete) {
           deleteScreenshots(toDelete.steps.map((s) => s.id)).catch(() => {})
+
+          // Clean up from Supabase Storage
+          const cloudPaths = toDelete.steps.map(s => s.screenshotPath).filter((p): p is string => Boolean(p))
+          if (cloudPaths.length > 0) deleteCloudScreenshots(cloudPaths).catch(() => {})
         }
       },
 
@@ -336,7 +392,7 @@ export const useEditorStore = create<EditorState>()(
           title: `${original.title} (Copy)`,
           createdAt: now,
           updatedAt: now,
-          steps: original.steps.map((s) => ({ ...s, id: generateId() })),
+          steps: original.steps.map((s) => ({ ...s, id: generateId(), screenshotPath: undefined })),
         }
 
         set({
@@ -356,7 +412,7 @@ export const useEditorStore = create<EditorState>()(
           id: trail.id,
           title: trail.title,
           version: trail.version,
-          steps: trail.steps.map(({ selectorQuality, selectorQualityHint, screenshot, elementRect, viewportSize, ...step }) => step),
+          steps: trail.steps.map(({ selectorQuality, selectorQualityHint, screenshot, screenshotPath, elementRect, viewportSize, ...step }) => step),
         }
 
         return JSON.stringify(exportData, null, 2)
