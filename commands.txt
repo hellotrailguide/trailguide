@@ -1,4 +1,0 @@
-cd /Users/branden/projects/trailguide && vercel --prod --yes 2>&1
-
-
-pnpm run dev:editor  
