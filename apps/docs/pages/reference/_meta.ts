@@ -1,0 +1,10 @@
+export default {
+  overview: 'Overview',
+  'trailguide-component': '<Trailguide>',
+  'use-trail': 'useTrail',
+  'use-trail-manager': 'useTrailManager',
+  'use-register-tour': 'useRegisterTour',
+  'tour-registry': 'TourRegistryProvider',
+  'tour-storage': 'tourStorage',
+  types: 'Types',
+}
