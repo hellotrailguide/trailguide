@@ -1,14 +1,14 @@
 'use client'
 
-import { useState } from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Home, BarChart3, Settings, LogOut, Sun, Moon } from 'lucide-react'
-import { HelpMenu, OnboardingTour, resetOnboardingTour } from '@/components/help'
+import { HelpMenu } from '@/components/help'
 import { Tooltip } from '@/components/ui/tooltip'
 import { createClient } from '@/lib/supabase/client'
 import { useTheme } from '@/lib/hooks/useTheme'
+import { useTourContext } from '@/lib/contexts/tour-context'
 
 interface DashboardShellProps {
   children: React.ReactNode
@@ -16,13 +16,8 @@ interface DashboardShellProps {
 
 export function DashboardShell({ children }: DashboardShellProps) {
   const router = useRouter()
-  const [showTour, setShowTour] = useState(false)
   const { theme, toggleTheme } = useTheme()
-
-  const handleStartTour = () => {
-    resetOnboardingTour()
-    setShowTour(true)
-  }
+  const { startTour } = useTourContext()
 
   const handleSignOut = async () => {
     const supabase = createClient()
@@ -55,6 +50,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
             <Link
               href="/dashboard/analytics"
               className="h-10 w-10 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+              data-tour-target="nav-analytics"
             >
               <BarChart3 className="h-5 w-5" />
             </Link>
@@ -71,7 +67,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
 
         <div className="flex flex-col items-center gap-2">
           <div data-tour-target="help-button">
-            <HelpMenu onStartTour={handleStartTour} />
+            <HelpMenu onStartTour={startTour} />
           </div>
           <Tooltip content={theme === 'light' ? 'Dark mode' : 'Light mode'}>
             <button
@@ -96,12 +92,6 @@ export function DashboardShell({ children }: DashboardShellProps) {
       <main className="flex-1 min-w-0 flex flex-col">
         {children}
       </main>
-
-      {/* Onboarding tour */}
-      <OnboardingTour
-        forceShow={showTour}
-        onComplete={() => setShowTour(false)}
-      />
     </>
   )
 }

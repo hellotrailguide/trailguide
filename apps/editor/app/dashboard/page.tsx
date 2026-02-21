@@ -1,16 +1,19 @@
 'use client'
 
-import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Plus, MoreVertical, Trash2, Copy, ExternalLink } from 'lucide-react'
+import { Plus, Trash2, Copy } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { useEditorStore } from '@/lib/stores/editor-store'
+import { usePageTour } from '@/lib/hooks/use-page-tour'
+import { PageTour } from '@/components/help'
+import { HOME_TOUR, TOUR_KEYS } from '@/components/help/tours'
 
 export default function TrailsPage() {
   const router = useRouter()
   const { trails, createNewTrail, loadTrail, deleteTrail, duplicateTrail } = useEditorStore()
+  const { showTour, complete } = usePageTour(TOUR_KEYS.home)
 
   const handleCreateNew = () => {
     const trail = createNewTrail()
@@ -43,12 +46,12 @@ export default function TrailsPage() {
   return (
     <div className="h-full overflow-y-auto">
       <div className="max-w-5xl mx-auto p-8">
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-8" data-tour-target="trails-header">
           <div>
             <h1 className="text-2xl font-bold">Your Trails</h1>
             <p className="text-muted-foreground">Create and manage your product tours</p>
           </div>
-          <Button onClick={handleCreateNew}>
+          <Button onClick={handleCreateNew} data-tour-target="new-trail-button">
             <Plus className="h-4 w-4 mr-2" />
             New Trail
           </Button>
@@ -122,6 +125,8 @@ export default function TrailsPage() {
           </div>
         )}
       </div>
+
+      <PageTour trail={HOME_TOUR} show={showTour} onDismiss={complete} />
     </div>
   )
 }

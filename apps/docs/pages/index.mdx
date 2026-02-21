@@ -1,0 +1,77 @@
+---
+title: Introduction
+---
+
+import { Cards, Card, Callout } from 'nextra/components'
+
+# Trailguide
+
+**Product tours as code.** Trailguide is a lightweight, framework-agnostic SDK for building guided onboarding tours directly in your web app. Define tours in JSON, target elements with CSS selectors, and ship them as part of your codebase — not as a third-party script.
+
+```bash
+npm install @trailguide/core
+# or with React:
+npm install @trailguide/runtime
+```
+
+```tsx
+import { Trailguide } from '@trailguide/runtime'
+import '@trailguide/core/dist/style.css'
+
+const tour = {
+  id: 'onboarding',
+  title: 'Welcome',
+  version: '1.0.0',
+  steps: [
+    {
+      id: 'step-1',
+      target: '[data-tour="dashboard"]',
+      placement: 'bottom',
+      title: 'Your Dashboard',
+      content: 'Everything you need in one place.',
+    },
+  ],
+}
+
+export function App() {
+  return <Trailguide trail={tour} onComplete={() => console.log('done')} />
+}
+```
+
+## Why Trailguide?
+
+Most onboarding tools are third-party scripts — loaded from a CDN, configured in a dashboard, and invisible to your version control. Trailguide is different: tours live in your codebase as JSON, ship with your deploys, and get reviewed in pull requests alongside the features they document.
+
+| | Trailguide | Third-party tools |
+|---|---|---|
+| Versioned with your code | ✅ | ❌ |
+| No external script tag | ✅ | ❌ |
+| TypeScript types | ✅ | Sometimes |
+| Works offline / in staging | ✅ | Sometimes |
+| CSS selector targeting | ✅ | ✅ |
+| Analytics | ✅ Pro | ✅ |
+| GitHub sync | ✅ Pro | ❌ |
+
+## Packages
+
+<Cards>
+  <Card title="@trailguide/core" href="/api/overview" arrow>
+    Framework-agnostic. Works with vanilla JS or any framework.
+  </Card>
+  <Card title="@trailguide/runtime" href="/getting-started/installation" arrow>
+    React hooks and components. `useTrailManager`, `useRegisterTour`, and more.
+  </Card>
+</Cards>
+
+## Free vs Pro
+
+The SDK is fully open source (MIT). Everything in this documentation works out of the box.
+
+**Trailguide Pro** unlocks:
+- **Analytics** — track starts, completions, drop-off by step, and trends over time
+- **GitHub Sync** — push tour JSON files to a repository directly from the editor
+- **Visual Editor** — build and preview tours without writing code, sync changes back to your repo
+
+<Callout type="info">
+  Start a **free 14-day Pro trial** at [app.gettrailguide.com](https://app.gettrailguide.com) — no credit card required.
+</Callout>

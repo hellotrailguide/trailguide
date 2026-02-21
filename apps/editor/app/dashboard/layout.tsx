@@ -1,6 +1,7 @@
 import { ExtensionListener } from '@/components/ExtensionListener'
 import { SubscriptionGuard } from '@/components/subscription'
 import { DashboardShell } from '@/components/dashboard'
+import { TourProvider } from '@/lib/contexts/tour-context'
 
 export default function DashboardLayout({
   children,
@@ -8,14 +9,16 @@ export default function DashboardLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className="flex h-screen">
-      {/* Global listener for Chrome extension messages */}
-      <ExtensionListener />
+    <TourProvider>
+      <div className="flex h-screen">
+        {/* Global listener for Chrome extension messages */}
+        <ExtensionListener />
 
-      {/* Dashboard shell with sidebar, help menu, and onboarding tour */}
-      <DashboardShell>
-        <SubscriptionGuard>{children}</SubscriptionGuard>
-      </DashboardShell>
-    </div>
+        {/* Dashboard shell with sidebar and help menu */}
+        <DashboardShell>
+          <SubscriptionGuard>{children}</SubscriptionGuard>
+        </DashboardShell>
+      </div>
+    </TourProvider>
   )
 }

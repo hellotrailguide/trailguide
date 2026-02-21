@@ -1,0 +1,135 @@
+---
+title: Types
+---
+
+# Types
+
+All types are exported from both `@trailguide/core` and `@trailguide/runtime`.
+
+```ts
+import type { Trail, Step, Placement, TrailguideOptions, AnalyticsConfig } from '@trailguide/core'
+```
+
+---
+
+## `Trail`
+
+A complete tour definition.
+
+```ts
+interface Trail {
+  id: string        // unique identifier used in analytics and tourStorage
+  title: string     // display name used in analytics
+  version: string   // semver string — bump when steps change significantly
+  steps: Step[]     // ordered list of steps
+}
+```
+
+---
+
+## `Step`
+
+A single step in a tour.
+
+```ts
+interface Step {
+  id: string           // unique within the tour; used in analytics
+  target: string       // CSS selector for the element to highlight
+  placement: Placement // which side of the target to show the tooltip
+  title: string        // tooltip heading
+  content: string      // tooltip body text
+  optional?: boolean   // if true, silently skip if target is not found/visible
+}
+```
+
+---
+
+## `Placement`
+
+```ts
+type Placement = 'top' | 'bottom' | 'left' | 'right'
+```
+
+Trailguide uses `@floating-ui/dom` under the hood. The tooltip will `flip` to the opposite side and `shift` to stay in viewport automatically.
+
+---
+
+## `TrailguideOptions`
+
+Options passed to `new Trailguide(options)` or the static `start()` function.
+
+```ts
+interface TrailguideOptions {
+  onComplete?: () => void
+  onSkip?: () => void
+  /** Fires when stop() is called while the tour is active */
+  onAbandoned?: () => void
+  onStepChange?: (step: Step, index: number) => void
+  /** Fires when a step's target cannot be found or is not visible */
+  onError?: (step: Step, error: 'element_not_found' | 'element_not_visible') => void
+  analytics?: AnalyticsConfig
+}
+```
+
+---
+
+## `AnalyticsConfig`
+
+Configuration for Trailguide Pro analytics.
+
+```ts
+interface AnalyticsConfig {
+  /** Analytics ingestion endpoint — use https://app.gettrailguide.com/api/analytics */
+  endpoint: string
+  /** Your Trailguide user ID from app.gettrailguide.com */
+  userId: string
+  /** Override trail.id for analytics (useful when merging metrics across tour versions) */
+  trailId?: string
+  /** Log analytics events to the browser console */
+  debug?: boolean
+}
+```
+
+---
+
+## `UseTrailManagerOptions`
+
+Options for `useTrailManager` and `useRegisterTour`.
+
+```ts
+interface UseTrailManagerOptions {
+  once?: boolean
+  storageKey?: string
+  enabled?: boolean
+  delay?: number
+  resumable?: boolean
+  onComplete?: () => void
+  onSkip?: () => void
+  onAbandoned?: () => void
+  onStepChange?: (step: Step, index: number) => void
+  onError?: (step: Step, error: 'element_not_found' | 'element_not_visible') => void
+  analytics?: AnalyticsConfig
+}
+```
+
+---
+
+## `UseTrailManagerReturn`
+
+Return value of `useTrailManager` and `useRegisterTour`.
+
+```ts
+interface UseTrailManagerReturn {
+  isActive: boolean
+  currentStep: Step | null
+  currentStepIndex: number
+  totalSteps: number
+  show: () => void
+  dismiss: () => void
+  reset: () => void
+  next: () => void
+  prev: () => void
+  skip: () => void
+  goToStep: (index: number) => void
+}
+```

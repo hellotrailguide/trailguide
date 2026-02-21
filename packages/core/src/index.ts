@@ -29,6 +29,9 @@ export {
   logValidationResults,
 } from './validate';
 
+// Storage utilities
+export { tourStorage } from './storage';
+
 export type {
   ValidationResult,
   ValidationError,

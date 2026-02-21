@@ -17,6 +17,9 @@ import { Loader2, TrendingUp, Users, Target, AlertCircle } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Select } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
+import { usePageTour } from '@/lib/hooks/use-page-tour'
+import { PageTour } from '@/components/help'
+import { ANALYTICS_TOUR, TOUR_KEYS } from '@/components/help/tours'
 
 interface AnalyticsEvent {
   id: string
@@ -42,6 +45,7 @@ export default function AnalyticsPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [selectedTrail, setSelectedTrail] = useState<string>('all')
   const [days, setDays] = useState(30)
+  const { showTour, complete } = usePageTour(TOUR_KEYS.analytics, { ready: !isLoading })
 
   useEffect(() => {
     async function loadAnalytics() {
@@ -93,12 +97,12 @@ export default function AnalyticsPage() {
   return (
     <div className="h-full overflow-y-auto">
       <div className="max-w-6xl mx-auto p-8">
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-8" data-tour-target="analytics-header">
           <div>
             <h1 className="text-2xl font-bold">Analytics</h1>
             <p className="text-muted-foreground">Track your trail performance</p>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4" data-tour-target="analytics-filters">
             <Select value={selectedTrail} onChange={(e) => setSelectedTrail(e.target.value)}>
               <option value="all">All Trails</option>
               {trailIds.map((id) => (
@@ -115,6 +119,7 @@ export default function AnalyticsPage() {
           </div>
         </div>
 
+        <div data-tour-target="analytics-content">
         {events.length === 0 ? (
           <Card>
             <CardContent className="flex flex-col items-center justify-center py-12">
@@ -276,7 +281,10 @@ export default function AnalyticsPage() {
             </Card>
           </>
         )}
+        </div>
       </div>
+
+      <PageTour trail={ANALYTICS_TOUR} show={showTour} onDismiss={complete} />
     </div>
   )
 }

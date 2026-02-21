@@ -1,0 +1,86 @@
+---
+title: TourRegistryProvider
+---
+
+# `TourRegistryProvider` / `useTourRegistry`
+
+**Package:** `@trailguide/runtime`
+
+A context provider and hook pair that lets a persistent layout element (sidebar, navbar) trigger the tour for whatever page is currently mounted.
+
+## Exports
+
+```ts
+import {
+  TourRegistryProvider,
+  useTourRegistry,
+} from '@trailguide/runtime'
+```
+
+---
+
+## `TourRegistryProvider`
+
+Wrap your app's persistent layout shell. Only one provider is needed per app.
+
+```tsx filename="app/layout.tsx"
+import { TourRegistryProvider } from '@trailguide/runtime'
+
+export default function RootLayout({ children }) {
+  return (
+    <TourRegistryProvider>
+      <AppShell>{children}</AppShell>
+    </TourRegistryProvider>
+  )
+}
+```
+
+### Props
+
+| Prop | Type | Description |
+|---|---|---|
+| `children` | `ReactNode` | Required. |
+
+---
+
+## `useTourRegistry`
+
+Returns the registry context. Call this in your layout's help button.
+
+```tsx
+import { useTourRegistry } from '@trailguide/runtime'
+
+export function HelpButton() {
+  const { startCurrentTour } = useTourRegistry()
+
+  return (
+    <button onClick={startCurrentTour}>
+      Quick Start Tour
+    </button>
+  )
+}
+```
+
+### Return value
+
+| Property | Type | Description |
+|---|---|---|
+| `startCurrentTour` | `() => void` | Triggers the tour registered by the currently mounted page. No-op if no tour is registered. |
+| `registerTour` | `(fn: () => void) => () => void` | Low-level registration function. You typically don't call this directly — use `useRegisterTour` instead. |
+
+---
+
+## Registering page tours
+
+Use [`useRegisterTour`](/api/use-register-tour) on each page — it is a drop-in replacement for `useTrailManager` that auto-registers:
+
+```tsx filename="app/analytics/page.tsx"
+import { useRegisterTour } from '@trailguide/runtime'
+
+export default function AnalyticsPage() {
+  const { isActive, dismiss } = useRegisterTour(analyticsTour, { once: true })
+  // ...
+}
+```
+
+For the full setup walkthrough, see [Help Menu Integration](/guides/help-menu).

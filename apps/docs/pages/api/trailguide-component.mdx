@@ -1,0 +1,68 @@
+---
+title: <Trailguide>
+---
+
+# `<Trailguide>`
+
+**Package:** `@trailguide/runtime`
+
+A React component that starts a tour on mount and stops it on unmount. Renders nothing to the React tree — the tour UI is injected directly into `document.body`.
+
+## Usage
+
+```tsx
+import { Trailguide } from '@trailguide/runtime'
+
+{show && (
+  <Trailguide
+    trail={myTour}
+    onComplete={() => setShow(false)}
+    onSkip={() => setShow(false)}
+  />
+)}
+```
+
+## Props
+
+| Prop | Type | Description |
+|---|---|---|
+| `trail` | `Trail` | The tour to run. Required. |
+| `onComplete` | `() => void` | Called when the user finishes the last step. |
+| `onSkip` | `() => void` | Called when the user clicks the × button. |
+| `onStepChange` | `(step: Step, index: number) => void` | Called on every step transition. |
+| `analytics` | `AnalyticsConfig` | Enable Pro analytics tracking. |
+
+## Behavior
+
+- Starts the tour immediately on mount.
+- Stops the tour and cleans up all DOM nodes on unmount.
+- If `trail` or `analytics` changes (reference equality), the tour restarts with the new values.
+- Callbacks (`onComplete`, `onSkip`, `onStepChange`) are stored in refs — you can pass new function references each render without restarting the tour.
+
+## Controlled visibility
+
+The recommended pattern is to control visibility with a boolean state variable:
+
+```tsx
+const [showTour, setShowTour] = useState(false)
+
+return (
+  <>
+    <button onClick={() => setShowTour(true)}>Start tour</button>
+    {showTour && (
+      <Trailguide
+        trail={myTour}
+        onComplete={() => setShowTour(false)}
+        onSkip={() => setShowTour(false)}
+      />
+    )}
+  </>
+)
+```
+
+For auto-show on first visit and help menu integration, use [`useTrailManager`](/api/use-trail-manager) or [`useRegisterTour`](/api/use-register-tour) instead.
+
+## Notes
+
+- The `<Trailguide>` component does not handle `onAbandoned` or `onError`. If you need those, use `useTrail` or `useTrailManager` instead.
+- Import styles once at your app root: `import '@trailguide/core/dist/style.css'`

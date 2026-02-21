@@ -1,0 +1,74 @@
+---
+title: useTrail
+---
+
+# `useTrail`
+
+**Package:** `@trailguide/runtime`
+
+A low-level React hook that wraps the `Trailguide` core class. Gives you imperative `start`, `stop`, `next`, `prev`, `skip`, and `goToStep` controls along with reactive state.
+
+For most use cases, prefer [`useTrailManager`](/api/use-trail-manager), which adds first-visit logic and progress tracking.
+
+## Usage
+
+```tsx
+import { useTrail, Trailguide } from '@trailguide/runtime'
+import { myTour } from './tours'
+
+export function MyComponent() {
+  const { isActive, start, stop, next, prev } = useTrail({
+    trail: myTour,
+    onComplete: () => console.log('done'),
+  })
+
+  return (
+    <>
+      <button onClick={start}>Start tour</button>
+      {isActive && (
+        <>
+          <button onClick={prev}>Back</button>
+          <button onClick={next}>Next</button>
+          <button onClick={stop}>Stop</button>
+          <Trailguide trail={myTour} />
+        </>
+      )}
+    </>
+  )
+}
+```
+
+Or use `autoStart` to start immediately on mount:
+
+```tsx
+const { isActive, stop } = useTrail({
+  trail: myTour,
+  autoStart: true,
+})
+```
+
+## Options
+
+| Option | Type | Default | Description |
+|---|---|---|---|
+| `trail` | `Trail` | — | The tour definition. Required. |
+| `autoStart` | `boolean` | `false` | Start the tour immediately on mount. |
+| `onComplete` | `() => void` | — | Called when user finishes the last step. |
+| `onSkip` | `() => void` | — | Called when user clicks the × button. |
+| `onStepChange` | `(step, index) => void` | — | Called on every step transition. |
+| `analytics` | `AnalyticsConfig` | — | Enable Pro analytics. |
+
+## Return value
+
+| Property | Type | Description |
+|---|---|---|
+| `isActive` | `boolean` | Whether the tour is currently running. |
+| `currentStep` | `Step \| null` | The step currently being shown, or `null` if inactive. |
+| `currentStepIndex` | `number` | 0-based index of the current step. |
+| `totalSteps` | `number` | Total number of steps in the tour. |
+| `start` | `() => void` | Start the tour from step 0. |
+| `stop` | `() => void` | Stop the tour (calls `onAbandoned` internally). |
+| `next` | `() => void` | Advance to the next step. |
+| `prev` | `() => void` | Go back to the previous step. |
+| `skip` | `() => void` | Skip the tour (calls `onSkip`). |
+| `goToStep` | `(index: number) => void` | Jump to a specific step by index. |

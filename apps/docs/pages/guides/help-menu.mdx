@@ -1,0 +1,118 @@
+---
+title: Help Menu Integration
+---
+
+import { Callout } from 'nextra/components'
+
+# Help Menu Integration
+
+Tours should be triggerable on demand — not just on first visit. A help menu, a "?" button, or a keyboard shortcut should let users re-run the tour for whatever page they are on.
+
+## The registry pattern
+
+`TourRegistryProvider` + `useRegisterTour` gives you a single `startCurrentTour()` function in your layout that always triggers the right tour for whatever page is mounted.
+
+### 1. Wrap your layout
+
+Add `TourRegistryProvider` around your app's persistent shell (the component that contains your sidebar or navbar):
+
+```tsx filename="app/layout.tsx"
+import { TourRegistryProvider } from '@trailguide/runtime'
+
+export default function RootLayout({ children }) {
+  return (
+    <TourRegistryProvider>
+      <AppShell>{children}</AppShell>
+    </TourRegistryProvider>
+  )
+}
+```
+
+### 2. Wire up the help button
+
+In your sidebar or navbar, call `useTourRegistry().startCurrentTour()`:
+
+```tsx filename="components/AppShell.tsx"
+import { useTourRegistry } from '@trailguide/runtime'
+
+export function AppShell({ children }) {
+  const { startCurrentTour } = useTourRegistry()
+
+  return (
+    <div>
+      <Sidebar>
+        <button onClick={startCurrentTour}>
+          Quick Start Tour
+        </button>
+      </Sidebar>
+      <main>{children}</main>
+    </div>
+  )
+}
+```
+
+### 3. Register each page's tour
+
+In each page component, replace `useTrailManager` with `useRegisterTour`. It does everything `useTrailManager` does, plus registers the tour with the nearest `TourRegistryProvider`:
+
+```tsx filename="app/dashboard/page.tsx"
+import { useRegisterTour, Trailguide } from '@trailguide/runtime'
+import { dashboardTour } from './tours'
+
+export default function DashboardPage() {
+  const { isActive, dismiss } = useRegisterTour(dashboardTour, {
+    once: true,
+  })
+
+  return (
+    <>
+      {/* page content */}
+      {isActive && <Trailguide trail={dashboardTour} onComplete={dismiss} onSkip={dismiss} />}
+    </>
+  )
+}
+```
+
+Now when the help button is clicked, it calls the registered `show()` function of whatever page is currently mounted — dashboard, settings, analytics, or any other page.
+
+---
+
+## How it works
+
+- `TourRegistryProvider` holds a ref to the current page's `show()` function.
+- When a page mounts, `useRegisterTour` registers its `show()` and returns a cleanup function.
+- When the page unmounts, the cleanup function deregisters it.
+- `startCurrentTour()` calls whatever is currently registered — always the active page's tour.
+
+Only one tour can be registered at a time, so clicking the help button always runs the right tour.
+
+---
+
+## Keyboard shortcut
+
+You can wire the tour to a keyboard shortcut in your layout alongside the button:
+
+```tsx
+import { useEffect } from 'react'
+import { useTourRegistry } from '@trailguide/runtime'
+
+export function AppShell({ children }) {
+  const { startCurrentTour } = useTourRegistry()
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === '?' && !e.metaKey && !e.ctrlKey) {
+        startCurrentTour()
+      }
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [startCurrentTour])
+
+  return <>{children}</>
+}
+```
+
+<Callout type="info">
+  `useRegisterTour` accepts the same options as `useTrailManager`, including `once`, `enabled`, `delay`, `resumable`, and all callbacks.
+</Callout>

@@ -1,6 +1,6 @@
 {
   "name": "@trailguide/runtime",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "React hooks and components for Trailguide product tours.",
   "type": "module",
   "main": "./dist/index.js",

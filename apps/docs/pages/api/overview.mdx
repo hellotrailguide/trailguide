@@ -1,0 +1,59 @@
+---
+title: API Overview
+---
+
+import { Cards, Card } from 'nextra/components'
+
+# API Reference
+
+## `@trailguide/core`
+
+Framework-agnostic. No React required.
+
+| Export | Description |
+|---|---|
+| `Trailguide` | Core class — create an instance and call `.start()`, `.next()`, `.prev()`, `.skip()`, `.stop()` |
+| `start(trail, options)` | Static helper that creates and starts a singleton instance |
+| `stop()` | Stop the singleton |
+| `next()` / `prev()` / `skip()` | Control the singleton |
+| `tourStorage` | localStorage utilities for tracking completion and progress |
+
+## `@trailguide/runtime`
+
+React components and hooks. Includes everything from `@trailguide/core`.
+
+| Export | Description |
+|---|---|
+| `<Trailguide>` | Render component — starts on mount, stops on unmount |
+| `useTrail` | Low-level hook — gives you `start`, `stop`, `next`, `prev`, `skip`, `goToStep` |
+| `useTrailManager` | High-level hook — `once`, `enabled`, `delay`, `resumable`, and all state |
+| `useRegisterTour` | Drop-in for `useTrailManager` that also wires into `TourRegistryProvider` |
+| `TourRegistryProvider` | Context provider for a layout-level help button |
+| `useTourRegistry` | Read `startCurrentTour` from the nearest `TourRegistryProvider` |
+| `tourStorage` | Re-exported from `@trailguide/core` |
+
+## Quick navigation
+
+<Cards>
+  <Card title="<Trailguide>" href="/api/trailguide-component" arrow>
+    React render component
+  </Card>
+  <Card title="useTrail" href="/api/use-trail" arrow>
+    Low-level React hook
+  </Card>
+  <Card title="useTrailManager" href="/api/use-trail-manager" arrow>
+    High-level hook with first-visit logic
+  </Card>
+  <Card title="useRegisterTour" href="/api/use-register-tour" arrow>
+    useTrailManager + help menu wiring
+  </Card>
+  <Card title="TourRegistryProvider" href="/api/tour-registry" arrow>
+    Layout-level tour context
+  </Card>
+  <Card title="tourStorage" href="/api/tour-storage" arrow>
+    localStorage persistence utilities
+  </Card>
+  <Card title="Types" href="/api/types" arrow>
+    Trail, Step, TrailguideOptions, and more
+  </Card>
+</Cards>

@@ -1,0 +1,90 @@
+---
+title: tourStorage
+---
+
+# `tourStorage`
+
+**Package:** `@trailguide/core` (also re-exported from `@trailguide/runtime`)
+
+Utilities for persisting tour state in `localStorage`. Used internally by `useTrailManager` and available for custom integrations.
+
+## Import
+
+```ts
+import { tourStorage } from '@trailguide/core'
+// or:
+import { tourStorage } from '@trailguide/runtime'
+```
+
+## API
+
+### `hasCompleted(trailId)`
+
+Returns `true` if the tour has been completed or skipped.
+
+```ts
+tourStorage.hasCompleted('onboarding') // → boolean
+```
+
+### `markCompleted(trailId)`
+
+Marks the tour as completed so it won't auto-show again. Called automatically by `useTrailManager` when `once: true`.
+
+```ts
+tourStorage.markCompleted('onboarding')
+```
+
+### `getProgress(trailId)`
+
+Returns the last step index the user reached, or `null` if no progress has been saved.
+
+```ts
+const step = tourStorage.getProgress('onboarding') // → number | null
+```
+
+### `saveProgress(trailId, stepIndex)`
+
+Saves the user's current step. Called automatically by `useTrailManager` on each `onStepChange` when `resumable: true`.
+
+```ts
+tourStorage.saveProgress('onboarding', 3)
+```
+
+### `clearProgress(trailId)`
+
+Clears the saved step index without touching the completion flag.
+
+```ts
+tourStorage.clearProgress('onboarding')
+```
+
+### `reset(trailId)`
+
+Clears both the completion flag and progress for a single tour. The next page visit will auto-show the tour again (if `once: true`).
+
+```ts
+tourStorage.reset('onboarding')
+```
+
+### `resetAll()`
+
+Clears all Trailguide keys from `localStorage` (any key starting with `trailguide:`).
+
+```ts
+tourStorage.resetAll()
+```
+
+## Storage keys
+
+All keys use the prefix `trailguide:`:
+
+| Key | Purpose |
+|---|---|
+| `trailguide:completed:{id}` | Completion flag (`'true'`) |
+| `trailguide:progress:{id}` | Step index (stringified number) |
+
+When using `useTrailManager`, the `id` is the `storageKey` option (default: `trailguide:managed:{trail.id}`).
+
+## SSR safety
+
+`tourStorage` safely no-ops on the server. All reads return `null` / `false` and all writes are ignored when `window` is not available.

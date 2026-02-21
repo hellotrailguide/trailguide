@@ -1,0 +1,115 @@
+---
+title: Writing Tours
+---
+
+import { Callout } from 'nextra/components'
+
+# Writing Tours
+
+A Trailguide tour is a plain TypeScript/JSON object. It lives in your codebase, ships with your deployments, and gets reviewed in pull requests.
+
+## Tour structure
+
+```ts
+import type { Trail } from '@trailguide/core'
+
+const tour: Trail = {
+  id: 'onboarding',        // unique identifier
+  title: 'Get started',    // used in analytics
+  version: '1.0.0',        // bump when steps change significantly
+  steps: [/* ... */],
+}
+```
+
+### `id`
+
+A stable unique string. Used as the key for analytics events and for `tourStorage` to track completion. If you change `id` all users will see the tour again.
+
+### `version`
+
+Not enforced by the SDK — use it as a convention to track which version of a tour a user has seen, e.g. by storing it alongside the completion flag in your own backend.
+
+---
+
+## Step structure
+
+```ts
+import type { Step } from '@trailguide/core'
+
+const step: Step = {
+  id: 'step-dashboard',             // unique within the tour
+  target: '[data-tour="dashboard"]', // CSS selector for the highlighted element
+  placement: 'bottom',               // tooltip position
+  title: 'Your dashboard',           // tooltip heading
+  content: 'All your work in one place.', // tooltip body text
+  optional: false,                   // if true, silently skip if target not found
+}
+```
+
+### `placement`
+
+Controls which side of the target the tooltip appears on. Trailguide uses `@floating-ui/dom` under the hood, so it will `flip` and `shift` automatically to stay in viewport.
+
+| Value | Description |
+|---|---|
+| `'top'` | Above the target |
+| `'bottom'` | Below the target |
+| `'left'` | Left of the target |
+| `'right'` | Right of the target |
+
+### `optional`
+
+When `optional: true`, if the target element is not found or is not visible, the step is silently skipped instead of showing an error tooltip. Useful for steps that point to elements that only appear in certain states.
+
+```ts
+{
+  id: 'step-pro-badge',
+  target: '[data-tour="pro-badge"]',
+  placement: 'left',
+  title: 'Pro features',
+  content: 'Upgrade to unlock these features.',
+  optional: true, // skipped for free users who don't have the badge
+}
+```
+
+---
+
+## Organizing tours
+
+For small apps, a single `tours.ts` file works fine. For larger apps, consider co-locating tours with the pages they document:
+
+```
+app/
+  dashboard/
+    page.tsx
+    page.tour.ts   ← tour for this page
+  settings/
+    page.tsx
+    page.tour.ts
+```
+
+Or a shared `lib/tours/` directory:
+
+```
+lib/
+  tours/
+    onboarding.ts
+    settings.ts
+    analytics.ts
+    index.ts        ← re-exports all tours
+```
+
+---
+
+## Versioning strategy
+
+Tours are just data. Treat them like any other content in your codebase:
+
+- Commit tour changes in the same PR as the feature they document
+- Review tour copy in code review alongside the UI changes
+- Use the `version` field to communicate breaking changes
+- Export tour JSON for use with [Trailguide Pro's visual editor](https://app.gettrailguide.com) (coming soon)
+
+<Callout type="info">
+  **Tip:** Keep step `id` values stable. They are used as the primary key in analytics reports — changing an `id` breaks historical step-level metrics.
+</Callout>

@@ -1,0 +1,56 @@
+---
+title: useRegisterTour
+---
+
+# `useRegisterTour`
+
+**Package:** `@trailguide/runtime`
+
+A drop-in replacement for `useTrailManager` that also registers the current page's tour with the nearest `TourRegistryProvider`. Use this on every page so a single help button in your layout can always trigger the right tour.
+
+## Usage
+
+```tsx
+import { useRegisterTour, Trailguide } from '@trailguide/runtime'
+import { settingsTour } from './tours'
+
+export default function SettingsPage() {
+  const { isActive, dismiss } = useRegisterTour(settingsTour, {
+    once: true,
+    enabled: !isLoading,
+  })
+
+  return (
+    <>
+      {/* page content */}
+      {isActive && (
+        <Trailguide
+          trail={settingsTour}
+          onComplete={dismiss}
+          onSkip={dismiss}
+        />
+      )}
+    </>
+  )
+}
+```
+
+## Options
+
+Identical to [`useTrailManager`](/api/use-trail-manager) — see that page for the full options reference.
+
+## Return value
+
+Identical to [`useTrailManager`](/api/use-trail-manager) — see that page for the full return value reference.
+
+## How registration works
+
+On mount, `useRegisterTour` calls `registerTour(show)` from the nearest `TourRegistryProvider`. This stores a reference to the current page's `show()` function. When the page unmounts, the cleanup function deregisters it.
+
+Clicking the help button calls `startCurrentTour()`, which invokes whatever is currently registered — always the active page's tour.
+
+## Requirements
+
+`useRegisterTour` must be used inside a `TourRegistryProvider`. If no provider is found, the registration is a no-op (the hook still manages the tour normally).
+
+See [Help Menu Integration](/guides/help-menu) for the full setup guide.

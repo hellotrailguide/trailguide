@@ -1,0 +1,133 @@
+---
+title: Quick Start
+---
+
+import { Callout, Steps } from 'nextra/components'
+
+# Quick Start
+
+Get a tour running in five minutes.
+
+<Steps>
+
+### Add data-tour attributes to your UI
+
+Mark the elements you want to highlight using `data-tour` attributes (or any CSS selector you prefer):
+
+```html
+<nav data-tour="nav">...</nav>
+<button data-tour="new-button">New Project</button>
+<section data-tour="dashboard">...</section>
+```
+
+### Define your tour
+
+A tour is plain JSON — an object with an `id`, `title`, `version`, and an array of `steps`:
+
+```ts filename="tours/onboarding.ts"
+import type { Trail } from '@trailguide/runtime'
+
+export const onboardingTour: Trail = {
+  id: 'onboarding',
+  title: 'Get started',
+  version: '1.0.0',
+  steps: [
+    {
+      id: 'step-nav',
+      target: '[data-tour="nav"]',
+      placement: 'bottom',
+      title: 'Navigate your workspace',
+      content: 'Use the sidebar to switch between projects, settings, and your team.',
+    },
+    {
+      id: 'step-new',
+      target: '[data-tour="new-button"]',
+      placement: 'bottom',
+      title: 'Create something new',
+      content: 'Click here to start a new project.',
+    },
+    {
+      id: 'step-dashboard',
+      target: '[data-tour="dashboard"]',
+      placement: 'top',
+      title: 'Your dashboard',
+      content: 'Everything you have worked on, right here.',
+    },
+  ],
+}
+```
+
+### Render the tour in React
+
+The simplest way to show a tour in React is the `<Trailguide>` component. It renders when mounted and cleans up when unmounted:
+
+```tsx filename="app/page.tsx"
+import { useState } from 'react'
+import { Trailguide } from '@trailguide/runtime'
+import { onboardingTour } from './tours/onboarding'
+
+export default function Page() {
+  const [show, setShow] = useState(false)
+
+  return (
+    <div>
+      <button onClick={() => setShow(true)}>Start Tour</button>
+
+      {show && (
+        <Trailguide
+          trail={onboardingTour}
+          onComplete={() => setShow(false)}
+          onSkip={() => setShow(false)}
+        />
+      )}
+    </div>
+  )
+}
+```
+
+### Auto-show on first visit
+
+Use `useTrailManager` to show the tour automatically the first time a user visits and never again:
+
+```tsx filename="app/dashboard/page.tsx"
+import { useTrailManager } from '@trailguide/runtime'
+import { onboardingTour } from './tours/onboarding'
+
+export default function DashboardPage() {
+  const { isActive, dismiss } = useTrailManager(onboardingTour, {
+    once: true,
+  })
+
+  return (
+    <div>
+      {/* your page */}
+      {isActive && (
+        <Trailguide
+          trail={onboardingTour}
+          onComplete={dismiss}
+          onSkip={dismiss}
+        />
+      )}
+    </div>
+  )
+}
+```
+
+</Steps>
+
+## Keyboard navigation
+
+Trailguide binds keyboard shortcuts automatically when a tour is active:
+
+| Key | Action |
+|---|---|
+| `→` / `Enter` | Next step |
+| `←` | Previous step |
+| `Esc` | Skip / close tour |
+
+## Next steps
+
+- [Writing tours](/guides/writing-tours) — step options, optional steps, and tour structure
+- [CSS selectors](/guides/selectors) — choosing robust targets
+- [First-visit logic](/guides/first-visit) — `once`, `enabled`, and `delay` options
+- [`useTrailManager` reference](/api/use-trail-manager) — full API
