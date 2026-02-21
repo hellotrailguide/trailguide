@@ -1,0 +1,91 @@
+---
+title: Loading States
+---
+
+import { Callout } from 'nextra/components'
+
+# Loading States
+
+Tour targets must exist in the DOM when the tour runs. If your page fetches data before rendering key elements, you need to defer the tour until loading is complete.
+
+## The `enabled` option
+
+`useTrailManager` accepts an `enabled` option. The tour's auto-show timer only starts once `enabled` becomes `true`:
+
+```tsx
+import { useTrailManager, Trailguide } from '@trailguide/runtime'
+import { analyticsTour } from './tours'
+
+export default function AnalyticsPage() {
+  const { data, isLoading } = useAnalyticsData()
+
+  const { isActive, dismiss } = useTrailManager(analyticsTour, {
+    once: true,
+    enabled: !isLoading,  // don't show until data is loaded
+  })
+
+  if (isLoading) return <Spinner />
+
+  return (
+    <>
+      <AnalyticsDashboard data={data} />
+      {isActive && <Trailguide trail={analyticsTour} onComplete={dismiss} onSkip={dismiss} />}
+    </>
+  )
+}
+```
+
+When the component first mounts, `enabled` is `false` (because `isLoading` is `true`). Once data arrives and `isLoading` flips to `false`, `enabled` becomes `true` and the auto-show timer starts.
+
+<Callout>
+  The `enabled` flag only affects auto-show. If the user clicks a help button to manually trigger the tour, `enabled` is ignored.
+</Callout>
+
+---
+
+## Multiple loading conditions
+
+You can combine multiple loading conditions:
+
+```tsx
+const { isActive, dismiss } = useTrailManager(settingsTour, {
+  once: true,
+  enabled: !isLoadingUser && !subscription.isLoading,
+})
+```
+
+---
+
+## Skeleton screens
+
+If you use skeleton placeholders during loading, the skeleton elements are in the DOM but are not the real targets. Set `enabled` based on whether the actual content is loaded, not just whether something is rendered:
+
+```tsx
+const { isActive, dismiss } = useTrailManager(tour, {
+  once: true,
+  enabled: data != null,  // not just !isLoading
+})
+```
+
+---
+
+## Async routing
+
+In apps that use client-side routing with code splitting, a page component may mount before its async data is available. The `enabled` pattern handles this cleanly — the tour waits however long the data takes, then fires `delay` ms after `enabled` transitions to `true`.
+
+---
+
+## Optional steps for conditionally rendered elements
+
+If only some steps depend on loaded data, use `optional: true` on those steps instead of gating the entire tour:
+
+```ts
+{
+  id: 'step-subscription',
+  target: '[data-tour="subscription-card"]',
+  placement: 'top',
+  title: 'Your subscription',
+  content: 'Manage billing and your current plan here.',
+  optional: true, // skipped if the card isn't rendered yet
+}
+```

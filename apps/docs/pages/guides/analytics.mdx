@@ -1,0 +1,119 @@
+---
+title: Analytics (Pro)
+---
+
+import { Callout } from 'nextra/components'
+
+# Analytics
+
+<Callout type="info">
+  Analytics require a **Trailguide Pro** account. [Start a free 14-day trial](https://app.gettrailguide.com) — no credit card required.
+</Callout>
+
+Trailguide Pro tracks tour events — starts, completions, skips, step views, and abandoned tours — and surfaces them in a dashboard with drop-off charts, completion rates, and step-level metrics.
+
+## Enable analytics
+
+Pass an `analytics` config to any hook or component:
+
+```tsx
+import { useTrailManager, Trailguide } from '@trailguide/runtime'
+import { onboardingTour } from './tours'
+
+const ANALYTICS: AnalyticsConfig = {
+  endpoint: 'https://app.gettrailguide.com/api/analytics',
+  userId: 'your-trailguide-user-id',  // from app.gettrailguide.com
+}
+
+export default function Page() {
+  const { isActive, dismiss } = useTrailManager(onboardingTour, {
+    once: true,
+    analytics: ANALYTICS,
+  })
+
+  return (
+    <>
+      {isActive && (
+        <Trailguide
+          trail={onboardingTour}
+          onComplete={dismiss}
+          onSkip={dismiss}
+          analytics={ANALYTICS}
+        />
+      )}
+    </>
+  )
+}
+```
+
+## Events tracked
+
+| Event | When it fires |
+|---|---|
+| `trail_started` | User starts the tour |
+| `step_viewed` | User sees a step |
+| `step_completed` | User advances past a step |
+| `trail_completed` | User finishes the last step |
+| `trail_skipped` | User clicks the × button |
+| `trail_abandoned` | Tour is stopped programmatically (e.g. navigation) |
+
+## Debug mode
+
+Set `debug: true` to log all events to the browser console:
+
+```ts
+const ANALYTICS: AnalyticsConfig = {
+  endpoint: 'https://app.gettrailguide.com/api/analytics',
+  userId: 'your-user-id',
+  debug: true,
+}
+```
+
+You will see entries like:
+
+```
+[Trailguide Analytics] trail_started { trail_id: "onboarding", step_id: "step-1", step_index: 0 }
+[Trailguide Analytics] step_viewed { trail_id: "onboarding", step_id: "step-1", step_index: 0 }
+```
+
+## Override trail ID
+
+If you want analytics to use a different ID than `trail.id` (e.g. to merge events from multiple tour versions), pass `trailId`:
+
+```ts
+const ANALYTICS: AnalyticsConfig = {
+  endpoint: 'https://app.gettrailguide.com/api/analytics',
+  userId: 'your-user-id',
+  trailId: 'onboarding-canonical', // override trail.id for analytics
+}
+```
+
+## Vanilla JS
+
+Analytics work identically with the core `Trailguide` class:
+
+```ts
+import { Trailguide } from '@trailguide/core'
+
+const instance = new Trailguide({
+  analytics: {
+    endpoint: 'https://app.gettrailguide.com/api/analytics',
+    userId: 'your-user-id',
+  },
+})
+
+instance.start(myTour)
+```
+
+Or with the static API:
+
+```ts
+import { start } from '@trailguide/core'
+
+start(myTour, {
+  analytics: {
+    endpoint: 'https://app.gettrailguide.com/api/analytics',
+    userId: 'your-user-id',
+  },
+})
+```

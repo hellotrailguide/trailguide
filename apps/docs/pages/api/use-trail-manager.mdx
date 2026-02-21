@@ -1,0 +1,75 @@
+---
+title: useTrailManager
+---
+
+# `useTrailManager`
+
+**Package:** `@trailguide/runtime`
+
+The high-level hook for managing a tour's full lifecycle — first-visit auto-show, completion tracking, loading state gates, resume support, and all callbacks.
+
+## Usage
+
+```tsx
+import { useTrailManager, Trailguide } from '@trailguide/runtime'
+import { onboardingTour } from './tours'
+
+export default function DashboardPage() {
+  const { isActive, dismiss } = useTrailManager(onboardingTour, {
+    once: true,
+    delay: 600,
+  })
+
+  return (
+    <>
+      {/* page content */}
+      {isActive && (
+        <Trailguide
+          trail={onboardingTour}
+          onComplete={dismiss}
+          onSkip={dismiss}
+        />
+      )}
+    </>
+  )
+}
+```
+
+## Options
+
+| Option | Type | Default | Description |
+|---|---|---|---|
+| `once` | `boolean` | `false` | Auto-show on first visit only. Marks the tour as completed on dismiss so it never auto-shows again. |
+| `storageKey` | `string` | `'trailguide:managed:{trail.id}'` | localStorage key for completion and progress. Override to re-show after major redesigns. |
+| `enabled` | `boolean` | `true` | Gate auto-show on this condition. Useful for deferring until data is loaded. |
+| `delay` | `number` | `500` | Milliseconds to wait after mount (or `enabled` turning `true`) before auto-showing. |
+| `resumable` | `boolean` | `false` | Save step progress on each transition and resume from the last step. |
+| `onComplete` | `() => void` | — | Called when the user finishes the last step. |
+| `onSkip` | `() => void` | — | Called when the user clicks the × button. |
+| `onAbandoned` | `() => void` | — | Called when `stop()` is called while the tour is active (e.g. navigation). |
+| `onStepChange` | `(step, index) => void` | — | Called on every step transition. |
+| `onError` | `(step, error) => void` | — | Called when a step's target is not found or not visible. |
+| `analytics` | `AnalyticsConfig` | — | Enable Pro analytics. |
+
+## Return value
+
+| Property | Type | Description |
+|---|---|---|
+| `isActive` | `boolean` | Whether the tour is currently running. |
+| `currentStep` | `Step \| null` | The step currently being shown, or `null` if inactive. |
+| `currentStepIndex` | `number` | 0-based index of the current step. |
+| `totalSteps` | `number` | Total number of steps in the tour. |
+| `show` | `() => void` | Show the tour (resumes from saved progress if `resumable: true`). |
+| `dismiss` | `() => void` | Hide the tour. If `once: true`, also marks it as completed. |
+| `reset` | `() => void` | Clear all saved state so the tour will auto-show again. |
+| `next` | `() => void` | Advance to the next step. |
+| `prev` | `() => void` | Go back to the previous step. |
+| `skip` | `() => void` | Skip the tour. |
+| `goToStep` | `(index: number) => void` | Jump to a specific step. |
+
+## Notes
+
+- Callbacks are stored in refs internally, so you can pass new function references each render without restarting the tour.
+- The auto-show timer is cleared and restarted whenever `enabled` or `delay` changes.
+- If `once: true` and `tourStorage.hasCompleted(storageKey)` is `true` on mount, the tour never auto-shows (but `show()` still works).
+- For help menu integration, use [`useRegisterTour`](/api/use-register-tour) instead — it's a drop-in replacement that also registers with `TourRegistryProvider`.

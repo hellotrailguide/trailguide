@@ -8,6 +8,9 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from '@/components/ui/badge'
 import { createClient } from '@/lib/supabase/client'
 import { useSubscription } from '@/lib/hooks/use-subscription'
+import { usePageTour } from '@/lib/hooks/use-page-tour'
+import { PageTour } from '@/components/help'
+import { SETTINGS_TOUR, TOUR_KEYS } from '@/components/help/tours'
 
 interface UserInfo {
   email: string | null
@@ -21,6 +24,9 @@ function SettingsContent() {
   const [user, setUser] = useState<UserInfo | null>(null)
   const [isLoadingUser, setIsLoadingUser] = useState(true)
   const [isCheckingOut, setIsCheckingOut] = useState(false)
+  const { showTour, complete } = usePageTour(TOUR_KEYS.settings, {
+    ready: !isLoadingUser && !subscription.isLoading,
+  })
 
   const success = searchParams?.get('success')
   const canceled = searchParams?.get('canceled')
@@ -123,7 +129,7 @@ function SettingsContent() {
 
         <div className="space-y-6">
           {/* Account */}
-          <Card>
+          <Card data-tour-target="settings-account">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <User className="h-5 w-5" />
@@ -154,7 +160,7 @@ function SettingsContent() {
           </Card>
 
           {/* Subscription */}
-          <Card>
+          <Card data-tour-target="settings-subscription">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <CreditCard className="h-5 w-5" />
@@ -274,6 +280,8 @@ function SettingsContent() {
           </Card>
         </div>
       </div>
+
+      <PageTour trail={SETTINGS_TOUR} show={showTour} onDismiss={complete} />
     </div>
   )
 }

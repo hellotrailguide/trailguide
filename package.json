@@ -14,6 +14,8 @@
     "build:editor": "pnpm --filter @trailguide/editor build",
     "build:showcase": "pnpm --filter @trailguide/showcase build",
     "dev:showcase": "pnpm --filter @trailguide/showcase dev",
+    "dev:docs": "pnpm --filter @trailguide/docs dev",
+    "build:docs": "pnpm --filter @trailguide/docs build",
     "typecheck": "pnpm -r typecheck",
     "dev:demo": "pnpm --filter @trailguide/editor dev",
     "seed:analytics": "pnpm --filter @trailguide/editor seed:analytics",

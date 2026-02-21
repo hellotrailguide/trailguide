@@ -1,0 +1,108 @@
+---
+title: First-Visit Logic
+---
+
+import { Callout } from 'nextra/components'
+
+# First-Visit Logic
+
+Most tours should only auto-show once — on the first time a user visits a page — and then be available on-demand via a help button. `useTrailManager` handles this for you.
+
+## Auto-show once
+
+Pass `once: true` to auto-show the tour on first mount and never again:
+
+```tsx
+import { useTrailManager, Trailguide } from '@trailguide/runtime'
+import { dashboardTour } from './tours'
+
+export default function DashboardPage() {
+  const { isActive, dismiss } = useTrailManager(dashboardTour, {
+    once: true,
+  })
+
+  return (
+    <>
+      {/* your page content */}
+      {isActive && <Trailguide trail={dashboardTour} onComplete={dismiss} onSkip={dismiss} />}
+    </>
+  )
+}
+```
+
+The first time this component mounts, the tour auto-shows after a 500ms delay. On completion or skip, `tourStorage.markCompleted(trail.id)` is called. On subsequent visits, `tourStorage.hasCompleted(trail.id)` returns `true` and the tour does not auto-show.
+
+The user can always re-trigger the tour manually — see [Help Menu Integration](/guides/help-menu).
+
+---
+
+## Customize the delay
+
+The `delay` option controls how long (in ms) to wait after mount before showing the tour. The default is `500`. This prevents the tour from firing before your page content is visible.
+
+```tsx
+useTrailManager(dashboardTour, {
+  once: true,
+  delay: 800, // wait 800ms after mount
+})
+```
+
+---
+
+## Custom storage key
+
+By default, `useTrailManager` uses `trailguide:managed:{trail.id}` as the localStorage key. Pass `storageKey` to override it:
+
+```tsx
+useTrailManager(dashboardTour, {
+  once: true,
+  storageKey: 'myapp:tours:dashboard-v2',
+})
+```
+
+This is useful when you want to re-show the tour after a major redesign — just change the key.
+
+---
+
+## Gate on loading state
+
+Use `enabled` to defer the auto-show until your page data has loaded. The tour will not show until `enabled` is `true`:
+
+```tsx
+const { data, isLoading } = useMyData()
+
+useTrailManager(dashboardTour, {
+  once: true,
+  enabled: !isLoading,  // wait for data before showing
+})
+```
+
+The `enabled` flag only affects auto-show. The help button can always trigger the tour regardless of `enabled`.
+
+See [Loading States](/guides/loading-states) for the full pattern.
+
+---
+
+## Reset and re-show
+
+To programmatically clear a tour's completion state so it will auto-show again:
+
+```tsx
+const { reset } = useTrailManager(dashboardTour, { once: true })
+
+// Clear the "seen" flag — next page visit will auto-show
+<button onClick={reset}>Reset tour</button>
+```
+
+Or use `tourStorage` directly:
+
+```ts
+import { tourStorage } from '@trailguide/core'
+
+tourStorage.reset('onboarding')  // clears completion + progress
+tourStorage.resetAll()           // clears all Trailguide state
+```
+
+<Callout type="info">
+  `tourStorage` uses `localStorage`. State is per-browser, per-origin. For cross-device persistence, track completion in your own backend and pass `enabled={!user.hasSeenTour}`.
+</Callout>

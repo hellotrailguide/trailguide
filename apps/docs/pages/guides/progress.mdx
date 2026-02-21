@@ -1,0 +1,102 @@
+---
+title: Progress & Resuming
+---
+
+import { Callout } from 'nextra/components'
+
+# Progress & Resuming
+
+For long tours, users may navigate away mid-tour and want to resume where they left off. Trailguide supports this with the `resumable` option and the `tourStorage` API.
+
+## Enable resuming
+
+Pass `resumable: true` to `useTrailManager` or `useRegisterTour`:
+
+```tsx
+const { isActive, dismiss } = useTrailManager(longTour, {
+  once: true,
+  resumable: true,
+})
+```
+
+When `resumable` is `true`:
+
+- `onStepChange` saves the current step index to `localStorage` via `tourStorage.saveProgress(key, index)`
+- When the tour is shown again (e.g. the user returns and clicks the help button), it resumes from the saved step
+- On completion or skip, the saved progress is cleared
+
+---
+
+## Manual progress control
+
+You can read and write progress directly using `tourStorage`:
+
+```ts
+import { tourStorage } from '@trailguide/core'
+
+// Get the step the user last reached (or null if no progress)
+const savedStep = tourStorage.getProgress('onboarding')
+
+// Save progress manually (e.g. in your own onStepChange handler)
+tourStorage.saveProgress('onboarding', 3)
+
+// Clear progress without clearing completion
+tourStorage.clearProgress('onboarding')
+```
+
+---
+
+## Navigate to a specific step
+
+Use `goToStep(index)` to jump to any step programmatically:
+
+```tsx
+const { show, goToStep } = useTrailManager(tour, { once: true })
+
+// Start at step 3 (0-indexed)
+const handleResume = () => {
+  show()
+  goToStep(3)
+}
+```
+
+`useTrailManager` does this automatically when `resumable: true`.
+
+---
+
+## Storage keys
+
+`tourStorage` uses `localStorage` with the prefix `trailguide:`. Keys used:
+
+| Key pattern | Purpose |
+|---|---|
+| `trailguide:completed:{key}` | Whether the tour has been completed/skipped |
+| `trailguide:progress:{key}` | Last step index reached |
+
+The default `key` used by `useTrailManager` is `trailguide:managed:{trail.id}`. Pass a custom `storageKey` to override:
+
+```tsx
+useTrailManager(tour, {
+  once: true,
+  resumable: true,
+  storageKey: 'myapp:tours:onboarding-v2',
+})
+```
+
+---
+
+## Reset everything
+
+```ts
+import { tourStorage } from '@trailguide/core'
+
+// Reset a single tour (clears completion + progress)
+tourStorage.reset('onboarding')
+
+// Reset all Trailguide state from localStorage
+tourStorage.resetAll()
+```
+
+<Callout>
+  `tourStorage` is localStorage-only. State is per-browser and not shared across devices. If you need cross-device progress, track it in your own backend and pass the starting index via `goToStep()`.
+</Callout>

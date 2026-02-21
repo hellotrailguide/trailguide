@@ -5,7 +5,8 @@ export type AnalyticsEventType =
   | 'step_viewed'
   | 'step_completed'
   | 'trail_completed'
-  | 'trail_skipped';
+  | 'trail_skipped'
+  | 'trail_abandoned';
 
 export interface AnalyticsEvent {
   event_type: AnalyticsEventType;

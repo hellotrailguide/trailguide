@@ -1,0 +1,84 @@
+---
+title: Installation
+---
+
+# Installation
+
+## Requirements
+
+- Node.js 16+
+- For React integration: React 17+
+
+## Install
+
+import { Tabs, Tab } from 'nextra/components'
+
+<Tabs items={['npm', 'pnpm', 'yarn', 'bun']}>
+  <Tab>
+```bash
+# Vanilla JS / any framework
+npm install @trailguide/core
+
+# React (includes @trailguide/core)
+npm install @trailguide/runtime
+```
+  </Tab>
+  <Tab>
+```bash
+# Vanilla JS / any framework
+pnpm add @trailguide/core
+
+# React (includes @trailguide/core)
+pnpm add @trailguide/runtime
+```
+  </Tab>
+  <Tab>
+```bash
+# Vanilla JS / any framework
+yarn add @trailguide/core
+
+# React (includes @trailguide/core)
+yarn add @trailguide/runtime
+```
+  </Tab>
+  <Tab>
+```bash
+# Vanilla JS / any framework
+bun add @trailguide/core
+
+# React (includes @trailguide/core)
+bun add @trailguide/runtime
+```
+  </Tab>
+</Tabs>
+
+## Import styles
+
+Trailguide ships a single stylesheet that must be imported once, typically at your app's entry point:
+
+```ts
+import '@trailguide/core/dist/style.css'
+```
+
+In a Next.js app, add it to `app/layout.tsx` (App Router) or `pages/_app.tsx` (Pages Router):
+
+```tsx filename="app/layout.tsx"
+import '@trailguide/core/dist/style.css'
+
+export default function RootLayout({ children }) {
+  return (
+    <html>
+      <body>{children}</body>
+    </html>
+  )
+}
+```
+
+## Which package do I need?
+
+| Package | Use when |
+|---|---|
+| `@trailguide/core` | Vanilla JS, Vue, Angular, Svelte, or any non-React framework |
+| `@trailguide/runtime` | React apps — includes the `<Trailguide>` component, `useTrail`, `useTrailManager`, and `useRegisterTour` |
+
+`@trailguide/runtime` depends on `@trailguide/core`, so you only need to install one.

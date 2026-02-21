@@ -19,6 +19,9 @@ export class Trailguide {
   private stepCleanupFns: (() => void)[] = [];
   private instanceId = `trailguide-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 
+  // Bug fix: cancel pending step transition timers to prevent stale callbacks
+  private stepTimerId: ReturnType<typeof setTimeout> | null = null;
+
   constructor(options: TrailguideOptions = {}) {
     this.options = options;
   }
@@ -34,14 +37,19 @@ export class Trailguide {
   }
 
   stop(): void {
-    this.isActive = false;
-    this.cleanup();
+    if (this.isActive) {
+      this.emitAnalytics('trail_abandoned');
+      this.isActive = false;
+      this.cleanup();
+      this.options.onAbandoned?.();
+    } else {
+      this.cleanup();
+    }
   }
 
   next(): void {
     if (!this.trail || !this.isActive) return;
 
-    // Emit step_completed before advancing
     this.emitAnalytics('step_completed');
 
     if (this.currentStepIndex < this.trail.steps.length - 1) {
@@ -84,11 +92,9 @@ export class Trailguide {
   }
 
   private createOverlay(): void {
-    // Main overlay container
     this.overlay = createElement('div', 'trailguide-overlay');
     document.body.appendChild(this.overlay);
 
-    // Spotlight with SVG mask
     const spotlight = createElement('div', 'trailguide-spotlight', this.overlay);
     const maskId = `${this.instanceId}-mask`;
     spotlight.innerHTML = `
@@ -103,10 +109,8 @@ export class Trailguide {
       </svg>
     `;
 
-    // Highlight border
     createElement('div', 'trailguide-highlight', this.overlay);
 
-    // Tooltip
     this.tooltip = createElement('div', 'trailguide-tooltip');
     this.tooltip.innerHTML = `
       <div class="trailguide-tooltip-content">
@@ -129,7 +133,6 @@ export class Trailguide {
 
     this.arrowEl = this.tooltip.querySelector('.trailguide-tooltip-arrow');
 
-    // Bind tooltip buttons
     this.tooltip.querySelector('.trailguide-tooltip-close')?.addEventListener('click', () => this.skip());
     this.tooltip.querySelector('.trailguide-btn-prev')?.addEventListener('click', () => this.prev());
     this.tooltip.querySelector('.trailguide-btn-next')?.addEventListener('click', () => this.next());
@@ -137,6 +140,12 @@ export class Trailguide {
 
   private showStep(): void {
     if (!this.trail || !this.overlay || !this.tooltip) return;
+
+    // Cancel any pending transition from a previous showStep call
+    if (this.stepTimerId !== null) {
+      clearTimeout(this.stepTimerId);
+      this.stepTimerId = null;
+    }
 
     // Clean up per-step listeners from previous step
     this.stepCleanupFns.forEach(fn => fn());
@@ -152,24 +161,38 @@ export class Trailguide {
     const step = this.trail.steps[this.currentStepIndex];
     if (!step) return;
 
-    // Emit step_viewed event
     this.emitAnalytics('step_viewed');
 
-    // Find target element
     const target = findElement(step.target);
-    if (!target || !isElementVisible(target)) {
+    const notFound = !target;
+    const notVisible = target ? !isElementVisible(target) : false;
+
+    if (notFound || notVisible) {
+      // Optional steps are silently skipped
+      if (step.optional) {
+        if (this.currentStepIndex < this.trail.steps.length - 1) {
+          this.currentStepIndex++;
+          this.showStep();
+        } else {
+          this.complete();
+        }
+        return;
+      }
+
+      const errorType = notFound ? 'element_not_found' : 'element_not_visible';
+      this.options.onError?.(step, errorType);
       console.warn(`[Trailguide] Target not found or not visible: ${step.target}`);
       this.showErrorState(step);
       return;
     }
 
-    // Scroll to element
-    scrollToElement(target);
+    scrollToElement(target!);
 
-    // Small delay for scroll to complete
-    setTimeout(() => {
-      this.updateSpotlight(target);
-      this.updateTooltip(step, target);
+    this.stepTimerId = setTimeout(() => {
+      this.stepTimerId = null;
+      if (!this.isActive) return; // Guard: tour may have been stopped during the delay
+      this.updateSpotlight(target!);
+      this.updateTooltip(step, target!);
       this.options.onStepChange?.(step, this.currentStepIndex);
     }, 100);
   }
@@ -177,13 +200,11 @@ export class Trailguide {
   private showErrorState(step: Step): void {
     if (!this.tooltip || !this.trail) return;
 
-    // Hide spotlight when there's an error
     const spotlight = this.overlay?.querySelector<HTMLElement>('.trailguide-spotlight');
     const highlight = this.overlay?.querySelector<HTMLElement>('.trailguide-highlight');
     if (spotlight) spotlight.style.display = 'none';
     if (highlight) highlight.style.display = 'none';
 
-    // Update tooltip with error message
     const title = this.tooltip.querySelector('.trailguide-tooltip-title');
     const body = this.tooltip.querySelector('.trailguide-tooltip-body');
     const progress = this.tooltip.querySelector('.trailguide-tooltip-progress');
@@ -204,7 +225,6 @@ export class Trailguide {
     if (prevBtn) prevBtn.style.display = isFirst ? 'none' : 'block';
     if (nextBtn) nextBtn.textContent = isLast ? 'Close' : 'Skip Step';
 
-    // Center tooltip on screen
     this.tooltip.style.left = '50%';
     this.tooltip.style.top = '50%';
     this.tooltip.style.transform = 'translate(-50%, -50%)';
@@ -216,7 +236,6 @@ export class Trailguide {
     const rect = target.getBoundingClientRect();
     const padding = 8;
 
-    // Update SVG cutout
     const cutout = this.overlay.querySelector('.trailguide-cutout');
     if (cutout) {
       cutout.setAttribute('x', String(rect.left - padding));
@@ -225,7 +244,6 @@ export class Trailguide {
       cutout.setAttribute('height', String(rect.height + padding * 2));
     }
 
-    // Update highlight border
     const highlight = this.overlay.querySelector<HTMLElement>('.trailguide-highlight');
     if (highlight) {
       highlight.style.top = `${rect.top - padding}px`;
@@ -234,7 +252,6 @@ export class Trailguide {
       highlight.style.height = `${rect.height + padding * 2}px`;
     }
 
-    // Update on scroll/resize
     const updatePosition = () => {
       if (!this.isActive) return;
       const newRect = target.getBoundingClientRect();
@@ -266,7 +283,6 @@ export class Trailguide {
     const isFirst = this.currentStepIndex === 0;
     const isLast = this.currentStepIndex === this.trail.steps.length - 1;
 
-    // Update content
     const title = this.tooltip.querySelector('.trailguide-tooltip-title');
     const body = this.tooltip.querySelector('.trailguide-tooltip-body');
     const progress = this.tooltip.querySelector('.trailguide-tooltip-progress');
@@ -279,7 +295,6 @@ export class Trailguide {
     if (prevBtn) prevBtn.style.display = isFirst ? 'none' : 'block';
     if (nextBtn) nextBtn.textContent = isLast ? 'Finish' : 'Next';
 
-    // Position tooltip with Floating UI
     const { x, y, placement, middlewareData } = await computePosition(target, this.tooltip, {
       placement: step.placement as Placement,
       middleware: [
@@ -290,11 +305,13 @@ export class Trailguide {
       ],
     });
 
+    // Guard against tour being stopped or stepped away during async computation
+    if (!this.tooltip || !this.isActive) return;
+
     this.tooltip.style.left = `${x}px`;
     this.tooltip.style.top = `${y}px`;
     this.tooltip.dataset.placement = placement;
 
-    // Position arrow
     if (middlewareData.arrow && this.arrowEl) {
       const { x: arrowX, y: arrowY } = middlewareData.arrow;
       this.arrowEl.style.left = arrowX != null ? `${arrowX}px` : '';
@@ -325,6 +342,12 @@ export class Trailguide {
   }
 
   private cleanup(): void {
+    // Cancel any pending step transition
+    if (this.stepTimerId !== null) {
+      clearTimeout(this.stepTimerId);
+      this.stepTimerId = null;
+    }
+
     this.stepCleanupFns.forEach(fn => fn());
     this.stepCleanupFns = [];
     this.cleanupFns.forEach(fn => fn());
@@ -338,7 +361,7 @@ export class Trailguide {
   }
 
   private emitAnalytics(
-    eventType: 'trail_started' | 'step_viewed' | 'step_completed' | 'trail_completed' | 'trail_skipped'
+    eventType: 'trail_started' | 'step_viewed' | 'step_completed' | 'trail_completed' | 'trail_skipped' | 'trail_abandoned'
   ): void {
     if (!this.options.analytics || !this.trail) return;
 

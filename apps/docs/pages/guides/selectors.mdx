@@ -1,0 +1,95 @@
+---
+title: CSS Selectors
+---
+
+import { Callout } from 'nextra/components'
+
+# CSS Selectors
+
+Each step's `target` field is a CSS selector. Trailguide calls `document.querySelector(target)` at runtime to find and highlight the element.
+
+## Use data attributes
+
+The most maintainable approach is to add dedicated `data-tour` attributes to your elements. They are:
+
+- Stable across refactors (class names and IDs change; tour attributes rarely do)
+- Invisible to users and screen readers
+- Easy to search for in code review
+
+```html
+<button data-tour="new-project">New project</button>
+```
+
+```ts
+{
+  target: '[data-tour="new-project"]',
+  ...
+}
+```
+
+You can use any attribute name. Some teams prefer `data-tour-target`, `data-testid`, or a namespace like `data-trailguide`:
+
+```html
+<nav data-tour-target="sidebar">...</nav>
+```
+
+```ts
+{
+  target: '[data-tour-target="sidebar"]',
+  ...
+}
+```
+
+---
+
+## When to use other selectors
+
+Data attributes are ideal, but Trailguide accepts any valid CSS selector, so you can target elements you don't control:
+
+```ts
+// ID
+{ target: '#main-content' }
+
+// Semantic element
+{ target: 'header nav' }
+
+// Attribute
+{ target: '[aria-label="Settings"]' }
+
+// Combination
+{ target: 'aside [role="navigation"]' }
+```
+
+---
+
+## Handling missing elements
+
+If `document.querySelector(target)` returns `null` or the matched element is not visible, Trailguide will:
+
+1. Call `onError` with the step and error type (`'element_not_found'` or `'element_not_visible'`)
+2. Show an error tooltip centered in the viewport with the selector highlighted
+
+To silently skip the step instead, mark it `optional: true`:
+
+```ts
+{
+  id: 'step-upgrade-banner',
+  target: '[data-tour="upgrade-banner"]',
+  placement: 'bottom',
+  title: 'Upgrade to Pro',
+  content: 'Unlock analytics and the visual editor.',
+  optional: true, // skipped if the banner is not rendered
+}
+```
+
+<Callout type="warning">
+  Avoid targeting elements by generated class names like `.css-1a2b3c`. These change with every build. Always prefer `data-tour` attributes for tour targets.
+</Callout>
+
+---
+
+## Visibility check
+
+Trailguide uses a conservative visibility check: an element is considered visible if it has a non-zero bounding rect and is not `display: none` or `visibility: hidden` anywhere in its ancestor chain. Elements with `opacity: 0` or behind other elements are considered visible.
+
+If your element is rendered but off-screen (e.g. in a hidden tab panel), the step will show the "element not visible" error. Use `optional: true` or gate the tour with `enabled` until the element is actually on screen.

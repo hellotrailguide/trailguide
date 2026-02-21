@@ -1,0 +1,30 @@
+<svg
+  width="180"
+  height="50"
+  viewBox="0 0 180 50"
+  xmlns="http://www.w3.org/2000/svg"
+  role="img"
+  aria-label="Trailguide logo"
+>
+  <text
+    x="0"
+    y="32"
+    font-family="Inter, system-ui, sans-serif"
+    font-size="28"
+    font-weight="600"
+    fill="#E5E7EB"
+    letter-spacing="-0.5"
+  >
+    Trailguide
+  </text>
+
+  <path
+    d="M2 42 C 40 39, 80 45, 120 42 S 160 41, 175 42"
+    fill="none"
+    stroke="#60A5FA"
+    stroke-width="2.5"
+    stroke-linecap="round"
+  />
+
+  <circle cx="175" cy="42" r="2.5" fill="#60A5FA" />
+</svg>
