@@ -34,19 +34,19 @@ export function HelpMenu({ onStartTour }: HelpMenuProps) {
       icon: Book,
       label: 'Documentation',
       description: 'Guides and API reference',
-      href: 'https://github.com/Brandenlanghals/trailguide#readme',
+      href: 'https://docs.gettrailguide.com',
     },
     {
       icon: Lightbulb,
       label: 'Tips & Best Practices',
       description: 'Create better tours',
-      href: 'https://github.com/Brandenlanghals/trailguide/blob/main/docs/TOUR_AUTHORING.md',
+      href: 'https://docs.gettrailguide.com/guides/writing-tours',
     },
     {
       icon: MessageCircle,
       label: 'Get Help',
-      description: 'Report issues or ask questions',
-      href: 'https://github.com/Brandenlanghals/trailguide/issues',
+      description: 'Email us at support@trailguide.com',
+      href: 'mailto:support@trailguide.com',
     },
   ]
 
