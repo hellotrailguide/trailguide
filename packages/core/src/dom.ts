@@ -21,11 +21,12 @@ export function isElementVisible(element: HTMLElement): boolean {
 }
 
 export function scrollToElement(element: HTMLElement): void {
-  element.scrollIntoView({
-    behavior: 'smooth',
-    block: 'center',
-    inline: 'center',
-  });
+  // Temporarily override CSS scroll-behavior (e.g. `html { scroll-behavior: smooth }`)
+  // with an inline style so the scroll is always instant. Inline styles win the cascade.
+  const html = document.documentElement;
+  html.style.scrollBehavior = 'auto';
+  element.scrollIntoView({ block: 'center', inline: 'nearest' });
+  requestAnimationFrame(() => { html.style.scrollBehavior = ''; });
 }
 
 export function escapeHtml(str: string): string {

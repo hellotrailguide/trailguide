@@ -10,14 +10,12 @@
     "build": "pnpm -r build",
     "build:core": "pnpm --filter @trailguide/core build",
     "build:runtime": "pnpm --filter @trailguide/runtime build",
-    "build:recorder": "pnpm --filter @trailguide/recorder build",
     "build:editor": "pnpm --filter @trailguide/editor build",
     "build:showcase": "pnpm --filter @trailguide/showcase build",
     "dev:showcase": "pnpm --filter @trailguide/showcase dev",
     "dev:docs": "pnpm --filter @trailguide/docs dev",
     "build:docs": "pnpm --filter @trailguide/docs build",
     "typecheck": "pnpm -r typecheck",
-    "dev:demo": "pnpm --filter @trailguide/editor dev",
     "seed:analytics": "pnpm --filter @trailguide/editor seed:analytics",
     "clean": "pnpm -r exec rm -rf dist node_modules",
     "test": "vitest run --workspace vitest.workspace.ts",
@@ -25,7 +23,6 @@
     "test:coverage": "vitest run --workspace vitest.workspace.ts --coverage",
     "test:core": "vitest run --project core",
     "test:runtime": "vitest run --project runtime",
-    "test:recorder": "vitest run --project recorder",
     "test:editor": "vitest run --project editor"
   },
   "devDependencies": {

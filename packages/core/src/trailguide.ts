@@ -111,7 +111,7 @@ export class Trailguide {
 
     createElement('div', 'trailguide-highlight', this.overlay);
 
-    this.tooltip = createElement('div', 'trailguide-tooltip');
+    this.tooltip = createElement('div', this.options.theme === 'dark' ? 'trailguide-tooltip dark' : 'trailguide-tooltip');
     this.tooltip.innerHTML = `
       <div class="trailguide-tooltip-content">
         <div class="trailguide-tooltip-header">
@@ -297,6 +297,7 @@ export class Trailguide {
 
     const { x, y, placement, middlewareData } = await computePosition(target, this.tooltip, {
       placement: step.placement as Placement,
+      strategy: 'fixed',
       middleware: [
         offset(12),
         flip(),
