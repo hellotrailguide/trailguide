@@ -3,9 +3,10 @@
 **Tutorials as code** — Git-native product tours for any web app.
 
 [![npm](https://img.shields.io/npm/v/@trailguide/core)](https://www.npmjs.com/package/@trailguide/core)
+[![npm downloads](https://img.shields.io/npm/dm/@trailguide/core)](https://www.npmjs.com/package/@trailguide/core)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-[Live Demo](https://app.gettrailguide.com/demo) · [Website](https://gettrailguide.com) · [Documentation](docs/)
+[Live Demo](https://app.gettrailguide.com/demo) · [Website](https://gettrailguide.com) · [Documentation](https://docs.gettrailguide.com)
 
 ---
 
@@ -19,6 +20,7 @@ Trailguide is different:
 - **No per-user pricing** — The runtime is free. Show tours to a million users without paying a cent.
 - **Git-native** — Review tour changes in PRs. Roll back mistakes. Branch for experiments.
 - **Framework-agnostic** — Works with React, Vue, Svelte, vanilla JS, or anything that runs in a browser.
+- **Keyboard navigation built in** — Arrow keys, Enter, Escape. Works out of the box.
 
 Your UI already knows how to teach itself. Trailguide just makes it easy.
 
@@ -311,9 +313,9 @@ Validation checks:
 
 | Package | Description |
 |---------|-------------|
-| [`@trailguide/core`](packages/core) | Vanilla JS runtime — works with any framework |
-| [`@trailguide/runtime`](packages/runtime) | React hooks and components |
-| [`@trailguide/recorder`](packages/recorder) | Capture steps by clicking elements |
+| [`@trailguide/core`](https://www.npmjs.com/package/@trailguide/core) | Vanilla JS runtime — works with any framework |
+| [`@trailguide/runtime`](https://www.npmjs.com/package/@trailguide/runtime) | React hooks and components |
+| [`@trailguide/recorder`](https://www.npmjs.com/package/@trailguide/recorder) | Capture steps by clicking elements |
 
 All packages are MIT licensed and free forever.
 
@@ -351,7 +353,7 @@ import { Trailguide, useTrail } from '@trailguide/runtime';
 const { next, prev, skip, goToStep, currentStep, isActive } = useTrail({ trail });
 ```
 
-See [docs/api-reference.md](docs/api-reference.md) for complete documentation.
+See [docs.gettrailguide.com](https://docs.gettrailguide.com) for complete documentation.
 
 ---
 
@@ -373,13 +375,13 @@ pnpm dev
 ## Roadmap
 
 ### Free & Open Source
-- [x] Core runtime (any framework)
-- [x] React wrapper
+- [x] Core runtime (works in React, Vue, Svelte, vanilla JS — any framework)
+- [x] React hooks and components (`@trailguide/runtime`)
 - [x] Recorder
 - [x] Trail validation
-- [ ] Vue wrapper
-- [ ] Svelte wrapper
 - [ ] Conditional steps
+- [ ] Vue convenience wrapper
+- [ ] Svelte convenience wrapper
 
 ### Pro
 - [x] Visual Editor (point-and-click, drag-and-drop, rich text, live preview)
@@ -424,7 +426,7 @@ For teams who want **speed, safety, and insights** — without changing how trai
 
 **The Pro Editor is optional.** Everything it produces is still just JSON files in your repo. No lock-in, ever.
 
-[Try Pro Free](https://app.gettrailguide.com) — 14 days of Pro, no credit card.
+[Try Pro Free](https://app.gettrailguide.com) — 14 days free, then $29/month. No credit card required to start.
 
 ---
 
