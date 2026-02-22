@@ -46,14 +46,15 @@ The optional [Pro Editor](#trailguide-pro) adds convenience features for teams �
 
 **Good fit:**
 - Dev teams who want onboarding without a SaaS dependency
+- Product managers who want to ship tours without waiting on engineering sprints
+- Customer success teams building walkthroughs for complex features
 - Products that ship behind firewalls or on-prem
 - OSS maintainers documenting complex UIs
 - Teams tired of per-seat pricing
-- Anyone who wants to version control their tours
 
 **Not a fit:**
-- No-code teams that never touch Git
-- Marketing-led tours managed by non-technical users
+- Teams with no engineering resources — the initial install requires a developer
+- Teams who need marketing to deploy tours with zero engineer review
 
 ---
 
@@ -400,7 +401,11 @@ pnpm dev
 
 For teams who want **speed, safety, and insights** — without changing how trails are stored or shipped.
 
+The workflow: a developer installs the runtime once. After that, product managers and customer success teams create and update tours in the visual editor — no code required. Every step is stored with a screenshot so your team can see exactly what changed when your UI evolves. Update copy, fix broken steps, check analytics, push to GitHub as a PR. Engineers review, merge, done.
+
 ### Visual Editor
+- **Screenshot storage** — every step is saved with a screenshot of your UI. When your app changes, you'll see exactly what shifted and can fix it before users notice
+- **Update copy without a deploy** — change step titles, reword instructions, fix typos directly in the editor. No PR, no deploy, no engineering ticket
 - **Point-and-click element selection** — click any element on your site to capture it as a step, no CSS selectors to write
 - **Inline flow recording** — hit Record, click through your app, and every click becomes a trail step in real time
 - **Trail playback preview** — step through the full trail inside the editor before publishing
