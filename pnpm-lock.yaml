@@ -100,9 +100,6 @@ importers:
       '@trailguide/core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@trailguide/recorder':
-        specifier: workspace:*
-        version: link:../../packages/recorder
       '@trailguide/runtime':
         specifier: workspace:*
         version: link:../../packages/runtime
@@ -232,37 +229,6 @@ importers:
         specifier: ^1.6.0
         version: 1.7.5
     devDependencies:
-      typescript:
-        specifier: ^5.4.0
-        version: 5.9.3
-      vite:
-        specifier: ^5.2.0
-        version: 5.4.21(@types/node@20.19.32)
-      vite-plugin-dts:
-        specifier: ^3.8.0
-        version: 3.9.1(@types/node@20.19.32)(rollup@4.57.1)(typescript@5.9.3)(vite@5.4.21(@types/node@20.19.32))
-
-  packages/recorder:
-    dependencies:
-      '@trailguide/core':
-        specifier: workspace:*
-        version: link:../core
-    devDependencies:
-      '@types/react':
-        specifier: 18.3.28
-        version: 18.3.28
-      '@types/react-dom':
-        specifier: 18.3.5
-        version: 18.3.5(@types/react@18.3.28)
-      '@vitejs/plugin-react':
-        specifier: ^4.2.0
-        version: 4.7.0(vite@5.4.21(@types/node@20.19.32))
-      react:
-        specifier: ^18.2.0
-        version: 18.3.1
-      react-dom:
-        specifier: ^18.2.0
-        version: 18.3.1(react@18.3.1)
       typescript:
         specifier: ^5.4.0
         version: 5.9.3
