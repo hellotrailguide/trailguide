@@ -1,6 +1,6 @@
 {
   "name": "@trailguide/core",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Framework-agnostic product tours. Tutorials as code for any web app.",
   "type": "module",
   "main": "./dist/trailguide.js",
