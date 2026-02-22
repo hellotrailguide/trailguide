@@ -7,6 +7,7 @@
   <title>Trailguide - Tutorials as Code</title>
   <meta name="description" content="Git-native product tours for any web app. No vendor lock-in, no per-user pricing. Your tutorials live in your repo.">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="trailguide.css"><!-- LOCAL BUILD - swap back to CDN before deploy -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -33,14 +34,14 @@
     <div class="container">
       <div class="badge">Open Source · MIT License</div>
       <h1>Tutorials as Code</h1>
-      <p class="hero-subtitle">
+      <p class="hero-subtitle" data-trail-id="hero-subtitle">
         Product tours that live in your Git repo.<br>
         No vendor lock-in. No per-user pricing. Just JSON files you own.
       </p>
       <div class="hero-cta">
-        <a href="https://app.gettrailguide.com/demo" target="_blank" class="btn btn-primary btn-large">
-          Try Live Demo
-        </a>
+        <button onclick="startTour()" class="btn btn-primary btn-large">
+          See it in action
+        </button>
         <a href="https://docs.gettrailguide.com" class="btn btn-secondary btn-large">
           View Documentation
         </a>
@@ -104,7 +105,7 @@
   <!-- How it works -->
   <section id="how-it-works" class="how-it-works">
     <div class="container">
-      <h2>Ship a tour in 5 minutes</h2>
+      <h2 data-trail-id="how-it-works-heading">Ship a tour in 5 minutes</h2>
       <p class="section-subtitle">Three steps. No account required.</p>
 
       <div class="steps">
@@ -343,7 +344,7 @@
   <section id="visual-editor" class="visual-editor">
     <div class="container">
       <div class="pro-badge">Pro Feature</div>
-      <h2>Your app changes. Your tours shouldn't break.</h2>
+      <h2 data-trail-id="visual-editor-heading">Your app changes. Your tours shouldn't break.</h2>
       <p class="section-subtitle">Pro stores your trails with screenshots so your team can keep them current — no engineering required.</p>
 
       <div class="editor-grid">
@@ -510,7 +511,7 @@
   <!-- Pricing -->
   <section id="pricing" class="pricing">
     <div class="container">
-      <h2>Simple pricing</h2>
+      <h2 data-trail-id="pricing-heading">Simple pricing</h2>
       <p class="section-subtitle">Free to use. Pay only for convenience and insights.</p>
 
       <div class="pricing-grid">
@@ -601,7 +602,7 @@
         </div>
         <div class="footer-links">
           <h4>Resources</h4>
-          <a href="https://app.gettrailguide.com/demo">Live Demo</a>
+          <a href="#" onclick="event.preventDefault(); startTour();">See it in action</a>
           <a href="https://docs.gettrailguide.com/getting-started/installation">Installation</a>
           <a href="https://docs.gettrailguide.com/reference/overview">API Reference</a>
         </div>
@@ -611,5 +612,46 @@
       </div>
     </div>
   </footer>
+  <script src="trailguide.umd.js"></script><!-- LOCAL BUILD - swap back to CDN before deploy -->
+  <script>
+    var trail = {
+      id: 'website-tour',
+      title: 'Trailguide in 60 seconds',
+      steps: [
+        {
+          id: 'step-1',
+          target: '[data-trail-id="hero-subtitle"]',
+          title: 'You just triggered a Trailguide tour',
+          content: 'This tooltip is running on this page right now — one script tag, one JSON file. No iframes, no third-party dashboard.',
+          placement: 'bottom'
+        },
+        {
+          id: 'step-2',
+          target: '[data-trail-id="how-it-works-heading"]',
+          title: 'Ship in 5 minutes',
+          content: 'Install the package, drop in a JSON file, call start(). That\'s the entire integration — works with React, Vue, Svelte, or plain JS.',
+          placement: 'bottom'
+        },
+        {
+          id: 'step-3',
+          target: '[data-trail-id="visual-editor-heading"]',
+          title: 'The Pro Editor records it for you',
+          content: 'Hit Record, click through your app, and every click becomes a step. No CSS selectors to write.',
+          placement: 'bottom'
+        },
+        {
+          id: 'step-4',
+          target: '[data-trail-id="pricing-heading"]',
+          title: 'Free runtime, forever',
+          content: 'No per-user pricing — ever. The runtime is MIT licensed and free for unlimited users. Pay for the Pro Editor when your team needs it.',
+          placement: 'bottom'
+        }
+      ]
+    };
+
+    function startTour() {
+      Trailguide.start(trail, { theme: 'dark' });
+    }
+  </script>
 </body>
 </html>

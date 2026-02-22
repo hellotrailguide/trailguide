@@ -25,6 +25,7 @@ export interface AnalyticsConfig {
 }
 
 export interface TrailguideOptions {
+  theme?: 'light' | 'dark';
   onComplete?: () => void;
   onSkip?: () => void;
   /** Fires when stop() is called while a tour is still active (e.g. user navigates away) */
