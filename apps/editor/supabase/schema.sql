@@ -7,8 +7,9 @@ alter database postgres set "app.jwt_secret" to 'your-jwt-secret';
 -- Profiles (extends Supabase auth.users)
 create table if not exists public.profiles (
   id uuid references auth.users on delete cascade primary key,
-  github_username text,
-  -- github_access_token: REMOVED — GitHub tokens are read from the OAuth session
+  vcs_username text,
+  vcs_provider text,  -- 'github' | 'gitlab' — mirrors auth.users app_metadata.provider
+  -- vcs_access_token: REMOVED — tokens are read from the OAuth session
   -- (session.provider_token) at request time. Never stored in the database.
   created_at timestamptz default now() not null
 );
@@ -33,12 +34,12 @@ create policy "Users can insert own profile"
 create table if not exists public.repos (
   id uuid primary key default gen_random_uuid(),
   user_id uuid references public.profiles on delete cascade not null,
-  github_repo_id bigint not null,
+  vcs_repo_id bigint not null,
   repo_name text not null,
   repo_owner text not null,
   installation_id bigint,
   created_at timestamptz default now() not null,
-  unique(user_id, github_repo_id)
+  unique(user_id, vcs_repo_id)
 );
 
 -- Enable RLS on repos
@@ -59,7 +60,7 @@ create table if not exists public.trails (
   repo_id uuid references public.repos on delete cascade not null,
   path text not null,
   content jsonb not null,
-  sha text,  -- GitHub blob SHA for cache invalidation
+  sha text,  -- VCS blob SHA for cache invalidation
   updated_at timestamptz default now() not null,
   unique(repo_id, path)
 );
@@ -148,10 +149,11 @@ create or replace function public.handle_new_user()
 returns trigger as $$
 begin
   -- Create profile
-  insert into public.profiles (id, github_username)
+  insert into public.profiles (id, vcs_username, vcs_provider)
   values (
     new.id,
-    new.raw_user_meta_data->>'user_name'
+    new.raw_user_meta_data->>'user_name',
+    new.raw_app_meta_data->>'provider'
   );
 
   -- Create 14-day trial subscription (no credit card required)

@@ -33,7 +33,8 @@ export async function GET(request: Request) {
       if (!profile) {
         await supabase.from('profiles').insert({
           id: data.user.id,
-          github_username: data.user.user_metadata?.user_name || null,
+          vcs_username: data.user.user_metadata?.user_name || null,
+          vcs_provider: data.user.app_metadata?.provider || null,
         })
       }
 
