@@ -90,16 +90,17 @@ export class GitLabProvider implements VCSProvider {
     }))
   }
 
-  async getTrails(owner: string, repo: string): Promise<VCSFile[]> {
+  async getTrails(owner: string, repo: string, branch?: string): Promise<VCSFile[]> {
     const trails: VCSFile[] = []
     const pid = this.projectId(owner, repo)
     const searchPaths = ['', 'tours', 'trails', 'src/trails', 'src/tours']
+    const ref = branch ? encodeURIComponent(branch) : 'HEAD'
 
     for (const basePath of searchPaths) {
       try {
         const pathParam = basePath ? `&path=${encodeURIComponent(basePath)}` : ''
         const items = await this.fetch<GLTreeItem[]>(
-          `/projects/${pid}/repository/tree?ref=HEAD&per_page=100${pathParam}`
+          `/projects/${pid}/repository/tree?ref=${ref}&per_page=100${pathParam}`
         )
 
         for (const item of items) {
@@ -118,13 +119,15 @@ export class GitLabProvider implements VCSProvider {
   async getTrail(
     owner: string,
     repo: string,
-    path: string
+    path: string,
+    branch?: string
   ): Promise<{ content: string; sha: string }> {
     const pid = this.projectId(owner, repo)
     const filePath = encodeURIComponent(path)
+    const ref = branch ? encodeURIComponent(branch) : 'HEAD'
 
     const file = await this.fetch<GLFile>(
-      `/projects/${pid}/repository/files/${filePath}?ref=HEAD`
+      `/projects/${pid}/repository/files/${filePath}?ref=${ref}`
     )
 
     const content = atob(file.content.replace(/\n/g, ''))
