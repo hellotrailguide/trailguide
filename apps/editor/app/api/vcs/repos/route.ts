@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { listRepos } from '@/lib/github/client'
+import { getVCSProvider } from '@/lib/vcs'
+import type { VCSProviderType } from '@/lib/vcs'
 import { requireProSubscription } from '@/lib/api/require-pro'
 import { rateLimit } from '@/lib/api/rate-limit'
 
@@ -10,41 +11,43 @@ export async function GET() {
   try {
     const supabase = createClient()
 
-    // Get current user
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Require Pro subscription
     const proCheck = await requireProSubscription()
     if (proCheck) return proCheck
 
-    // Rate limit
-    const rl = await rateLimit(`github:${user.id}`, { limit: 30, windowMs: 60_000 })
+    const rl = await rateLimit(`vcs:${user.id}`, { limit: 30, windowMs: 60_000 })
     if (!rl.allowed) {
       return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
     }
 
-    // Get GitHub access token from session
     const { data: { session } } = await supabase.auth.getSession()
     const accessToken = session?.provider_token
+    const providerType = session?.user?.app_metadata?.provider as VCSProviderType | undefined
 
-    if (!accessToken) {
+    if (!accessToken || !providerType) {
       return NextResponse.json(
-        { error: 'GitHub not connected. Please reconnect your GitHub account.' },
+        { error: 'No VCS provider connected. Please reconnect your account.' },
         { status: 401 }
       )
     }
 
-    const repos = await listRepos(accessToken)
+    if (providerType !== 'github' && providerType !== 'gitlab') {
+      return NextResponse.json(
+        { error: `Unsupported VCS provider: ${providerType}` },
+        { status: 400 }
+      )
+    }
 
-    return NextResponse.json({ repos })
+    const provider = getVCSProvider(providerType, accessToken)
+    const repos = await provider.listRepos()
+
+    return NextResponse.json({ repos, provider: providerType })
   } catch (error) {
     console.error('Error fetching repos:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch repositories' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch repositories' }, { status: 500 })
   }
 }
