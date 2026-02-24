@@ -13,8 +13,6 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams
     const owner = searchParams.get('owner')
     const repo = searchParams.get('repo')
-    const path = searchParams.get('path')
-    const branch = searchParams.get('branch') || undefined
 
     if (!owner || !repo) {
       return NextResponse.json({ error: 'Missing owner or repo parameter' }, { status: 400 })
@@ -49,16 +47,10 @@ export async function GET(request: NextRequest) {
     }
 
     const provider = getVCSProvider(providerType, accessToken)
-
-    if (path) {
-      const { content, sha } = await provider.getTrail(owner, repo, path, branch)
-      return NextResponse.json({ content, sha })
-    } else {
-      const trails = await provider.getTrails(owner, repo, branch)
-      return NextResponse.json({ trails })
-    }
+    const branches = await provider.listBranches(owner, repo)
+    return NextResponse.json({ branches })
   } catch (error) {
-    console.error('Error fetching trails:', error)
-    return NextResponse.json({ error: 'Failed to fetch trails' }, { status: 500 })
+    console.error('Error fetching branches:', error)
+    return NextResponse.json({ error: 'Failed to fetch branches' }, { status: 500 })
   }
 }

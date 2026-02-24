@@ -30,6 +30,8 @@ export interface VCSPullRequest {
 export interface VCSProvider {
   listRepos(): Promise<VCSRepo[]>
 
+  listBranches(owner: string, repo: string): Promise<string[]>
+
   getTrails(owner: string, repo: string, branch?: string): Promise<VCSFile[]>
 
   getTrail(
@@ -70,6 +72,7 @@ export interface VCSProvider {
     repo: string,
     trail: object,
     trailPath: string,
-    prTitle: string
+    prTitle: string,
+    baseBranch?: string
   ): Promise<VCSPullRequest>
 }

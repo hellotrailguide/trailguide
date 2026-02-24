@@ -14,6 +14,7 @@ interface CommitRequest {
   content: object
   message: string
   sha?: string
+  branch?: string
   createPR?: boolean
   prTitle?: string
 }
@@ -22,7 +23,7 @@ export async function POST(request: NextRequest) {
   try {
     const supabase = createClient()
     const body: CommitRequest = await request.json()
-    const { owner, repo, path, content, message, sha, createPR, prTitle } = body
+    const { owner, repo, path, content, message, sha, branch, createPR, prTitle } = body
 
     if (!owner || !repo || !path || !content || !message) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
@@ -59,7 +60,7 @@ export async function POST(request: NextRequest) {
     const provider = getVCSProvider(providerType, accessToken)
 
     if (createPR) {
-      const pr = await provider.createTrailPR(owner, repo, content, path, prTitle || message)
+      const pr = await provider.createTrailPR(owner, repo, content, path, prTitle || message, branch)
 
       return NextResponse.json({
         success: true,
@@ -68,7 +69,7 @@ export async function POST(request: NextRequest) {
       })
     } else {
       const contentString = JSON.stringify(content, null, 2)
-      const commit = await provider.commitFile(owner, repo, path, contentString, message, sha)
+      const commit = await provider.commitFile(owner, repo, path, contentString, message, sha, branch)
 
       return NextResponse.json({
         success: true,
