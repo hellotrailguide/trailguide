@@ -30,7 +30,7 @@ describe('POST /api/stripe/webhook', () => {
     supabaseMock = makeSupabaseMock()
     // Reset headers mock to return null for stripe-signature
     const { headers } = await import('next/headers')
-    vi.mocked(headers).mockReturnValue({ get: vi.fn(() => null) })
+    vi.mocked(headers).mockReturnValue({ get: vi.fn(() => null) } as any)
   })
 
   it('returns 400 when stripe-signature header is missing', async () => {
