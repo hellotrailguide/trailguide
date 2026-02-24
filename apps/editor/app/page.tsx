@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowRight, Github, GitBranch, Zap, BarChart3 } from 'lucide-react'
+import { ArrowRight, GitBranch, Zap, BarChart3 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 
@@ -55,8 +55,7 @@ export default async function Home() {
               href="/login"
               className="inline-flex items-center gap-2 border border-border px-6 py-3 rounded-lg font-medium hover:bg-accent transition-colors"
             >
-              <Github className="h-4 w-4" />
-              Sign in with GitHub
+              Sign in
             </Link>
           </div>
 

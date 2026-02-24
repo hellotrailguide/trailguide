@@ -2,7 +2,7 @@
 
 import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { CreditCard, Github, User, Check, Loader2, ExternalLink } from 'lucide-react'
+import { CreditCard, Github, Gitlab, GitBranch, User, Check, Loader2, ExternalLink } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -14,7 +14,8 @@ import { SETTINGS_TOUR, TOUR_KEYS } from '@/components/help/tours'
 
 interface UserInfo {
   email: string | null
-  githubUsername: string | null
+  vcsUsername: string | null
+  vcsProvider: string | null
 }
 
 function SettingsContent() {
@@ -43,7 +44,8 @@ function SettingsContent() {
 
       setUser({
         email: user.email || null,
-        githubUsername: user.user_metadata?.user_name || null,
+        vcsUsername: user.user_metadata?.user_name || null,
+        vcsProvider: user.app_metadata?.provider || null,
       })
 
       setIsLoadingUser(false)
@@ -142,12 +144,18 @@ function SettingsContent() {
                 <label className="text-sm font-medium">Email</label>
                 <p className="text-sm text-muted-foreground">{user?.email || 'Not set'}</p>
               </div>
-              {user?.githubUsername && (
+              {user?.vcsUsername && (
                 <div>
-                  <label className="text-sm font-medium">GitHub</label>
+                  <label className="text-sm font-medium">
+                    {user.vcsProvider === 'gitlab' ? 'GitLab' : 'GitHub'}
+                  </label>
                   <p className="text-sm text-muted-foreground flex items-center gap-1">
-                    <Github className="h-4 w-4" />
-                    {user.githubUsername}
+                    {user.vcsProvider === 'gitlab' ? (
+                      <Gitlab className="h-4 w-4" />
+                    ) : (
+                      <Github className="h-4 w-4" />
+                    )}
+                    {user.vcsUsername}
                   </p>
                 </div>
               )}
@@ -188,7 +196,7 @@ function SettingsContent() {
                     <ul className="text-sm text-muted-foreground space-y-1">
                       <li className="flex items-center gap-2">
                         <Check className="h-4 w-4 text-green-600" />
-                        GitHub sync
+                        Git sync (GitHub &amp; GitLab)
                       </li>
                       <li className="flex items-center gap-2">
                         <Check className="h-4 w-4 text-green-600" />
@@ -216,7 +224,7 @@ function SettingsContent() {
                       <div>
                         <h4 className="font-medium">Upgrade to Pro</h4>
                         <p className="text-sm text-muted-foreground mt-1">
-                          Get GitHub sync, analytics, and more.
+                          Get Git sync, analytics, and more.
                         </p>
                       </div>
                       <div className="text-right">
@@ -227,7 +235,7 @@ function SettingsContent() {
                     <ul className="text-sm text-muted-foreground mt-4 space-y-1">
                       <li className="flex items-center gap-2">
                         <Check className="h-4 w-4 text-primary" />
-                        Sync trails to GitHub repositories
+                        Sync trails to GitHub or GitLab
                       </li>
                       <li className="flex items-center gap-2">
                         <Check className="h-4 w-4 text-primary" />
