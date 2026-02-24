@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "seed:analytics": "npx tsx scripts/seed-analytics.ts"
+    "seed:analytics": "npx tsx scripts/seed-analytics.ts",
+    "test:integration": "vitest run --config vitest.integration.config.ts"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.1.0",
