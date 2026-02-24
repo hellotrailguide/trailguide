@@ -10,7 +10,7 @@
  *   npm run test:integration
  */
 import { describe, it, expect, afterAll } from 'vitest'
-import { GitHubProvider } from './github'
+import { GitHubProvider } from '@/lib/vcs/providers/github'
 
 const TOKEN = process.env.GITHUB_TEST_TOKEN
 const OWNER = process.env.GITHUB_TEST_OWNER

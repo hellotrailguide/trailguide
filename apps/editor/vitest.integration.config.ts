@@ -9,7 +9,7 @@ export default defineConfig({
     name: 'editor-integration',
     environment: 'node',
     globals: true,
-    include: ['**/*.integration.test.ts'],
+    include: ['tests/integration/**/*.integration.test.ts'],
     testTimeout: 30_000, // real API calls need more time
   },
   resolve: {
