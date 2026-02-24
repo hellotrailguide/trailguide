@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/nextjs'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { Trail, Step, Placement, ElementRect } from '@/lib/types/trail'
@@ -194,10 +195,10 @@ export const useEditorStore = create<EditorState>()(
         })
 
         // Clean up screenshot from IndexedDB
-        deleteScreenshots([removedStep.id]).catch(() => {})
+        deleteScreenshots([removedStep.id]).catch(Sentry.captureException)
 
         // Clean up from Supabase Storage
-        if (removedStep.screenshotPath) deleteCloudScreenshot(removedStep.screenshotPath).catch(() => {})
+        if (removedStep.screenshotPath) deleteCloudScreenshot(removedStep.screenshotPath).catch(Sentry.captureException)
       },
 
       reorderSteps: (fromIndex, toIndex) => {
@@ -277,7 +278,7 @@ export const useEditorStore = create<EditorState>()(
         })
 
         // Persist screenshots to IndexedDB (fire-and-forget)
-        saveScreenshots(updatedTrail.steps).catch(() => {})
+        saveScreenshots(updatedTrail.steps).catch(Sentry.captureException)
 
         // Upload new screenshots to Supabase Storage (fire-and-forget)
         const stepsNeedingUpload = updatedTrail.steps.filter(s => s.screenshot && !s.screenshotPath)
@@ -295,8 +296,8 @@ export const useEditorStore = create<EditorState>()(
                   ? { ...t, steps: t.steps.map(s => s.id === step.id ? { ...s, screenshotPath: path } : s) }
                   : t),
               }))
-            })).catch(() => {})
-          }).catch(() => {})
+            })).catch(Sentry.captureException)
+          }).catch(Sentry.captureException)
         }
       },
 
@@ -343,10 +344,10 @@ export const useEditorStore = create<EditorState>()(
                   }
                 })
                 // Warm IndexedDB cache
-                saveScreenshots([{ ...step, screenshot: dataUri }]).catch(() => {})
-              })).catch(() => {})
+                saveScreenshots([{ ...step, screenshot: dataUri }]).catch(Sentry.captureException)
+              })).catch(Sentry.captureException)
             })
-            .catch(() => {})
+            .catch(Sentry.captureException)
         }
       },
 
@@ -361,11 +362,11 @@ export const useEditorStore = create<EditorState>()(
 
         // Clean up screenshots from IndexedDB
         if (toDelete) {
-          deleteScreenshots(toDelete.steps.map((s) => s.id)).catch(() => {})
+          deleteScreenshots(toDelete.steps.map((s) => s.id)).catch(Sentry.captureException)
 
           // Clean up from Supabase Storage
           const cloudPaths = toDelete.steps.map(s => s.screenshotPath).filter((p): p is string => Boolean(p))
-          if (cloudPaths.length > 0) deleteCloudScreenshots(cloudPaths).catch(() => {})
+          if (cloudPaths.length > 0) deleteCloudScreenshots(cloudPaths).catch(Sentry.captureException)
         }
       },
 

@@ -53,6 +53,10 @@ export function makeSupabaseMock(overrides: Record<string, unknown> = {}) {
         data: { session: { provider_token: 'github-token-abc' } },
         error: null,
       }),
+      exchangeCodeForSession: vi.fn().mockResolvedValue({
+        data: { user: null },
+        error: null,
+      }),
     },
     from: mockFrom,
     ...overrides,
