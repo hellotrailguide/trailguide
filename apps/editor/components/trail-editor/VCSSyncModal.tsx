@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import {
   Github,
+  Gitlab,
   Loader2,
   Check,
   GitPullRequest,
@@ -10,30 +11,31 @@ import {
   FolderGit2,
   ExternalLink,
   X,
+  GitBranch,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select } from '@/components/ui/select'
-import { Badge } from '@/components/ui/badge'
 import { useEditorStore } from '@/lib/stores/editor-store'
+import type { VCSProviderType } from '@/lib/vcs'
 
-interface GitHubRepo {
+interface VCSRepo {
   id: number
   name: string
-  full_name: string
-  owner: { login: string }
-  default_branch: string
+  fullName: string
+  owner: string
+  defaultBranch: string
   private: boolean
 }
 
-interface GitHubTrail {
+interface VCSTrail {
   name: string
   path: string
   sha: string
 }
 
-interface GitHubSyncModalProps {
+interface VCSSyncModalProps {
   isOpen: boolean
   onClose: () => void
 }
@@ -41,15 +43,33 @@ interface GitHubSyncModalProps {
 type SyncMode = 'save' | 'load'
 type SaveMethod = 'commit' | 'pr'
 
-export function GitHubSyncModal({ isOpen, onClose }: GitHubSyncModalProps) {
+const PROVIDER_LABEL: Record<VCSProviderType, string> = {
+  github: 'GitHub',
+  gitlab: 'GitLab',
+}
+
+function ProviderIcon({
+  provider,
+  className,
+}: {
+  provider: VCSProviderType | null
+  className?: string
+}) {
+  if (provider === 'gitlab') return <Gitlab className={className} />
+  if (provider === 'github') return <Github className={className} />
+  return <GitBranch className={className} />
+}
+
+export function VCSSyncModal({ isOpen, onClose }: VCSSyncModalProps) {
   const { trail, exportTrail, importTrail } = useEditorStore()
 
+  const [provider, setProvider] = useState<VCSProviderType | null>(null)
   const [mode, setMode] = useState<SyncMode>('save')
   const [saveMethod, setSaveMethod] = useState<SaveMethod>('commit')
 
-  const [repos, setRepos] = useState<GitHubRepo[]>([])
-  const [selectedRepo, setSelectedRepo] = useState<GitHubRepo | null>(null)
-  const [trails, setTrails] = useState<GitHubTrail[]>([])
+  const [repos, setRepos] = useState<VCSRepo[]>([])
+  const [selectedRepo, setSelectedRepo] = useState<VCSRepo | null>(null)
+  const [trails, setTrails] = useState<VCSTrail[]>([])
 
   const [isLoadingRepos, setIsLoadingRepos] = useState(false)
   const [isLoadingTrails, setIsLoadingTrails] = useState(false)
@@ -63,14 +83,12 @@ export function GitHubSyncModal({ isOpen, onClose }: GitHubSyncModalProps) {
   const [success, setSuccess] = useState<{ type: string; url?: string } | null>(null)
   const [isLoadingTrail, setIsLoadingTrail] = useState(false)
 
-  // Load repos on open
   useEffect(() => {
     if (isOpen) {
       loadRepos()
     }
   }, [isOpen])
 
-  // Reset state when modal closes
   useEffect(() => {
     if (!isOpen) {
       setError(null)
@@ -78,7 +96,6 @@ export function GitHubSyncModal({ isOpen, onClose }: GitHubSyncModalProps) {
     }
   }, [isOpen])
 
-  // Set default file path when trail changes
   useEffect(() => {
     if (trail) {
       setFilePath(`trails/${trail.id}.trail.json`)
@@ -87,7 +104,6 @@ export function GitHubSyncModal({ isOpen, onClose }: GitHubSyncModalProps) {
     }
   }, [trail])
 
-  // Load trails when repo is selected
   useEffect(() => {
     if (selectedRepo) {
       loadTrails(selectedRepo)
@@ -99,13 +115,14 @@ export function GitHubSyncModal({ isOpen, onClose }: GitHubSyncModalProps) {
     setError(null)
 
     try {
-      const response = await fetch('/api/github/repos')
+      const response = await fetch('/api/vcs/repos')
       const data = await response.json()
 
       if (data.error) {
         setError(data.error)
       } else {
         setRepos(data.repos || [])
+        setProvider(data.provider || null)
       }
     } catch {
       setError('Failed to load repositories')
@@ -114,12 +131,12 @@ export function GitHubSyncModal({ isOpen, onClose }: GitHubSyncModalProps) {
     }
   }
 
-  const loadTrails = async (repo: GitHubRepo) => {
+  const loadTrails = async (repo: VCSRepo) => {
     setIsLoadingTrails(true)
 
     try {
       const response = await fetch(
-        `/api/github/trails?owner=${repo.owner.login}&repo=${repo.name}`
+        `/api/vcs/trails?owner=${repo.owner}&repo=${repo.name}`
       )
       const data = await response.json()
 
@@ -133,7 +150,7 @@ export function GitHubSyncModal({ isOpen, onClose }: GitHubSyncModalProps) {
     }
   }
 
-  const handleLoadTrail = async (trailFile: GitHubTrail) => {
+  const handleLoadTrail = async (trailFile: VCSTrail) => {
     if (!selectedRepo) return
 
     setIsLoadingTrail(true)
@@ -141,7 +158,7 @@ export function GitHubSyncModal({ isOpen, onClose }: GitHubSyncModalProps) {
 
     try {
       const response = await fetch(
-        `/api/github/trails?owner=${selectedRepo.owner.login}&repo=${selectedRepo.name}&path=${encodeURIComponent(trailFile.path)}`
+        `/api/vcs/trails?owner=${selectedRepo.owner}&repo=${selectedRepo.name}&path=${encodeURIComponent(trailFile.path)}`
       )
       const { content, error: apiError } = await response.json()
 
@@ -156,7 +173,7 @@ export function GitHubSyncModal({ isOpen, onClose }: GitHubSyncModalProps) {
 
       onClose()
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Failed to load trail from GitHub')
+      setError(e instanceof Error ? e.message : 'Failed to load trail')
     } finally {
       setIsLoadingTrail(false)
     }
@@ -179,11 +196,11 @@ export function GitHubSyncModal({ isOpen, onClose }: GitHubSyncModalProps) {
         return
       }
 
-      const response = await fetch('/api/github/commit', {
+      const response = await fetch('/api/vcs/commit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          owner: selectedRepo.owner.login,
+          owner: selectedRepo.owner,
           repo: selectedRepo.name,
           path: filePath,
           content: JSON.parse(trailJson),
@@ -204,11 +221,14 @@ export function GitHubSyncModal({ isOpen, onClose }: GitHubSyncModalProps) {
         })
       }
     } catch {
-      setError('Failed to save to GitHub')
+      setError('Failed to save')
     } finally {
       setIsSaving(false)
     }
   }
+
+  const providerLabel = provider ? PROVIDER_LABEL[provider] : 'Git'
+  const prLabel = provider === 'gitlab' ? 'Merge Request' : 'Pull Request'
 
   if (!isOpen) return null
 
@@ -222,8 +242,8 @@ export function GitHubSyncModal({ isOpen, onClose }: GitHubSyncModalProps) {
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-border">
           <div className="flex items-center gap-2">
-            <Github className="h-5 w-5" />
-            <h2 className="font-semibold">GitHub Sync</h2>
+            <ProviderIcon provider={provider} className="h-5 w-5" />
+            <h2 className="font-semibold">{providerLabel} Sync</h2>
           </div>
           <Button variant="ghost" size="icon" onClick={onClose}>
             <X className="h-4 w-4" />
@@ -239,14 +259,14 @@ export function GitHubSyncModal({ isOpen, onClose }: GitHubSyncModalProps) {
               size="sm"
               onClick={() => setMode('save')}
             >
-              Save to GitHub
+              Save to {providerLabel}
             </Button>
             <Button
               variant={mode === 'load' ? 'default' : 'outline'}
               size="sm"
               onClick={() => setMode('load')}
             >
-              Load from GitHub
+              Load from {providerLabel}
             </Button>
           </div>
 
@@ -263,7 +283,7 @@ export function GitHubSyncModal({ isOpen, onClose }: GitHubSyncModalProps) {
               <div className="flex items-center gap-2">
                 <Check className="h-4 w-4" />
                 <span>
-                  {success.type === 'pr' ? 'Pull request created!' : 'Changes committed!'}
+                  {success.type === 'pr' ? `${prLabel} created!` : 'Changes committed!'}
                 </span>
               </div>
               {success.url && (
@@ -273,7 +293,7 @@ export function GitHubSyncModal({ isOpen, onClose }: GitHubSyncModalProps) {
                   rel="noopener noreferrer"
                   className="flex items-center gap-1 text-xs mt-2 text-green-600 hover:underline"
                 >
-                  View on GitHub
+                  View on {providerLabel}
                   <ExternalLink className="h-3 w-3" />
                 </a>
               )}
@@ -290,20 +310,20 @@ export function GitHubSyncModal({ isOpen, onClose }: GitHubSyncModalProps) {
               </div>
             ) : repos.length === 0 ? (
               <div className="text-sm text-muted-foreground">
-                {"No repositories found. Make sure you've connected GitHub with repo access."}
+                {`No repositories found. Make sure you've connected ${providerLabel} with repo access.`}
               </div>
             ) : (
               <Select
-                value={selectedRepo?.full_name || ''}
+                value={selectedRepo?.fullName || ''}
                 onChange={(e) => {
-                  const repo = repos.find((r) => r.full_name === e.target.value)
+                  const repo = repos.find((r) => r.fullName === e.target.value)
                   setSelectedRepo(repo || null)
                 }}
               >
                 <option value="">Select a repository...</option>
                 {repos.map((repo) => (
-                  <option key={repo.id} value={repo.full_name}>
-                    {repo.full_name} {repo.private && '(private)'}
+                  <option key={repo.id} value={repo.fullName}>
+                    {repo.fullName} {repo.private && '(private)'}
                   </option>
                 ))}
               </Select>
@@ -332,7 +352,7 @@ export function GitHubSyncModal({ isOpen, onClose }: GitHubSyncModalProps) {
                     className="flex-1"
                   >
                     <GitPullRequest className="h-4 w-4 mr-1" />
-                    Create PR
+                    {prLabel}
                   </Button>
                 </div>
               </div>
@@ -350,9 +370,7 @@ export function GitHubSyncModal({ isOpen, onClose }: GitHubSyncModalProps) {
 
               {/* Commit message */}
               <div className="space-y-2">
-                <Label htmlFor="commitMessage">
-                  {saveMethod === 'pr' ? 'Commit Message' : 'Commit Message'}
-                </Label>
+                <Label htmlFor="commitMessage">Commit Message</Label>
                 <Input
                   id="commitMessage"
                   value={commitMessage}
@@ -361,10 +379,10 @@ export function GitHubSyncModal({ isOpen, onClose }: GitHubSyncModalProps) {
                 />
               </div>
 
-              {/* PR title (only for PR mode) */}
+              {/* PR/MR title (only for PR mode) */}
               {saveMethod === 'pr' && (
                 <div className="space-y-2">
-                  <Label htmlFor="prTitle">PR Title</Label>
+                  <Label htmlFor="prTitle">{prLabel} Title</Label>
                   <Input
                     id="prTitle"
                     value={prTitle}
@@ -430,7 +448,7 @@ export function GitHubSyncModal({ isOpen, onClose }: GitHubSyncModalProps) {
                   ) : (
                     <GitCommit className="h-4 w-4 mr-2" />
                   )}
-                  {saveMethod === 'pr' ? 'Create PR' : 'Commit'}
+                  {saveMethod === 'pr' ? `Create ${prLabel}` : 'Commit'}
                 </>
               )}
             </Button>

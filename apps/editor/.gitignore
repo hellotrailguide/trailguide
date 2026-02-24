@@ -34,3 +34,4 @@ next-env.d.ts
 *.swp
 *.swo
 .DS_Store
+.env.integration
