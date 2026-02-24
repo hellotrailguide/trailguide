@@ -391,7 +391,7 @@ pnpm dev
 - [x] Selector quality indicators
 - [x] Selector auto-repair
 - [x] Analytics dashboard (completion rates, drop-off funnel, time per step)
-- [x] GitHub Sync (push trails as PRs)
+- [x] Git Sync — push trails as PRs/MRs to GitHub or GitLab
 - [ ] A/B testing for trails
 - [ ] Team workspaces with role-based access
 
@@ -401,7 +401,7 @@ pnpm dev
 
 For teams who want **speed, safety, and insights** — without changing how trails are stored or shipped.
 
-The workflow: a developer installs the runtime once. After that, product managers and customer success teams create and update tours in the visual editor — no code required. Every step is stored with a screenshot so your team can see exactly what changed when your UI evolves. Update copy, fix broken steps, check analytics, push to GitHub as a PR. Engineers review, merge, done.
+The workflow: a developer installs the runtime once. After that, product managers and customer success teams create and update tours in the visual editor — no code required. Every step is stored with a screenshot so your team can see exactly what changed when your UI evolves. Update copy, fix broken steps, check analytics, push to GitHub or GitLab as a PR/MR. Engineers review, merge, done.
 
 ### Visual Editor
 - **Screenshot storage** — every step is saved with a screenshot of your UI. When your app changes, you'll see exactly what shifted and can fix it before users notice
@@ -424,8 +424,9 @@ The workflow: a developer installs the runtime once. After that, product manager
 - Time per step
 - Daily/weekly trends
 
-### GitHub Sync
-- Push trails as PRs directly from the editor
+### Git Sync — GitHub &amp; GitLab
+- Push trails as PRs (GitHub) or MRs (GitLab) directly from the editor
+- Choose any branch — push to `develop`, `main`, or a feature branch
 - Review changes in code
 - Full version history
 

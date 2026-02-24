@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowRight, Github, Zap, BarChart3 } from 'lucide-react'
+import { ArrowRight, Github, GitBranch, Zap, BarChart3 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 
@@ -41,7 +41,7 @@ export default async function Home() {
           </h1>
           <p className="text-xl text-muted-foreground mb-8">
             Visual editor for creating product tours. No code required.
-            Sync to GitHub, track analytics, and ship in minutes.
+            Sync to GitHub or GitLab, track analytics, and ship in minutes.
           </p>
           <div className="flex items-center justify-center gap-4 mb-16">
             <Link
@@ -73,12 +73,12 @@ export default async function Home() {
             </div>
             <div className="bg-card border border-border rounded-xl p-6 text-left">
               <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                <Github className="h-5 w-5 text-primary" />
+                <GitBranch className="h-5 w-5 text-primary" />
               </div>
-              <h3 className="font-semibold mb-2">GitHub Sync</h3>
+              <h3 className="font-semibold mb-2">Git Sync</h3>
               <p className="text-sm text-muted-foreground">
-                Push trails directly to your repo. Create PRs for review.
-                Version control built-in.
+                Push trails directly to your GitHub or GitLab repo. Create PRs
+                and MRs for review. Version control built-in.
               </p>
             </div>
             <div className="bg-card border border-border rounded-xl p-6 text-left">

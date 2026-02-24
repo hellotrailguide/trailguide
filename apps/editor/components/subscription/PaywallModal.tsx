@@ -86,7 +86,7 @@ export function PaywallModal() {
               </li>
               <li className="flex items-center gap-2">
                 <Check className="h-4 w-4 text-primary" />
-                GitHub sync with PR reviews
+                GitHub &amp; GitLab sync with PR/MR reviews
               </li>
               <li className="flex items-center gap-2">
                 <Check className="h-4 w-4 text-primary" />
