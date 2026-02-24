@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { commitFile, createTrailPR } from '@/lib/github/client'
+import { getVCSProvider } from '@/lib/vcs'
+import type { VCSProviderType } from '@/lib/vcs'
 import { requireProSubscription } from '@/lib/api/require-pro'
 import { rateLimit } from '@/lib/api/rate-limit'
 
@@ -21,82 +22,58 @@ export async function POST(request: NextRequest) {
   try {
     const supabase = createClient()
     const body: CommitRequest = await request.json()
-
     const { owner, repo, path, content, message, sha, createPR, prTitle } = body
 
     if (!owner || !repo || !path || !content || !message) {
-      return NextResponse.json(
-        { error: 'Missing required fields' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
-    // Get current user
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Require Pro subscription
     const proCheck = await requireProSubscription()
     if (proCheck) return proCheck
 
-    // Rate limit (stricter for writes)
-    const rl = await rateLimit(`github-commit:${user.id}`, { limit: 10, windowMs: 60_000 })
+    const rl = await rateLimit(`vcs-commit:${user.id}`, { limit: 10, windowMs: 60_000 })
     if (!rl.allowed) {
       return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
     }
 
-    // Get GitHub access token from session
     const { data: { session } } = await supabase.auth.getSession()
     const accessToken = session?.provider_token
+    const providerType = session?.user?.app_metadata?.provider as VCSProviderType | undefined
 
-    if (!accessToken) {
+    if (!accessToken || !providerType) {
+      return NextResponse.json({ error: 'No VCS provider connected' }, { status: 401 })
+    }
+
+    if (providerType !== 'github' && providerType !== 'gitlab') {
       return NextResponse.json(
-        { error: 'GitHub not connected' },
-        { status: 401 }
+        { error: `Unsupported VCS provider: ${providerType}` },
+        { status: 400 }
       )
     }
 
+    const provider = getVCSProvider(providerType, accessToken)
+
     if (createPR) {
-      // Create branch + commit + PR
-      const pr = await createTrailPR(
-        owner,
-        repo,
-        content,
-        path,
-        prTitle || message,
-        accessToken
-      )
+      const pr = await provider.createTrailPR(owner, repo, content, path, prTitle || message)
 
       return NextResponse.json({
         success: true,
         type: 'pr',
-        pr: {
-          number: pr.number,
-          url: pr.html_url,
-        },
+        pr: { number: pr.number, url: pr.url },
       })
     } else {
-      // Direct commit to default branch
       const contentString = JSON.stringify(content, null, 2)
-      const commit = await commitFile(
-        owner,
-        repo,
-        path,
-        contentString,
-        message,
-        accessToken,
-        sha
-      )
+      const commit = await provider.commitFile(owner, repo, path, contentString, message, sha)
 
       return NextResponse.json({
         success: true,
         type: 'commit',
-        commit: {
-          sha: commit.sha,
-          url: commit.html_url,
-        },
+        commit: { sha: commit.sha, url: commit.url },
       })
     }
   } catch (error) {

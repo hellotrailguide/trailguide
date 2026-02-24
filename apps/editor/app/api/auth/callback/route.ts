@@ -22,7 +22,8 @@ export async function GET(request: Request) {
     }
 
     if (data.user) {
-      // Create or update profile with GitHub info
+      // Profile is created by the on_auth_user_created trigger.
+      // This insert is a fallback in case the trigger didn't fire.
       const { data: profile } = await supabase
         .from('profiles')
         .select('id')

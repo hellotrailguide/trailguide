@@ -9,18 +9,18 @@ import {
   Download,
   Upload,
   ArrowLeft,
-  Github,
+  GitBranch,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { useEditorStore } from '@/lib/stores/editor-store'
-import { GitHubSyncModal } from './GitHubSyncModal'
+import { VCSSyncModal } from './VCSSyncModal'
 
 export function Toolbar() {
   const router = useRouter()
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const [isGitHubModalOpen, setIsGitHubModalOpen] = useState(false)
+  const [isVCSSyncModalOpen, setIsVCSSyncModalOpen] = useState(false)
   const {
     trail,
     isDirty,
@@ -138,10 +138,10 @@ export function Toolbar() {
       <Button
         variant="outline"
         size="sm"
-        onClick={() => setIsGitHubModalOpen(true)}
+        onClick={() => setIsVCSSyncModalOpen(true)}
         data-tour-target="sync-button"
       >
-        <Github className="h-4 w-4 mr-1" />
+        <GitBranch className="h-4 w-4 mr-1" />
         Sync
       </Button>
 
@@ -151,10 +151,10 @@ export function Toolbar() {
         Save
       </Button>
 
-      {/* GitHub Sync Modal */}
-      <GitHubSyncModal
-        isOpen={isGitHubModalOpen}
-        onClose={() => setIsGitHubModalOpen(false)}
+      {/* VCS Sync Modal */}
+      <VCSSyncModal
+        isOpen={isVCSSyncModalOpen}
+        onClose={() => setIsVCSSyncModalOpen(false)}
       />
     </div>
   )

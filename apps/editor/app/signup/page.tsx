@@ -4,7 +4,7 @@ import { useState, Suspense } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Github, Mail, Loader2 } from 'lucide-react'
+import { Github, Gitlab, Mail, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -66,6 +66,26 @@ function SignupContent() {
     }
   }
 
+  const handleGitLabSignup = async () => {
+    setIsLoading(true)
+    setError(null)
+
+    const supabase = createClient()
+
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'gitlab',
+      options: {
+        redirectTo: `${window.location.origin}/api/auth/callback?next=${encodeURIComponent(redirectTo)}`,
+        scopes: 'api read_user',
+      },
+    })
+
+    if (error) {
+      setError(error.message)
+      setIsLoading(false)
+    }
+  }
+
   if (success) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
@@ -118,6 +138,20 @@ function SignupContent() {
               <Github className="h-4 w-4 mr-2" />
             )}
             Continue with GitHub
+          </Button>
+
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={handleGitLabSignup}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <Gitlab className="h-4 w-4 mr-2" />
+            )}
+            Continue with GitLab
           </Button>
 
           <div className="relative">
