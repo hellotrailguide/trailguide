@@ -10,7 +10,7 @@
  *   npm run test:integration
  */
 import { describe, it, expect, afterAll } from 'vitest'
-import { GitLabProvider } from './gitlab'
+import { GitLabProvider } from '@/lib/vcs/providers/gitlab'
 
 const TOKEN = process.env.GITLAB_TEST_TOKEN
 const OWNER = process.env.GITLAB_TEST_OWNER
