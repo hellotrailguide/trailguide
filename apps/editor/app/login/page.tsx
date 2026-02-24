@@ -14,8 +14,6 @@ import { createClient } from '@/lib/supabase/client'
 function LoginContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const rawRedirect = searchParams?.get('redirectTo') || '/dashboard'
-  const redirectTo = rawRedirect.startsWith('/') && !rawRedirect.startsWith('//') ? rawRedirect : '/dashboard'
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -51,7 +49,7 @@ function LoginContent() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'github',
       options: {
-        redirectTo: `${window.location.origin}/api/auth/callback?next=${encodeURIComponent(redirectTo)}`,
+        redirectTo: `${window.location.origin}/api/auth/callback`,
         scopes: 'read:user user:email repo',
       },
     })
@@ -71,7 +69,7 @@ function LoginContent() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'gitlab',
       options: {
-        redirectTo: `${window.location.origin}/api/auth/callback?next=${encodeURIComponent(redirectTo)}`,
+        redirectTo: `${window.location.origin}/api/auth/callback`,
         scopes: 'api read_user',
       },
     })
