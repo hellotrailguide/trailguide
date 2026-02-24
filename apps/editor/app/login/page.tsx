@@ -66,18 +66,54 @@ function LoginContent() {
 
     const supabase = createClient()
 
-    const { error } = await supabase.auth.signInWithOAuth({
+    const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'gitlab',
       options: {
-        redirectTo: `${window.location.origin}/api/auth/callback`,
+        redirectTo: `${window.location.origin}/auth/complete`,
         scopes: 'api read_user',
+        skipBrowserRedirect: true,
       },
     })
 
     if (error) {
       setError(error.message)
       setIsLoading(false)
+      return
     }
+
+    if (!data.url) {
+      setError('Failed to start GitLab sign in')
+      setIsLoading(false)
+      return
+    }
+
+    const popup = window.open(data.url, 'gitlab-auth', 'width=500,height=700,left=200,top=100')
+
+    if (!popup) {
+      // Popup blocked — fall back to normal redirect
+      window.location.href = data.url
+      return
+    }
+
+    const handleMessage = (event: MessageEvent) => {
+      if (event.origin !== window.location.origin) return
+      if (event.data?.type === 'AUTH_COMPLETE') {
+        window.removeEventListener('message', handleMessage)
+        clearInterval(popupCheck)
+        router.push('/dashboard')
+        router.refresh()
+      }
+    }
+
+    window.addEventListener('message', handleMessage)
+
+    const popupCheck = setInterval(() => {
+      if (popup.closed) {
+        clearInterval(popupCheck)
+        window.removeEventListener('message', handleMessage)
+        setIsLoading(false)
+      }
+    }, 500)
   }
 
   return (
