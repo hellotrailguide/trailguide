@@ -69,9 +69,12 @@ export function VCSSyncModal({ isOpen, onClose }: VCSSyncModalProps) {
 
   const [repos, setRepos] = useState<VCSRepo[]>([])
   const [selectedRepo, setSelectedRepo] = useState<VCSRepo | null>(null)
+  const [branches, setBranches] = useState<string[]>([])
+  const [selectedBranch, setSelectedBranch] = useState<string>('')
   const [trails, setTrails] = useState<VCSTrail[]>([])
 
   const [isLoadingRepos, setIsLoadingRepos] = useState(false)
+  const [isLoadingBranches, setIsLoadingBranches] = useState(false)
   const [isLoadingTrails, setIsLoadingTrails] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
 
@@ -106,9 +109,16 @@ export function VCSSyncModal({ isOpen, onClose }: VCSSyncModalProps) {
 
   useEffect(() => {
     if (selectedRepo) {
+      loadBranches(selectedRepo)
       loadTrails(selectedRepo)
     }
   }, [selectedRepo])
+
+  useEffect(() => {
+    if (selectedRepo && selectedBranch) {
+      loadTrails(selectedRepo, selectedBranch)
+    }
+  }, [selectedBranch])
 
   const loadRepos = async () => {
     setIsLoadingRepos(true)
@@ -131,12 +141,33 @@ export function VCSSyncModal({ isOpen, onClose }: VCSSyncModalProps) {
     }
   }
 
-  const loadTrails = async (repo: VCSRepo) => {
-    setIsLoadingTrails(true)
+  const loadBranches = async (repo: VCSRepo) => {
+    setIsLoadingBranches(true)
+    setBranches([])
+    setSelectedBranch(repo.defaultBranch)
 
     try {
       const response = await fetch(
-        `/api/vcs/trails?owner=${repo.owner}&repo=${repo.name}`
+        `/api/vcs/branches?owner=${repo.owner}&repo=${repo.name}`
+      )
+      const data = await response.json()
+      if (!data.error) {
+        setBranches(data.branches || [])
+      }
+    } catch {
+      // Fall back to defaultBranch only
+    } finally {
+      setIsLoadingBranches(false)
+    }
+  }
+
+  const loadTrails = async (repo: VCSRepo, branch?: string) => {
+    setIsLoadingTrails(true)
+
+    try {
+      const branchParam = branch ? `&branch=${encodeURIComponent(branch)}` : ''
+      const response = await fetch(
+        `/api/vcs/trails?owner=${repo.owner}&repo=${repo.name}${branchParam}`
       )
       const data = await response.json()
 
@@ -205,6 +236,7 @@ export function VCSSyncModal({ isOpen, onClose }: VCSSyncModalProps) {
           path: filePath,
           content: JSON.parse(trailJson),
           message: commitMessage,
+          branch: selectedBranch || selectedRepo.defaultBranch,
           createPR: saveMethod === 'pr',
           prTitle: saveMethod === 'pr' ? prTitle : undefined,
         }),
@@ -329,6 +361,32 @@ export function VCSSyncModal({ isOpen, onClose }: VCSSyncModalProps) {
               </Select>
             )}
           </div>
+
+          {/* Branch selector */}
+          {selectedRepo && (
+            <div className="space-y-2">
+              <Label>Branch</Label>
+              {isLoadingBranches ? (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Loading branches...
+                </div>
+              ) : (
+                <Select
+                  value={selectedBranch}
+                  onChange={(e) => setSelectedBranch(e.target.value)}
+                >
+                  {branches.length === 0 ? (
+                    <option value={selectedRepo.defaultBranch}>{selectedRepo.defaultBranch}</option>
+                  ) : (
+                    branches.map((b) => (
+                      <option key={b} value={b}>{b}</option>
+                    ))
+                  )}
+                </Select>
+              )}
+            </div>
+          )}
 
           {mode === 'save' && selectedRepo && (
             <>

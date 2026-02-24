@@ -76,6 +76,14 @@ export class GitLabProvider implements VCSProvider {
     return encodeURIComponent(`${owner}/${repo}`)
   }
 
+  async listBranches(owner: string, repo: string): Promise<string[]> {
+    const pid = this.projectId(owner, repo)
+    const branches = await this.fetch<Array<{ name: string }>>(
+      `/projects/${pid}/repository/branches?per_page=100`
+    )
+    return branches.map((b) => b.name)
+  }
+
   async listRepos(): Promise<VCSRepo[]> {
     const projects = await this.fetch<GLProject[]>(
       '/projects?membership=true&order_by=last_activity_at&per_page=100'
@@ -230,9 +238,12 @@ export class GitLabProvider implements VCSProvider {
     repo: string,
     trail: object,
     trailPath: string,
-    prTitle: string
+    prTitle: string,
+    baseBranch?: string
   ): Promise<VCSPullRequest> {
-    const baseBranch = await this.getDefaultBranch(owner, repo)
+    if (!baseBranch) {
+      baseBranch = await this.getDefaultBranch(owner, repo)
+    }
     const branchName = `trailguide/update-${Date.now()}`
 
     await this.createBranch(owner, repo, branchName, baseBranch)

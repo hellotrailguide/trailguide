@@ -63,6 +63,13 @@ export class GitHubProvider implements VCSProvider {
     return response.json()
   }
 
+  async listBranches(owner: string, repo: string): Promise<string[]> {
+    const branches = await this.fetch<Array<{ name: string }>>(
+      `/repos/${owner}/${repo}/branches?per_page=100`
+    )
+    return branches.map((b) => b.name)
+  }
+
   async listRepos(): Promise<VCSRepo[]> {
     const repos = await this.fetch<GHRepo[]>('/user/repos?sort=updated&per_page=100')
     return repos.map((r) => ({
@@ -183,10 +190,13 @@ export class GitHubProvider implements VCSProvider {
     repo: string,
     trail: object,
     trailPath: string,
-    prTitle: string
+    prTitle: string,
+    baseBranch?: string
   ): Promise<VCSPullRequest> {
-    const repoInfo = await this.fetch<GHRepo>(`/repos/${owner}/${repo}`)
-    const baseBranch = repoInfo.default_branch
+    if (!baseBranch) {
+      const repoInfo = await this.fetch<GHRepo>(`/repos/${owner}/${repo}`)
+      baseBranch = repoInfo.default_branch
+    }
     const branchName = `trailguide/update-${Date.now()}`
 
     await this.createBranch(owner, repo, branchName, baseBranch)
