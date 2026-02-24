@@ -30,12 +30,13 @@ export interface VCSPullRequest {
 export interface VCSProvider {
   listRepos(): Promise<VCSRepo[]>
 
-  getTrails(owner: string, repo: string): Promise<VCSFile[]>
+  getTrails(owner: string, repo: string, branch?: string): Promise<VCSFile[]>
 
   getTrail(
     owner: string,
     repo: string,
-    path: string
+    path: string,
+    branch?: string
   ): Promise<{ content: string; sha: string }>
 
   commitFile(

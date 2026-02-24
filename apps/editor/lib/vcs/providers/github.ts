@@ -75,15 +75,16 @@ export class GitHubProvider implements VCSProvider {
     }))
   }
 
-  async getTrails(owner: string, repo: string): Promise<VCSFile[]> {
+  async getTrails(owner: string, repo: string, branch?: string): Promise<VCSFile[]> {
     const trails: VCSFile[] = []
     const searchPaths = ['', 'tours', 'trails', 'src/trails', 'src/tours']
+    const refParam = branch ? `?ref=${encodeURIComponent(branch)}` : ''
 
     for (const basePath of searchPaths) {
       try {
         const endpoint = basePath
-          ? `/repos/${owner}/${repo}/contents/${basePath}`
-          : `/repos/${owner}/${repo}/contents`
+          ? `/repos/${owner}/${repo}/contents/${basePath}${refParam}`
+          : `/repos/${owner}/${repo}/contents${refParam}`
 
         const contents = await this.fetch<GHContent[]>(endpoint)
 
@@ -103,9 +104,11 @@ export class GitHubProvider implements VCSProvider {
   async getTrail(
     owner: string,
     repo: string,
-    path: string
+    path: string,
+    branch?: string
   ): Promise<{ content: string; sha: string }> {
-    const file = await this.fetch<GHContent>(`/repos/${owner}/${repo}/contents/${path}`)
+    const refParam = branch ? `?ref=${encodeURIComponent(branch)}` : ''
+    const file = await this.fetch<GHContent>(`/repos/${owner}/${repo}/contents/${path}${refParam}`)
 
     if (!file.content) {
       throw new Error('File has no content')
