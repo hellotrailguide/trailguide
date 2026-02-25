@@ -6,10 +6,7 @@ export const dynamic = 'force-dynamic'
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url)
   const code = requestUrl.searchParams.get('code')
-  const rawNext = requestUrl.searchParams.get('next') || '/dashboard'
-  // Prevent open redirect - only allow relative paths
-  const next = rawNext.startsWith('/') && !rawNext.startsWith('//') ? rawNext : '/dashboard'
 
-  const redirectUrl = await handleOAuthCallback(code, requestUrl.origin, next)
+  const redirectUrl = await handleOAuthCallback(code, requestUrl.origin, '/auth/complete')
   return NextResponse.redirect(redirectUrl)
 }

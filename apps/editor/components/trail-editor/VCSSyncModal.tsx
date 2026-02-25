@@ -118,7 +118,7 @@ export function VCSSyncModal({ isOpen, onClose }: VCSSyncModalProps) {
     if (selectedRepo && selectedBranch) {
       loadTrails(selectedRepo, selectedBranch)
     }
-  }, [selectedBranch])
+  }, [selectedBranch, selectedRepo])
 
   const loadRepos = async () => {
     setIsLoadingRepos(true)
