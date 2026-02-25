@@ -9,8 +9,8 @@ create table if not exists public.profiles (
   id uuid references auth.users on delete cascade primary key,
   vcs_username text,
   vcs_provider text,  -- 'github' | 'gitlab' — mirrors auth.users app_metadata.provider
-  -- vcs_access_token: REMOVED — tokens are read from the OAuth session
-  -- (session.provider_token) at request time. Never stored in the database.
+  -- NOTE: access tokens are intentionally not stored here.
+  -- They are read from session.provider_token at request time.
   created_at timestamptz default now() not null
 );
 
