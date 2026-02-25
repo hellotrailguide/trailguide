@@ -21,6 +21,7 @@ function SignupContent() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
+  const [gitlabPopupOpen, setGitlabPopupOpen] = useState(false)
 
   const handleEmailSignup = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -101,6 +102,7 @@ function SignupContent() {
       return
     }
 
+    setGitlabPopupOpen(true)
     let popupCheck: ReturnType<typeof setInterval>
 
     const handleMessage = (event: MessageEvent) => {
@@ -108,6 +110,7 @@ function SignupContent() {
       if (event.data?.type === 'AUTH_COMPLETE') {
         window.removeEventListener('message', handleMessage)
         clearInterval(popupCheck)
+        setGitlabPopupOpen(false)
         router.push('/dashboard')
         router.refresh()
       }
@@ -119,6 +122,7 @@ function SignupContent() {
       if (popup.closed) {
         clearInterval(popupCheck)
         window.removeEventListener('message', handleMessage)
+        setGitlabPopupOpen(false)
         setIsLoading(false)
       }
     }, 500)
@@ -161,6 +165,12 @@ function SignupContent() {
           {error && (
             <div className="p-3 text-sm text-destructive bg-destructive/10 rounded-md">
               {error}
+            </div>
+          )}
+
+          {gitlabPopupOpen && (
+            <div className="p-3 text-sm text-muted-foreground bg-muted rounded-md text-center">
+              Complete sign in in the popup window
             </div>
           )}
 

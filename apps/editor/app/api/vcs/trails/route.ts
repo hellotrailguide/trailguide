@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
 
     if (path) {
       const { content, sha } = await provider.getTrail(owner, repo, path, branch)
-      return NextResponse.json({ content, sha })
+      return NextResponse.json({ content: JSON.parse(content), sha })
     } else {
       const trails = await provider.getTrails(owner, repo, branch)
       return NextResponse.json({ trails })
