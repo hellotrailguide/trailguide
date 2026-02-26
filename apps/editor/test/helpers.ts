@@ -21,7 +21,8 @@ export function makeSupabaseMock(overrides: Record<string, unknown> = {}) {
   const mockLimit = vi.fn().mockResolvedValue({ data: [], error: null })
   const mockOrder = vi.fn(() => ({ limit: mockLimit }))
   const mockGte = vi.fn(() => ({ order: mockOrder, limit: mockLimit }))
-  const mockEq = vi.fn(function () {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const mockEq: any = vi.fn(function () {
     return {
       eq: mockEq,
       gte: mockGte,
