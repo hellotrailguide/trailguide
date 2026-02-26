@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <title>Privacy Policy – Trailguide</title>
+  <meta name="description" content="Privacy Policy for Trailguide and the Trailguide Recorder Chrome Extension.">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    .privacy-container {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 80px 24px 120px;
+    }
+    .privacy-container h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .privacy-container .last-updated {
+      color: var(--text-muted, #94a3b8);
+      font-size: 0.875rem;
+      margin-bottom: 48px;
+    }
+    .privacy-container h2 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin: 40px 0 12px;
+    }
+    .privacy-container p, .privacy-container li {
+      color: var(--text-secondary, #cbd5e1);
+      line-height: 1.75;
+      font-size: 0.975rem;
+    }
+    .privacy-container ul {
+      padding-left: 20px;
+      margin: 12px 0;
+    }
+    .privacy-container li {
+      margin-bottom: 6px;
+    }
+    .privacy-container a {
+      color: var(--accent, #1a91a2);
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-container">
+      <a href="/" class="logo">
+        <img src="favicon.svg" alt="" height="44">
+        <span class="logo-text">Trailguide</span>
+      </a>
+      <div class="nav-links">
+        <a href="https://docs.gettrailguide.com">Documentation</a>
+        <a href="https://github.com/hellotrailguide/trailguide" target="_blank">GitHub</a>
+        <a href="/#pricing">Pricing</a>
+        <a href="https://app.gettrailguide.com" class="btn btn-primary">Get Started</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="privacy-container">
+    <h1>Privacy Policy</h1>
+    <p class="last-updated">Last updated: February 26, 2026</p>
+
+    <p>This Privacy Policy covers Trailguide ("we", "us", "our"), including the Trailguide web application at <a href="https://app.gettrailguide.com">app.gettrailguide.com</a> and the Trailguide Recorder Chrome Extension.</p>
+
+    <h2>1. Trailguide Recorder Chrome Extension</h2>
+    <p>The Trailguide Recorder extension helps you create product tours by recording steps on your web app. Here is exactly what it collects:</p>
+    <ul>
+      <li><strong>Screenshots</strong> — when you click an element during a recording session, a screenshot of the visible tab is captured and sent to the Trailguide editor to serve as a visual reference for that step.</li>
+      <li><strong>CSS selectors</strong> — the CSS selector of the element you clicked is captured and sent to the editor so the tour can target that element in production.</li>
+    </ul>
+    <p>This data is transmitted only to the Trailguide editor running in your browser session. It is not sent to any third party. Screenshots are stored in your browser's local storage and, if you are a Pro subscriber, in your private Supabase storage bucket.</p>
+    <p>The extension does <strong>not</strong> collect browsing history, personally identifiable information, passwords, financial data, location, or any data outside of an active recording session you initiate.</p>
+
+    <h2>2. Trailguide Web Application</h2>
+    <p>When you create an account at <a href="https://app.gettrailguide.com">app.gettrailguide.com</a>:</p>
+    <ul>
+      <li><strong>Account information</strong> — your email address and OAuth identity (GitHub or GitLab) are stored to authenticate your account.</li>
+      <li><strong>Trail data</strong> — the product tours you create, including step content and screenshots, are stored in your account.</li>
+      <li><strong>Usage analytics</strong> — if you enable analytics on your tours, aggregated event data (tour starts, completions, step views) from your end users is stored and displayed in your dashboard. No personally identifiable information about your end users is collected.</li>
+      <li><strong>Payment information</strong> — billing is handled by Stripe. We do not store credit card numbers or payment credentials.</li>
+    </ul>
+
+    <h2>3. How We Use Your Data</h2>
+    <ul>
+      <li>To provide and improve the Trailguide service.</li>
+      <li>To authenticate your account and manage your subscription.</li>
+      <li>To store and sync your product tours.</li>
+    </ul>
+    <p>We do not sell, rent, or share your data with third parties for marketing or advertising purposes.</p>
+
+    <h2>4. Third-Party Services</h2>
+    <ul>
+      <li><strong>Supabase</strong> — database, authentication, and file storage.</li>
+      <li><strong>Stripe</strong> — payment processing.</li>
+    </ul>
+    <p>Each service has its own privacy policy governing their handling of data.</p>
+
+    <h2>5. Data Retention</h2>
+    <p>Your data is retained as long as your account is active. You can delete your account and all associated data by contacting us at the email below.</p>
+
+    <h2>6. Contact</h2>
+    <p>Questions about this policy? Email us at <a href="mailto:hello@gettrailguide.com">hello@gettrailguide.com</a>.</p>
+  </div>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <p>&copy; 2026 Trailguide. <a href="/privacy.html">Privacy Policy</a></p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
