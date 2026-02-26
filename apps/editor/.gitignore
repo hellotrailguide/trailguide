@@ -35,3 +35,6 @@ next-env.d.ts
 *.swo
 .DS_Store
 .env.integration
+
+# Build artifacts
+*.zip
