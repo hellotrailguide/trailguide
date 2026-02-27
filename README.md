@@ -264,7 +264,7 @@ No ejecting, no custom render functions, no build step — just CSS.
 
 ## Using the Recorder
 
-The recorder is a **developer capture tool** for the free workflow. Install it in your React app, click elements to capture steps, and export clean JSON you own.
+The recorder is a **developer capture tool** for the free workflow. You add it directly to your React app — it renders as a floating panel that only appears in development, never in production. Use it to click through your app and capture steps, then export the JSON and commit it to your repo. When you need to create or update a tour later, the recorder is already there waiting in your dev environment.
 
 **Try it before installing** — visit [app.gettrailguide.com/demo](https://app.gettrailguide.com/demo) to see the recorder in action without writing a line of code.
 
@@ -281,7 +281,7 @@ function App() {
   return (
     <>
       <YourApp />
-      {process.env.NODE_ENV === 'development' && (
+      {process.env.NEXT_PUBLIC_TRAILGUIDE_RECORDER === 'true' && (
         <RecorderOverlay recorder={recorder} />
       )}
     </>
@@ -289,15 +289,28 @@ function App() {
 }
 ```
 
+Gate it behind an env variable so it only appears when you explicitly want to record — not every time you run your dev server. Add it to your `.env.local` when you need it, leave it out the rest of the time. It never ships to production regardless.
+
+```bash
+# .env.local — only add this when you want to record
+NEXT_PUBLIC_TRAILGUIDE_RECORDER=true
+```
+
+For non-Next.js apps, use whatever env prefix your framework requires (e.g. `VITE_TRAILGUIDE_RECORDER` for Vite).
+
 ### Recording Flow
 
-1. Click **Record** in the overlay panel
-2. Click any element on the page to capture it
-3. Fill in what the user should do and know
-4. Repeat for each step
-5. Click **Save Trail** to download the JSON
+1. Run your app locally — the recorder panel appears automatically
+2. Click **Record** in the overlay
+3. Click any element on the page to capture it as a step
+4. Fill in what the user should do and know
+5. Repeat for each step
+6. Click **Save Trail** to download the JSON
+7. Commit the JSON to your repo and load it with `<Trailguide />`
 
 The recorder generates smart selectors, preferring stable attributes (`id`, `data-trail-id`, `aria-label`) over fragile paths.
+
+> **Note:** Because the recorder runs inside your local dev environment, creating and updating tours requires someone with access to the codebase running the app locally. If you need non-developers to record and manage tours, or want to record against any URL without touching the codebase, that's what [Trailguide Pro](#trailguide-pro) is for.
 
 ---
 
@@ -394,8 +407,8 @@ pnpm dev
 - [x] Recorder (`@trailguide/recorder`)
 - [x] Trail validation
 - [ ] Conditional steps
-- [ ] Vue convenience wrapper
-- [ ] Svelte convenience wrapper
+- [ ] Vue convenience wrapper (`@trailguide/vue`) — Vue composables on top of core, which already works in Vue today
+- [ ] Svelte convenience wrapper (`@trailguide/svelte`) — Svelte stores/actions on top of core, which already works in Svelte today
 
 ### Pro
 - [x] Visual Editor (point-and-click, drag-and-drop, rich text, live preview)
