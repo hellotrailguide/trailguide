@@ -4,26 +4,22 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "dev": "pnpm --filter @trailguide/editor dev",
     "dev:vanilla": "npx serve examples/vanilla-demo",
     "dev:website": "npx serve website",
     "build": "pnpm -r build",
     "build:core": "pnpm --filter @trailguide/core build",
     "build:runtime": "pnpm --filter @trailguide/runtime build",
-    "build:editor": "pnpm --filter @trailguide/editor build",
     "build:showcase": "pnpm --filter @trailguide/showcase build",
     "dev:showcase": "pnpm --filter @trailguide/showcase dev",
     "dev:docs": "pnpm --filter @trailguide/docs dev",
     "build:docs": "pnpm --filter @trailguide/docs build",
     "typecheck": "pnpm -r typecheck",
-    "seed:analytics": "pnpm --filter @trailguide/editor seed:analytics",
     "clean": "pnpm -r exec rm -rf dist node_modules",
     "test": "vitest run --workspace vitest.workspace.ts",
     "test:watch": "vitest --workspace vitest.workspace.ts",
     "test:coverage": "vitest run --workspace vitest.workspace.ts --coverage",
     "test:core": "vitest run --project core",
-    "test:runtime": "vitest run --project runtime",
-    "test:editor": "vitest run --project editor"
+    "test:runtime": "vitest run --project runtime"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.4.0",
