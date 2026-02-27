@@ -67,9 +67,8 @@ describe('scrollToElement', () => {
     el.scrollIntoView = vi.fn()
     scrollToElement(el)
     expect(el.scrollIntoView).toHaveBeenCalledWith({
-      behavior: 'smooth',
       block: 'center',
-      inline: 'center',
+      inline: 'nearest',
     })
   })
 })
