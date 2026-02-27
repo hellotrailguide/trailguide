@@ -8,6 +8,9 @@
 
 [Live Demo](https://app.gettrailguide.com/demo) · [Website](https://gettrailguide.com) · [Documentation](https://docs.gettrailguide.com)
 
+![Trailguide Pro — record a trail and sync to GitHub or GitLab in seconds](https://raw.githubusercontent.com/hellotrailguide/trailguide/main/.github/assets/QuickStart.gif)
+*↑ [Trailguide Pro](https://app.gettrailguide.com) — visual editor, Git sync, and analytics for your whole team*
+
 ---
 
 ## Why Trailguide?
@@ -38,7 +41,7 @@ You can:
 
 No accounts. No tracking. No hosted dependencies.
 
-The optional [Pro Editor](#trailguide-pro) adds convenience features for teams — but the core tooling will always be free.
+The free path is a **developer tool** — someone on your team writes or records the JSON, commits it, and deploys it. If you want non-developers to create and manage tours, built-in analytics, and one-click Git sync, that's what [Pro](#trailguide-pro) is for.
 
 ---
 
@@ -46,30 +49,38 @@ The optional [Pro Editor](#trailguide-pro) adds convenience features for teams �
 
 **Good fit:**
 - Dev teams who want onboarding without a SaaS dependency
-- Product managers who want to ship tours without waiting on engineering sprints
-- Customer success teams building walkthroughs for complex features
 - Products that ship behind firewalls or on-prem
 - OSS maintainers documenting complex UIs
 - Teams tired of per-seat pricing
+- Teams who want tours in version control, not a vendor dashboard
 
 **Not a fit:**
 - Teams with no engineering resources — the initial install requires a developer
-- Teams who need marketing to deploy tours with zero engineer review
+- Teams who need marketing to deploy tours with zero engineer involvement
 
 ---
 
 ## How It Works
 
+Two paths — pick the one that fits your team:
+
+**Free — developer workflow**
 ```
-1. Run your app locally
-2. Enable the recorder
-3. Click through your UI to capture steps
-4. Export the trail as a JSON file
-5. Commit it to your repo
-6. Load it in production with <Trailguide />
+1. Install the runtime in your app
+2. Write trail JSON by hand, or use the recorder to capture steps by clicking
+3. Commit the JSON to your repo
+4. Load it with <Trailguide />
 ```
 
-That's it. Edit the JSON, reload, see changes. No build step. No deploy. No dashboard.
+**Pro — whole team workflow**
+```
+1. A developer installs the runtime once
+2. Anyone on your team opens the editor, enters your app URL, and hits Record
+3. Click through your app — every click becomes a step, no code required
+4. Edit, reorder, and preview in the visual editor
+5. Hit Sync — trails push to GitHub or GitLab as a PR/MR
+6. Engineers review and merge. Done.
+```
 
 ---
 
@@ -253,7 +264,9 @@ No ejecting, no custom render functions, no build step — just CSS.
 
 ## Using the Recorder
 
-The recorder is a **developer capture tool** — not a full visual editor. It generates clean, reviewable JSON that you own.
+The recorder is a **developer capture tool** for the free workflow. Install it in your React app, click elements to capture steps, and export clean JSON you own.
+
+**Try it before installing** — visit [app.gettrailguide.com/demo](https://app.gettrailguide.com/demo) to see the recorder in action without writing a line of code.
 
 ```bash
 npm install @trailguide/recorder
@@ -378,7 +391,7 @@ pnpm dev
 ### Free & Open Source
 - [x] Core runtime (works in React, Vue, Svelte, vanilla JS — any framework)
 - [x] React hooks and components (`@trailguide/runtime`)
-- [x] Recorder
+- [x] Recorder (`@trailguide/recorder`)
 - [x] Trail validation
 - [ ] Conditional steps
 - [ ] Vue convenience wrapper
@@ -386,7 +399,8 @@ pnpm dev
 
 ### Pro
 - [x] Visual Editor (point-and-click, drag-and-drop, rich text, live preview)
-- [x] Inline flow recording
+- [x] Trail & screenshot storage — every trail is saved with screenshots so your team can open and modify them anytime
+- [x] Inline flow recording (Chrome extension)
 - [x] Trail playback preview
 - [x] Selector quality indicators
 - [x] Selector auto-repair
@@ -399,40 +413,42 @@ pnpm dev
 
 ## Trailguide Pro
 
-For teams who want **speed, safety, and insights** — without changing how trails are stored or shipped.
+Your app ships every week. Your tours need to keep up. Pro is how your whole team — product, marketing, customer success — stays on top of it without filing an engineering ticket every time copy changes.
 
-The workflow: a developer installs the runtime once. After that, product managers and customer success teams create and update tours in the visual editor — no code required. Every step is stored with a screenshot so your team can see exactly what changed when your UI evolves. Update copy, fix broken steps, check analytics, push to GitHub or GitLab as a PR/MR. Engineers review, merge, done.
+A developer installs the runtime once. After that, anyone on your team can open the editor, record a new trail, edit an existing one, and push it to GitHub or GitLab as a pull request. Engineers review and merge. No one has to hand-edit JSON.
+
+### Your trails, stored with screenshots
+
+Every trail you build in the Pro Editor is saved to your account with a screenshot of each step. When your UI changes, you'll see exactly what shifted — open any trail, update the affected steps, and push a fix before users hit a broken tour.
 
 ### Visual Editor
-- **Screenshot storage** — every step is saved with a screenshot of your UI. When your app changes, you'll see exactly what shifted and can fix it before users notice
-- **Update copy without a deploy** — change step titles, reword instructions, fix typos directly in the editor. No PR, no deploy, no engineering ticket
-- **Point-and-click element selection** — click any element on your site to capture it as a step, no CSS selectors to write
-- **Inline flow recording** — hit Record, click through your app, and every click becomes a trail step in real time
-- **Trail playback preview** — step through the full trail inside the editor before publishing
-- **Rich text editing** — format step titles and content with a friendly editor, no JSON hand-editing
-- **Drag-and-drop step ordering** — reorganize your flow instantly
-- **JSON import/export** — everything exports to clean JSON you own
+- **Point-and-click recording** — open your app in the editor, click through it, every click becomes a step
+- **Rich text editing** — format step content without touching JSON
+- **Drag-and-drop step ordering** — reorganize flows instantly
+- **Live preview** — step through the full trail inside the editor before publishing
+- **JSON import/export** — everything is still plain JSON you own
 
-### Selector Quality & Reliability
-- **Selector quality indicators** — every captured selector is graded as Stable, Moderate, or Fragile with actionable hints (e.g., "Add a `data-trail-id` for stability")
-- **Selector auto-repair** — when DOM changes break a selector, the editor suggests fixes with confidence scores
-- **Warnings when trails break** — catch broken selectors before your users do
+### Analytics
 
-### Analytics Dashboard
-- Completion rates
-- Drop-off by step (funnel view)
-- Time per step
-- Daily/weekly trends
+See exactly where users drop off, how long they spend on each step, and which tours actually get completed. Completion funnels, time-per-step breakdowns, daily and weekly trends. This is data companies pay hundreds of dollars a month for in standalone analytics tools — it's built into Pro.
 
-### Git Sync — GitHub &amp; GitLab
+### Git Sync — GitHub & GitLab
 - Push trails as PRs (GitHub) or MRs (GitLab) directly from the editor
 - Choose any branch — push to `develop`, `main`, or a feature branch
-- Review changes in code
-- Full version history
+- Review changes in code like any other diff
+- Full version history, rollbacks, branching — everything Git already gives you
 
-**The Pro Editor is optional.** Everything it produces is still just JSON files in your repo. No lock-in, ever.
+### Selector Quality & Reliability
+- **Selector quality indicators** — every captured selector is graded Stable, Moderate, or Fragile with actionable hints
+- **Selector auto-repair** — when DOM changes break a selector, the editor suggests fixes with confidence scores
 
-[Try Pro Free](https://app.gettrailguide.com) — 14 days free, then $29/month. No credit card required to start.
+### Pricing
+
+Appcues starts at $249/month. Pendo won't show you pricing until you talk to sales. Trailguide Pro is **$29/month** — one flat price, unlimited trails, unlimited users.
+
+**The Pro Editor is optional.** Everything it produces is still plain JSON in your repo. No lock-in, ever.
+
+[Try Pro Free](https://app.gettrailguide.com) — 14 days free, no credit card required.
 
 ---
 
