@@ -5,7 +5,7 @@ import { DocsThemeConfig } from 'nextra-theme-docs'
 const config: DocsThemeConfig = {
   logo: (
     <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-      <Image src="/logo.svg" alt="Trailguide" width={44} height={44} />
+      <Image src="/icon.png" alt="Trailguide" width={44} height={44} />
       <span style={{ fontWeight: 700, fontSize: 18 }}>Trailguide</span>
     </span>
   ),
@@ -17,7 +17,7 @@ const config: DocsThemeConfig = {
   head: (
     <>
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+      <link rel="icon" href="/icon.png" type="image/png" />
       <meta property="og:title" content="Trailguide Documentation" />
       <meta property="og:description" content="Product tour SDK for web applications" />
     </>
