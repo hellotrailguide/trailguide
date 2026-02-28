@@ -48,9 +48,14 @@ Most onboarding tools are third-party scripts — loaded from a CDN, configured 
 | No external script tag | ✅ | ❌ |
 | TypeScript types | ✅ | Sometimes |
 | Works offline / in staging | ✅ | Sometimes |
+| No per-user pricing | ✅ | ❌ |
 | CSS selector targeting | ✅ | ✅ |
 | Analytics | ✅ Pro | ✅ |
-| GitHub sync | ✅ Pro | ❌ |
+| Visual editor | ✅ Pro | ✅ |
+| Hosted trail storage with screenshots | ✅ Pro | ❌ |
+| Git sync (GitHub + GitLab) | ✅ Pro | ❌ |
+| Load trails from your repo | ✅ Pro | ❌ |
+| Selector quality grades | ✅ Pro | ❌ |
 
 ## Packages
 
@@ -65,12 +70,17 @@ Most onboarding tools are third-party scripts — loaded from a CDN, configured 
 
 ## Free vs Pro
 
-The SDK is fully open source (MIT). Everything in this documentation works out of the box.
+The SDK is fully open source (MIT). Everything in this documentation works out of the box — build tours in JSON, ship them with your code, no account needed.
 
-**Trailguide Pro** unlocks:
-- **Analytics** — track starts, completions, drop-off by step, and trends over time
-- **GitHub Sync** — push tour JSON files to a repository directly from the editor
-- **Visual Editor** — build and preview tours without writing code, sync changes back to your repo
+**Trailguide Pro** is the hosted editor at [app.gettrailguide.com](https://app.gettrailguide.com). It gives your team a permanent home for your trails: a visual dashboard where anyone — not just developers — can open a trail, see a screenshot of what each step was pointing at, and update it when the app changes. Trails sync back to GitHub or GitLab as commits or pull requests, so nothing leaves version control.
+
+**What Pro adds:**
+
+- **Hosted trail storage with screenshots** — every trail lives in your dashboard. Each step is stored with a screenshot taken at the time you built it. When your app ships a redesign, open the editor, see exactly what shifted, fix it, and push the update. Non-devs can own this without touching the repo.
+- **Visual editor** — build tours by clicking through your app. No CSS selectors to write. Drag steps to reorder, edit copy inline, and play back the full trail before you ship it.
+- **Analytics** — see starts, completions, and a step-by-step drop-off funnel. Know which steps lose users and whether your changes made things better.
+- **Git sync (GitHub + GitLab)** — load existing trails straight from your repo, edit them in the dashboard, and push changes back as commits or pull/merge requests. Works with both GitHub and GitLab.
+- **Selector quality grades** — every captured element is graded Stable, Moderate, or Fragile, with suggestions to fix brittle selectors before they break in production.
 
 <Callout type="info">
   Start a **free 14-day Pro trial** at [app.gettrailguide.com](https://app.gettrailguide.com) — no credit card required.
