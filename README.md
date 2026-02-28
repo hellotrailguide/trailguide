@@ -461,7 +461,7 @@ Appcues starts at $249/month. Pendo won't show you pricing until you talk to sal
 
 **The Pro Editor is optional.** Everything it produces is still plain JSON in your repo. No lock-in, ever.
 
-[Try Pro Free](https://app.gettrailguide.com) — 14 days free, no credit card required.
+[Try Pro Free](https://app.gettrailguide.com) — 14-day free trial.
 
 ---
 
