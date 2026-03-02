@@ -1,0 +1,42 @@
+{
+  "id": "1772462034039-ojlzoer",
+  "title": "Untitled Trail",
+  "version": "1.0.0",
+  "steps": [
+    {
+      "title": "Dashboard",
+      "content": "<p>This is your dashboard</p>",
+      "target": "[data-trail-id=\"nav-dashboard\"]",
+      "placement": "bottom",
+      "id": "1772462048821-horxa0e"
+    },
+    {
+      "title": "Projects",
+      "content": "<p>Check out some projects</p>",
+      "target": "[data-trail-id=\"nav-projects\"]",
+      "placement": "bottom",
+      "id": "1772462049794-8xvwxc9"
+    },
+    {
+      "title": "Team",
+      "content": "<p>Hey team, here we are.</p>",
+      "target": "[data-trail-id=\"nav-team\"]",
+      "placement": "bottom",
+      "id": "1772462050604-5i7eidq"
+    },
+    {
+      "title": "Settings",
+      "content": "<p>This is where you set things. </p>",
+      "target": "[data-trail-id=\"nav-settings\"]",
+      "placement": "bottom",
+      "id": "1772462051577-vajr0e4"
+    },
+    {
+      "title": "New Project",
+      "content": "<p>Create new projects here! </p>",
+      "target": "[data-trail-id=\"create-project-btn\"]",
+      "placement": "top",
+      "id": "1772462054066-17qk0rn"
+    }
+  ]
+}
