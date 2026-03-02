@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/png" href="icon.png">
-  <title>Trailguide - Tutorials as Code</title>
-  <meta name="description" content="Git-native product tours for any web app. No vendor lock-in, no per-user pricing. Your tutorials live in your repo.">
+  <title>Trailguide — Product tours that double as Playwright tests</title>
+  <meta name="description" content="Record a product tour once. It runs as an onboarding guide for users and a Playwright regression test in CI — from the same JSON file. Free, open-source, no per-user pricing.">
   <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@trailguide/core@0.1.3/dist/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@trailguide/core@0.1.4/dist/style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -33,10 +33,10 @@
   <section class="hero">
     <div class="container">
       <div class="badge">Open Source · MIT License</div>
-      <h1>Tutorials as Code</h1>
+      <h1>One recording. Two jobs.</h1>
       <p class="hero-subtitle" data-trail-id="hero-subtitle">
-        Product tours that live in your Git repo.<br>
-        No vendor lock-in. No per-user pricing. Just JSON files you own.
+        Record a product tour once. It runs as an onboarding guide for your users<br>
+        <em>and</em> a Playwright regression test in CI — from the same JSON file.
       </p>
       <div class="hero-cta">
         <button onclick="startTour()" class="btn btn-primary btn-large">
@@ -85,6 +85,7 @@
             <li>Tutorials locked in vendor dashboard</li>
             <li>No version control</li>
             <li>Can't review changes in PRs</li>
+            <li>Tours break silently in production</li>
             <li>Vendor goes down = tours gone</li>
           </ul>
         </div>
@@ -95,6 +96,7 @@
             <li>Tutorials are JSON in your repo</li>
             <li>Full Git history</li>
             <li>Review tour changes like code</li>
+            <li>Same file runs as a CI test — breaks caught before users see them</li>
             <li>You own everything</li>
           </ul>
         </div>
@@ -240,6 +242,54 @@
           <h3>Tiny Bundle</h3>
           <p>Under 13kb gzipped (JS + CSS). No analytics bloat, no tracking scripts, no third-party requests.</p>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Two Jobs -->
+  <section class="two-jobs">
+    <div class="container">
+      <div class="pro-badge">New · @trailguide/playwright</div>
+      <h2>The only tour tool that also runs your tours as tests</h2>
+      <p class="section-subtitle">Set any trail to <strong>Both</strong> mode. It shows onboarding tooltips to real users <em>and</em> runs as a Playwright regression test in CI. Automatically.</p>
+
+      <div class="two-jobs-grid">
+        <div class="two-jobs-card">
+          <div class="two-jobs-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+          </div>
+          <h3>For users</h3>
+          <p>The same trail file plays as the onboarding tooltip sequence your users see. Nothing changes about how you ship tours.</p>
+        </div>
+
+        <div class="two-jobs-divider">
+          <span>+</span>
+        </div>
+
+        <div class="two-jobs-card">
+          <div class="two-jobs-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg>
+          </div>
+          <h3>In CI</h3>
+          <p>On every deploy, Playwright walks each step — clicking, filling, asserting. If a button moves or a selector breaks, the test fails before users hit it.</p>
+        </div>
+      </div>
+
+      <div class="code-block code-block-large" style="max-width: 680px; margin: 40px auto 0;">
+<pre><code><span class="code-comment">// playwright.config.ts — add once, covers every trail set to test/both mode</span>
+<span class="code-keyword">import</span> { test } <span class="code-keyword">from</span> <span class="code-string">'@playwright/test'</span>;
+<span class="code-keyword">import</span> { runTrail } <span class="code-keyword">from</span> <span class="code-string">'@trailguide/playwright'</span>;
+<span class="code-keyword">import</span> welcomeTrail <span class="code-keyword">from</span> <span class="code-string">'./tours/welcome.json'</span>;
+
+<span class="code-function">test</span>(<span class="code-string">'welcome tour'</span>, <span class="code-keyword">async</span> ({ page }) => {
+  <span class="code-keyword">await</span> page.<span class="code-function">goto</span>(<span class="code-string">'https://myapp.com'</span>);
+  <span class="code-keyword">await</span> <span class="code-function">runTrail</span>(page, welcomeTrail);
+});</code></pre>
+      </div>
+
+      <div class="analytics-cta">
+        <a href="https://app.gettrailguide.com" class="btn btn-primary btn-large">Try it free</a>
+        <p class="analytics-cta-note">No other product tour tool does this.</p>
       </div>
     </div>
   </section>
@@ -596,7 +646,7 @@
             <img src="icon.png" alt="" height="24">
             <span class="logo-text">Trailguide</span>
           </a>
-          <p>Tutorials as code. Free forever.</p>
+          <p>One recording. Two jobs. Free forever.</p>
         </div>
         <div class="footer-links">
           <h4>Product</h4>
@@ -616,7 +666,7 @@
       </div>
     </div>
   </footer>
-  <script src="https://cdn.jsdelivr.net/npm/@trailguide/core@0.1.3/dist/trailguide.umd.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@trailguide/core@0.1.4/dist/trailguide.umd.js"></script>
   <script>
     var trail = {
       id: 'website-tour',

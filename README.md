@@ -1,6 +1,6 @@
 # Trailguide
 
-**Tutorials as code** — Git-native product tours for any web app.
+**One recording. Two jobs.** Record a product tour once. It runs as an onboarding guide for users *and* a Playwright regression test in CI, from the same JSON file.
 
 [![npm](https://img.shields.io/npm/v/@trailguide/core)](https://www.npmjs.com/package/@trailguide/core)
 [![npm downloads](https://img.shields.io/npm/dm/@trailguide/core)](https://www.npmjs.com/package/@trailguide/core)
@@ -15,17 +15,16 @@
 
 ## Why Trailguide?
 
-Most product tour tools charge per user, lock your content in their dashboard, and disappear when they shut down.
+Most product tour tools charge per user, lock your content in their dashboard, and have no answer for "what happens when a deploy breaks the tour?" Trailguide solves all three.
 
-Trailguide is different:
-
+- **One file, two jobs.** Set a trail to `both` mode and it shows onboarding tooltips to users *and* runs as a Playwright regression test in CI. No other tour tool does this.
 - **No vendor lock-in** — Tours are JSON files in your repo. You own them forever.
 - **No per-user pricing** — The runtime is free. Show tours to a million users without paying a cent.
 - **Git-native** — Review tour changes in PRs. Roll back mistakes. Branch for experiments.
 - **Framework-agnostic** — Works with React, Vue, Svelte, vanilla JS, or anything that runs in a browser.
 - **Keyboard navigation built in** — Arrow keys, Enter, Escape. Works out of the box.
 
-Your UI already knows how to teach itself. Trailguide just makes it easy.
+Your UI already knows how to teach itself. Trailguide makes it easy and makes sure it stays working.
 
 ---
 
@@ -173,6 +172,80 @@ Tours are JSON files. Simple, readable, diffable.
 | `placement` | `top` \| `bottom` \| `left` \| `right` | Yes | Tooltip position |
 | `title` | string | Yes | Step headline |
 | `content` | string | Yes | Step description |
+
+### Trail Modes
+
+Every trail has an optional `mode` field that controls how it runs:
+
+| Mode | Behavior |
+|------|----------|
+| `"tour"` (default) | Shows onboarding tooltips to users |
+| `"test"` | Runs as a Playwright test only, no tooltip UI |
+| `"both"` | Shows tooltips to users AND runs as a CI test |
+
+```json
+{
+  "id": "welcome",
+  "title": "Welcome Tour",
+  "mode": "both",
+  "steps": [
+    {
+      "id": "step-1",
+      "target": "[data-trail-id='create-btn']",
+      "placement": "bottom",
+      "title": "Start here",
+      "content": "Click to create your first project.",
+      "action": "click",
+      "assert": { "type": "visible" }
+    }
+  ]
+}
+```
+
+### Step Test Fields
+
+When `mode` is `"test"` or `"both"`, steps support additional fields for automation:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `action` | `click` \| `fill` \| `select` \| `check` \| `hover` | Action Playwright executes on the target |
+| `value` | string | Value to fill or select (used with `fill` and `select` actions) |
+| `assert` | object | Assertion to run after the action |
+| `assert.type` | `visible` \| `hidden` \| `text` \| `value` \| `url` | What to check |
+| `assert.expected` | string | Expected value (used with `text`, `value`, `url`) |
+
+---
+
+## Running Trails as Playwright Tests
+
+Install the runner:
+
+```bash
+npm install --save-dev @trailguide/playwright
+```
+
+Then call `runTrail()` inside any Playwright test:
+
+```ts
+import { test } from '@playwright/test';
+import { runTrail } from '@trailguide/playwright';
+import welcomeTrail from './tours/welcome.json';
+
+test('welcome tour', async ({ page }) => {
+  await page.goto('https://myapp.com');
+  await runTrail(page, welcomeTrail);
+});
+```
+
+`runTrail` walks each step in order. For each step it:
+1. Navigates to `step.url` if set
+2. Executes the `action` on the target element (`click`, `fill`, etc.)
+3. Runs the `assert` if defined (`visible`, `has text`, `url equals`, etc.)
+4. Falls back to checking the element is attached to the DOM if neither action nor assert is set
+
+This means your trail JSON is the source of truth for both what users see and what CI verifies.
+
+---
 
 ### Best Practice: Stable Selectors
 
@@ -340,9 +413,10 @@ Validation checks:
 
 | Package | Description |
 |---------|-------------|
-| [`@trailguide/core`](https://www.npmjs.com/package/@trailguide/core) | Vanilla JS runtime — works with any framework |
+| [`@trailguide/core`](https://www.npmjs.com/package/@trailguide/core) | Vanilla JS runtime. Works with any framework. |
 | [`@trailguide/runtime`](https://www.npmjs.com/package/@trailguide/runtime) | React hooks and components |
-| [`@trailguide/recorder`](https://www.npmjs.com/package/@trailguide/recorder) | Capture steps by clicking elements |
+| [`@trailguide/recorder`](https://www.npmjs.com/package/@trailguide/recorder) | Capture steps by clicking elements in your dev environment |
+| [`@trailguide/playwright`](https://www.npmjs.com/package/@trailguide/playwright) | Run any trail as a Playwright regression test in CI |
 
 All packages are MIT licensed and free forever.
 
@@ -402,13 +476,15 @@ pnpm dev
 ## Roadmap
 
 ### Free & Open Source
-- [x] Core runtime (works in React, Vue, Svelte, vanilla JS — any framework)
+- [x] Core runtime (works in React, Vue, Svelte, vanilla JS)
 - [x] React hooks and components (`@trailguide/runtime`)
 - [x] Recorder (`@trailguide/recorder`)
 - [x] Trail validation
+- [x] Playwright test runner (`@trailguide/playwright`)
+- [x] Trail modes: `tour`, `test`, `both`
 - [ ] Conditional steps
-- [ ] Vue convenience wrapper (`@trailguide/vue`) — Vue composables on top of core, which already works in Vue today
-- [ ] Svelte convenience wrapper (`@trailguide/svelte`) — Svelte stores/actions on top of core, which already works in Svelte today
+- [ ] Vue convenience wrapper (`@trailguide/vue`)
+- [ ] Svelte convenience wrapper (`@trailguide/svelte`)
 
 ### Pro
 - [x] Visual Editor (point-and-click, drag-and-drop, rich text, live preview)
@@ -419,6 +495,7 @@ pnpm dev
 - [x] Selector auto-repair
 - [x] Analytics dashboard (completion rates, drop-off funnel, time per step)
 - [x] Git Sync — push trails as PRs/MRs to GitHub or GitLab
+- [x] Trail mode toggle (Guide / Test / Both) in the editor
 - [ ] A/B testing for trails
 - [ ] Team workspaces with role-based access
 
