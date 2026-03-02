@@ -50,6 +50,7 @@ Most onboarding tools are third-party scripts — loaded from a CDN, configured 
 | Works offline / in staging | ✅ | Sometimes |
 | No per-user pricing | ✅ | ❌ |
 | CSS selector targeting | ✅ | ✅ |
+| Runs as a Playwright CI test | ✅ | ❌ |
 | Analytics | ✅ Pro | ✅ |
 | Visual editor | ✅ Pro | ✅ |
 | Hosted trail storage with screenshots | ✅ Pro | ❌ |
@@ -66,6 +67,9 @@ Most onboarding tools are third-party scripts — loaded from a CDN, configured 
   <Cards.Card title="@trailguide/runtime" href="/getting-started/installation" arrow>
     React hooks and components. `useTrailManager`, `useRegisterTour`, and more.
   </Cards.Card>
+  <Cards.Card title="@trailguide/playwright" href="/guides/playwright" arrow>
+    Run any trail as a Playwright regression test in CI.
+  </Cards.Card>
 </Cards>
 
 ## Free vs Pro
@@ -81,6 +85,7 @@ The SDK is fully open source (MIT). Everything in this documentation works out o
 - **Analytics** — see starts, completions, and a step-by-step drop-off funnel. Know which steps lose users and whether your changes made things better.
 - **Git sync (GitHub + GitLab)** — load existing trails straight from your repo, edit them in the dashboard, and push changes back as commits or pull/merge requests. Works with both GitHub and GitLab.
 - **Selector quality grades** — every captured element is graded Stable, Moderate, or Fragile, with suggestions to fix brittle selectors before they break in production.
+- **Playwright test runner** — set any trail to `both` mode and it runs as a Playwright regression test in CI from the same JSON file. No separate test suite to maintain.
 
 <Callout type="info">
   Start a **free 14-day Pro trial** at [app.gettrailguide.com](https://app.gettrailguide.com).

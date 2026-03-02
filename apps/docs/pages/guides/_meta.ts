@@ -6,4 +6,5 @@ export default {
   'help-menu': 'Help Menu Integration',
   progress: 'Progress & Resuming',
   analytics: 'Analytics (Pro)',
+  playwright: 'Playwright Testing',
 }

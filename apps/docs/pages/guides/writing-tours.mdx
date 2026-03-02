@@ -101,6 +101,44 @@ lib/
 
 ---
 
+## Trail modes
+
+Every trail has an optional `mode` field:
+
+```ts
+const tour: Trail = {
+  id: 'onboarding',
+  title: 'Get started',
+  version: '1.0.0',
+  mode: 'both',   // 'tour' | 'test' | 'both'
+  steps: [/* ... */],
+}
+```
+
+| Mode | Behavior |
+|---|---|
+| `'tour'` | Shows onboarding tooltips to users. This is the default if `mode` is omitted. |
+| `'test'` | Runs as a Playwright test only. No tooltip UI is shown. |
+| `'both'` | Shows tooltips to users and runs as a Playwright CI test from the same file. |
+
+Steps can include `action`, `value`, and `assert` fields for test execution:
+
+```ts
+{
+  id: 'step-create',
+  target: '[data-trail-id="create-btn"]',
+  placement: 'bottom',
+  title: 'Create a project',
+  content: 'Click here to get started.',
+  action: 'click',
+  assert: { type: 'visible' },
+}
+```
+
+See the [Playwright guide](/guides/playwright) for full setup instructions.
+
+---
+
 ## Versioning strategy
 
 Tours are just data. Treat them like any other content in your codebase:

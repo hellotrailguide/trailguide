@@ -7,7 +7,7 @@ title: Types
 All types are exported from both `@trailguide/core` and `@trailguide/runtime`.
 
 ```ts
-import type { Trail, Step, Placement, TrailguideOptions, AnalyticsConfig } from '@trailguide/core'
+import type { Trail, Step, Placement, TrailMode, StepAction, StepAssert, TrailguideOptions, AnalyticsConfig } from '@trailguide/core'
 ```
 
 ---
@@ -18,10 +18,11 @@ A complete tour definition.
 
 ```ts
 interface Trail {
-  id: string        // unique identifier used in analytics and tourStorage
-  title: string     // display name used in analytics
-  version: string   // semver string — bump when steps change significantly
-  steps: Step[]     // ordered list of steps
+  id: string          // unique identifier used in analytics and tourStorage
+  title: string       // display name used in analytics
+  version: string     // semver string, bump when steps change significantly
+  steps: Step[]       // ordered list of steps
+  mode?: TrailMode    // 'tour' (default), 'test', or 'both'
 }
 ```
 
@@ -33,12 +34,16 @@ A single step in a tour.
 
 ```ts
 interface Step {
-  id: string           // unique within the tour; used in analytics
-  target: string       // CSS selector for the element to highlight
-  placement: Placement // which side of the target to show the tooltip
-  title: string        // tooltip heading
-  content: string      // tooltip body text
-  optional?: boolean   // if true, silently skip if target is not found/visible
+  id: string            // unique within the tour; used in analytics
+  target: string        // CSS selector for the element to highlight
+  placement: Placement  // which side of the target to show the tooltip
+  title: string         // tooltip heading
+  content: string       // tooltip body text
+  optional?: boolean    // if true, silently skip if target is not found/visible
+  url?: string          // pathname this step belongs to, used for cross-page tours
+  action?: StepAction   // action Playwright executes on the target in test mode
+  value?: string        // value for fill/select actions
+  assert?: StepAssert   // assertion to run after the action in test mode
 }
 ```
 
@@ -51,6 +56,39 @@ type Placement = 'top' | 'bottom' | 'left' | 'right'
 ```
 
 Trailguide uses `@floating-ui/dom` under the hood. The tooltip will `flip` to the opposite side and `shift` to stay in viewport automatically.
+
+---
+
+## `TrailMode`
+
+```ts
+type TrailMode = 'tour' | 'test' | 'both'
+```
+
+Controls how a trail runs. `'tour'` shows onboarding tooltips to users (the default). `'test'` runs the trail as a Playwright test only. `'both'` does both from the same JSON file. See the [Playwright guide](/guides/playwright) for setup.
+
+---
+
+## `StepAction`
+
+```ts
+type StepAction = 'click' | 'fill' | 'select' | 'check' | 'hover'
+```
+
+The action Playwright executes on the step's target element when running in test mode. Use `fill` and `select` with the `value` field.
+
+---
+
+## `StepAssert`
+
+```ts
+interface StepAssert {
+  type: 'visible' | 'hidden' | 'text' | 'value' | 'url'
+  expected?: string  // required for 'text', 'value', and 'url' types
+}
+```
+
+An assertion Playwright runs after the action. `visible` and `hidden` check element state. `text` checks the element's text content. `value` checks an input's value. `url` checks the current page URL.
 
 ---
 

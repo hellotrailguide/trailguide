@@ -1,0 +1,164 @@
+---
+title: Playwright Testing
+---
+
+import { Callout, Steps } from 'nextra/components'
+
+# Playwright Testing
+
+Set any trail to `both` mode and it runs as a Playwright regression test in CI from the same JSON file. The tour that guides new users through your product is also the test that verifies your product still works on every deploy.
+
+No separate test suite. No duplicate work.
+
+<Callout type="info">
+  `@trailguide/playwright` requires `@trailguide/core >= 0.1.4` and `@playwright/test >= 1.40.0`.
+</Callout>
+
+---
+
+## Setup
+
+<Steps>
+
+### Install the runner
+
+```bash
+npm install --save-dev @trailguide/playwright
+```
+
+### Set trail mode to `both`
+
+Add `mode: "both"` to any trail you want to run as a test. Optionally add `action` and `assert` fields to steps:
+
+```json
+{
+  "id": "welcome",
+  "title": "Welcome Tour",
+  "version": "1.0.0",
+  "mode": "both",
+  "steps": [
+    {
+      "id": "step-1",
+      "target": "[data-trail-id='create-btn']",
+      "placement": "bottom",
+      "title": "Create a project",
+      "content": "Click here to get started.",
+      "action": "click",
+      "assert": { "type": "visible" }
+    },
+    {
+      "id": "step-2",
+      "target": "[data-trail-id='project-name']",
+      "placement": "right",
+      "title": "Name it",
+      "content": "Give your project a name.",
+      "action": "fill",
+      "value": "My project",
+      "assert": { "type": "value", "expected": "My project" }
+    }
+  ]
+}
+```
+
+### Write a Playwright test
+
+```ts
+import { test } from '@playwright/test'
+import { runTrail } from '@trailguide/playwright'
+import welcomeTrail from './tours/welcome.json'
+
+test('welcome tour', async ({ page }) => {
+  await page.goto(process.env.BASE_URL ?? 'http://localhost:3000')
+  await runTrail(page, welcomeTrail)
+})
+```
+
+### Add to CI
+
+```yaml
+# .github/workflows/test.yml
+- name: Run trail tests
+  run: npx playwright test
+```
+
+</Steps>
+
+---
+
+## How `runTrail` works
+
+`runTrail(page, trail, options?)` walks each step in order. For each step:
+
+1. Navigates to `step.url` if set and the page is not already there
+2. Waits for the target element to be visible, then executes `step.action`
+3. Runs `step.assert` if defined
+4. Falls back to checking the element is attached to the DOM if neither `action` nor `assert` is set
+
+If any step fails — missing selector, failed action, or failed assertion — the test fails and the deploy is blocked.
+
+```ts
+import { runTrail, type RunTrailOptions } from '@trailguide/playwright'
+
+await runTrail(page, trail, {
+  baseUrl: 'https://staging.myapp.com',  // prepended to step.url if relative
+  timeout: 8000,                          // per-step timeout in ms (default: 8000)
+})
+```
+
+---
+
+## Step fields reference
+
+| Field | Type | Description |
+|---|---|---|
+| `action` | `StepAction` | Action to execute on the target element |
+| `value` | `string` | Value for `fill` and `select` actions |
+| `assert` | `StepAssert` | Assertion to run after the action |
+
+### `StepAction`
+
+| Value | Playwright method |
+|---|---|
+| `'click'` | `locator.click()` |
+| `'fill'` | `locator.fill(value)` |
+| `'select'` | `locator.selectOption(value)` |
+| `'check'` | `locator.check()` |
+| `'hover'` | `locator.hover()` |
+
+### `StepAssert`
+
+| `type` | Assertion | Requires `expected` |
+|---|---|---|
+| `'visible'` | Element is visible | No |
+| `'hidden'` | Element is hidden | No |
+| `'text'` | Element has text content | Yes |
+| `'value'` | Input has value | Yes |
+| `'url'` | Page URL matches | Yes |
+
+---
+
+## Steps without action or assert
+
+Steps that have no `action` or `assert` still run in CI. `runTrail` checks that the target element is attached to the DOM. This is enough to catch the most common regression: a selector that no longer matches anything after a code change.
+
+```json
+{
+  "id": "step-nav",
+  "target": "[data-trail-id='main-nav']",
+  "placement": "bottom",
+  "title": "Navigation",
+  "content": "Find everything you need here."
+}
+```
+
+No `action`. No `assert`. The test still fails if `[data-trail-id='main-nav']` disappears.
+
+---
+
+## Using the Pro Editor
+
+The [Pro Editor](https://app.gettrailguide.com) has a mode toggle on every trail (Guide / Test / Both) and exposes `action`, `value`, and `assert` fields per step when the mode is set to `test` or `both`. You can build and update test trails visually without touching JSON.
+
+<Callout type="info">
+  Every trail in the Pro Editor is stored with a screenshot of each step. When your UI ships a redesign, anyone on your team can open the trail, see exactly what changed, fix the affected steps, and push the update to GitHub or GitLab as a pull request — no engineering ticket needed.
+</Callout>
