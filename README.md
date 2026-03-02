@@ -457,7 +457,7 @@ See exactly where users drop off, how long they spend on each step, and which to
 
 ### Pricing
 
-Appcues starts at $249/month. Pendo won't show you pricing until you talk to sales. Trailguide Pro is **$29/month** — one flat price, unlimited trails, unlimited users.
+Appcues starts at $249/month. Pendo won't show you pricing until you talk to sales. Trailguide Pro is **$49/month** — one flat price, unlimited trails, unlimited users.
 
 **The Pro Editor is optional.** Everything it produces is still plain JSON in your repo. No lock-in, ever.
 
