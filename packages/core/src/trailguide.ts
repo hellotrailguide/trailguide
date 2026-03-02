@@ -1,7 +1,8 @@
 import { computePosition, offset, flip, shift, arrow } from '@floating-ui/dom';
 import type { Trail, Step, TrailguideOptions, Placement } from './types';
-import { findElement, isElementVisible, scrollToElement, createElement, escapeHtml } from './dom';
+import { findElement, scrollToElement, createElement, escapeHtml } from './dom';
 import { sendEvent } from './analytics';
+import { activeTrailSession } from './storage';
 
 export class Trailguide {
   private trail: Trail | null = null;
@@ -26,10 +27,11 @@ export class Trailguide {
     this.options = options;
   }
 
-  start(trail: Trail): void {
+  start(trail: Trail, startAtIndex = 0): void {
     this.trail = trail;
-    this.currentStepIndex = 0;
+    this.currentStepIndex = startAtIndex;
     this.isActive = true;
+    activeTrailSession.save(trail, startAtIndex);
     this.createOverlay();
     this.showStep();
     this.bindKeyboard();
@@ -37,6 +39,7 @@ export class Trailguide {
   }
 
   stop(): void {
+    activeTrailSession.clear();
     if (this.isActive) {
       this.emitAnalytics('trail_abandoned');
       this.isActive = false;
@@ -54,6 +57,7 @@ export class Trailguide {
 
     if (this.currentStepIndex < this.trail.steps.length - 1) {
       this.currentStepIndex++;
+      activeTrailSession.update(this.currentStepIndex);
       this.showStep();
     } else {
       this.complete();
@@ -65,11 +69,13 @@ export class Trailguide {
 
     if (this.currentStepIndex > 0) {
       this.currentStepIndex--;
+      activeTrailSession.update(this.currentStepIndex);
       this.showStep();
     }
   }
 
   skip(): void {
+    activeTrailSession.clear();
     this.emitAnalytics('trail_skipped');
     this.isActive = false;
     this.cleanup();
@@ -80,15 +86,41 @@ export class Trailguide {
     if (!this.trail || !this.isActive) return;
     if (index >= 0 && index < this.trail.steps.length) {
       this.currentStepIndex = index;
+      activeTrailSession.update(index);
       this.showStep();
     }
   }
 
   private complete(): void {
+    activeTrailSession.clear();
     this.emitAnalytics('trail_completed');
     this.isActive = false;
     this.cleanup();
     this.options.onComplete?.();
+  }
+
+  /** Waits up to `timeout`ms for an element matching `selector` to appear in the DOM */
+  private waitForElement(selector: string, timeout = 3000): Promise<HTMLElement | null> {
+    return new Promise((resolve) => {
+      const el = findElement(selector);
+      if (el) { resolve(el); return; }
+
+      let settled = false;
+      const finish = (result: HTMLElement | null) => {
+        if (settled) return;
+        settled = true;
+        observer.disconnect();
+        resolve(result);
+      };
+
+      const observer = new MutationObserver(() => {
+        const found = findElement(selector);
+        if (found) finish(found);
+      });
+
+      observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+      setTimeout(() => finish(findElement(selector)), timeout);
+    });
   }
 
   private createOverlay(): void {
@@ -163,38 +195,62 @@ export class Trailguide {
 
     this.emitAnalytics('step_viewed');
 
-    const target = findElement(step.target);
-    const notFound = !target;
-    const notVisible = target ? !isElementVisible(target) : false;
-
-    if (notFound || notVisible) {
-      // Optional steps are silently skipped
-      if (step.optional) {
-        if (this.currentStepIndex < this.trail.steps.length - 1) {
-          this.currentStepIndex++;
-          this.showStep();
-        } else {
-          this.complete();
-        }
+    // If the step has a URL and we're on the wrong page, prompt navigation
+    if (step.url) {
+      const stepPath = new URL(step.url, window.location.origin).pathname;
+      if (window.location.pathname !== stepPath) {
+        this.showNavigateState(step);
         return;
       }
+    }
 
-      const errorType = notFound ? 'element_not_found' : 'element_not_visible';
-      this.options.onError?.(step, errorType);
-      console.warn(`[Trailguide] Target not found or not visible: ${step.target}`);
-      this.showErrorState(step);
+    // Fast path: element is already in the DOM
+    const immediateTarget = findElement(step.target);
+    if (immediateTarget) {
+      scrollToElement(immediateTarget);
+      this.stepTimerId = setTimeout(() => {
+        this.stepTimerId = null;
+        if (!this.isActive) return;
+        this.updateSpotlight(immediateTarget);
+        this.updateTooltip(step, immediateTarget);
+        this.options.onStepChange?.(step, this.currentStepIndex);
+      }, 100);
       return;
     }
 
-    scrollToElement(target!);
+    // Element not immediately in DOM
+    if (step.optional) {
+      if (this.currentStepIndex < this.trail.steps.length - 1) {
+        this.currentStepIndex++;
+        activeTrailSession.update(this.currentStepIndex);
+        this.showStep();
+      } else {
+        this.complete();
+      }
+      return;
+    }
 
-    this.stepTimerId = setTimeout(() => {
-      this.stepTimerId = null;
-      if (!this.isActive) return; // Guard: tour may have been stopped during the delay
-      this.updateSpotlight(target!);
-      this.updateTooltip(step, target!);
-      this.options.onStepChange?.(step, this.currentStepIndex);
-    }, 100);
+    // Show error immediately so there's no blank delay
+    this.options.onError?.(step, 'element_not_found');
+    console.warn(`[Trailguide] Target not found: ${step.target}`);
+    this.showErrorState(step);
+
+    // Also wait in background — if element appears (SPA lazy load), auto-recover
+    this.waitForElement(step.target).then(target => {
+      if (!this.isActive || !target) return;
+      // Element appeared — clear error state and show the step properly
+      if (this.tooltip) this.tooltip.style.transform = '';
+      if (spotlight) spotlight.style.display = '';
+      if (highlight) highlight.style.display = '';
+      scrollToElement(target);
+      this.stepTimerId = setTimeout(() => {
+        this.stepTimerId = null;
+        if (!this.isActive) return;
+        this.updateSpotlight(target);
+        this.updateTooltip(step, target);
+        this.options.onStepChange?.(step, this.currentStepIndex);
+      }, 100);
+    });
   }
 
   private showErrorState(step: Step): void {
@@ -224,6 +280,44 @@ export class Trailguide {
     if (progress) progress.textContent = `${this.currentStepIndex + 1} of ${this.trail.steps.length}`;
     if (prevBtn) prevBtn.style.display = isFirst ? 'none' : 'block';
     if (nextBtn) nextBtn.textContent = isLast ? 'Close' : 'Skip Step';
+
+    this.tooltip.style.left = '50%';
+    this.tooltip.style.top = '50%';
+    this.tooltip.style.transform = 'translate(-50%, -50%)';
+  }
+
+  private showNavigateState(step: Step): void {
+    if (!this.tooltip || !this.trail) return;
+
+    const spotlight = this.overlay?.querySelector<HTMLElement>('.trailguide-spotlight');
+    const highlight = this.overlay?.querySelector<HTMLElement>('.trailguide-highlight');
+    if (spotlight) spotlight.style.display = 'none';
+    if (highlight) highlight.style.display = 'none';
+
+    const title = this.tooltip.querySelector('.trailguide-tooltip-title');
+    const body = this.tooltip.querySelector('.trailguide-tooltip-body');
+    const progress = this.tooltip.querySelector('.trailguide-tooltip-progress');
+    const prevBtn = this.tooltip.querySelector<HTMLElement>('.trailguide-btn-prev');
+    const nextBtn = this.tooltip.querySelector<HTMLElement>('.trailguide-btn-next');
+
+    const isFirst = this.currentStepIndex === 0;
+    const destination = step.url!;
+
+    if (title) title.textContent = step.title;
+    if (body) {
+      body.innerHTML = `
+        <p style="margin: 0 0 8px 0;">This step is on a different page.</p>
+        <p style="margin: 0; font-size: 13px; color: #6b7280;">Navigate to continue the tour.</p>
+      `;
+    }
+    if (progress) progress.textContent = `${this.currentStepIndex + 1} of ${this.trail.steps.length}`;
+    if (prevBtn) prevBtn.style.display = isFirst ? 'none' : 'block';
+    if (nextBtn) {
+      nextBtn.textContent = 'Go There';
+      const navHandler = (e: Event) => { e.stopImmediatePropagation(); window.location.href = destination; };
+      nextBtn.addEventListener('click', navHandler, true);
+      this.stepCleanupFns.push(() => nextBtn.removeEventListener('click', navHandler, true));
+    }
 
     this.tooltip.style.left = '50%';
     this.tooltip.style.top = '50%';
@@ -406,4 +500,15 @@ export function prev(): void {
 export function skip(): void {
   defaultInstance?.skip();
   defaultInstance = null;
+}
+
+export function resume(options?: TrailguideOptions): Trailguide | null {
+  const saved = activeTrailSession.get();
+  if (!saved) return null;
+  if (defaultInstance) {
+    defaultInstance.stop();
+  }
+  defaultInstance = new Trailguide(options ?? {});
+  defaultInstance.start(saved.trail, saved.stepIndex);
+  return defaultInstance;
 }

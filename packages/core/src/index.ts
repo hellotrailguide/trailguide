@@ -1,11 +1,14 @@
 import './styles.css';
 
-export { Trailguide, start, stop, next, prev, skip } from './trailguide';
+export { Trailguide, start, stop, next, prev, skip, resume } from './trailguide';
 
 export type {
   Trail,
   Step,
   Placement,
+  TrailMode,
+  StepAction,
+  StepAssert,
   TrailguideOptions,
   AnalyticsConfig,
 } from './types';

@@ -1,5 +1,14 @@
 export type Placement = 'top' | 'bottom' | 'left' | 'right';
 
+export type TrailMode = 'tour' | 'test' | 'both';
+
+export type StepAction = 'click' | 'fill' | 'select' | 'check' | 'hover';
+
+export interface StepAssert {
+  type: 'visible' | 'hidden' | 'text' | 'value' | 'url';
+  expected?: string;
+}
+
 export interface Step {
   id: string;
   target: string;
@@ -8,6 +17,14 @@ export interface Step {
   content: string;
   /** When true, silently skip this step if the target element is not found or not visible */
   optional?: boolean;
+  /** URL or pathname this step belongs to (e.g. '/dashboard'). Used to resume cross-page tours. */
+  url?: string;
+  /** Action to execute on the target element when running as a test */
+  action?: StepAction;
+  /** Value for fill/select actions */
+  value?: string;
+  /** Assertion to run after the action */
+  assert?: StepAssert;
 }
 
 export interface Trail {
@@ -15,6 +32,8 @@ export interface Trail {
   title: string;
   version: string;
   steps: Step[];
+  /** Whether this trail runs as a guide, a Playwright test, or both. Defaults to 'tour'. */
+  mode?: TrailMode;
 }
 
 export interface AnalyticsConfig {

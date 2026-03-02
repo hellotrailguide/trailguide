@@ -1,0 +1,52 @@
+{
+  "name": "@trailguide/playwright",
+  "version": "0.1.0",
+  "description": "Run Trailguide trails as Playwright tests",
+  "type": "module",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "vite build && tsc --emitDeclarationOnly",
+    "dev": "vite build --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "trailguide",
+    "playwright",
+    "testing",
+    "e2e",
+    "product-tour"
+  ],
+  "author": "Branden Langhals",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hellotrailguide/trailguide.git",
+    "directory": "packages/playwright"
+  },
+  "peerDependencies": {
+    "@playwright/test": ">=1.40.0",
+    "@trailguide/core": ">=0.1.4"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "@trailguide/core": "workspace:*",
+    "typescript": "^5.4.0",
+    "vite": "^5.2.0",
+    "vite-plugin-dts": "^3.8.0"
+  }
+}

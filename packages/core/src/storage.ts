@@ -1,4 +1,45 @@
+import type { Trail } from './types';
+
 const PREFIX = 'trailguide:';
+const ACTIVE_KEY = `${PREFIX}active`;
+
+function session(): Storage | null {
+  try {
+    return typeof window !== 'undefined' ? window.sessionStorage : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Persists active trail state so it can be resumed after cross-page navigation */
+export const activeTrailSession = {
+  save(trail: Trail, stepIndex: number): void {
+    session()?.setItem(ACTIVE_KEY, JSON.stringify({ trail, stepIndex }));
+  },
+
+  get(): { trail: Trail; stepIndex: number } | null {
+    const raw = session()?.getItem(ACTIVE_KEY);
+    if (!raw) return null;
+    try {
+      return JSON.parse(raw);
+    } catch {
+      return null;
+    }
+  },
+
+  update(stepIndex: number): void {
+    const raw = session()?.getItem(ACTIVE_KEY);
+    if (!raw) return;
+    try {
+      const data = JSON.parse(raw);
+      session()?.setItem(ACTIVE_KEY, JSON.stringify({ ...data, stepIndex }));
+    } catch {}
+  },
+
+  clear(): void {
+    session()?.removeItem(ACTIVE_KEY);
+  },
+};
 
 function completionKey(id: string): string {
   return `${PREFIX}completed:${id}`;
