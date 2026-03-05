@@ -233,3 +233,198 @@
   left: -5px;
   box-shadow: -1px 1px 1px rgba(0, 0, 0, 0.05);
 }
+
+/* ============================================================
+   Celebration Step
+   ============================================================ */
+
+.trailguide-celebration {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--trailguide-overlay);
+  font-family: var(--trailguide-font);
+}
+
+.trailguide-celebration-card {
+  background: var(--trailguide-bg);
+  border-radius: var(--trailguide-radius);
+  box-shadow: var(--trailguide-shadow);
+  padding: 40px 48px;
+  text-align: center;
+  max-width: 400px;
+  width: 90vw;
+  position: relative;
+  overflow: hidden;
+}
+
+.trailguide-celebration-emoji {
+  font-size: 56px;
+  margin: 0 0 16px 0;
+  line-height: 1;
+}
+
+.trailguide-celebration-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--trailguide-title);
+  margin: 0 0 8px 0;
+}
+
+.trailguide-celebration-body {
+  font-size: 14px;
+  color: var(--trailguide-text);
+  margin: 0 0 24px 0;
+  line-height: 1.6;
+}
+
+@keyframes trailguide-confetti-fall {
+  0% { transform: translateY(-10px) rotateZ(0deg); opacity: 1; }
+  80% { opacity: 1; }
+  100% { transform: translateY(320px) rotateZ(720deg); opacity: 0; }
+}
+
+.trailguide-confetti-particle {
+  position: absolute;
+  top: 0;
+  border-radius: 2px;
+  animation: trailguide-confetti-fall 2s ease-in forwards;
+  pointer-events: none;
+}
+
+/* ============================================================
+   Feedback Step
+   ============================================================ */
+
+.trailguide-feedback {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--trailguide-overlay);
+  font-family: var(--trailguide-font);
+}
+
+.trailguide-feedback-card {
+  background: var(--trailguide-bg);
+  border-radius: var(--trailguide-radius);
+  box-shadow: var(--trailguide-shadow);
+  padding: 32px;
+  max-width: 380px;
+  width: 90vw;
+}
+
+.trailguide-feedback-question {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--trailguide-title);
+  margin: 0 0 20px 0;
+  text-align: center;
+}
+
+.trailguide-star-row {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.trailguide-star {
+  font-size: 32px;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+  line-height: 1;
+  background: none;
+  border: none;
+  padding: 0;
+  color: #d1d5db;
+}
+
+.trailguide-star.active,
+.trailguide-star:hover {
+  color: #f59e0b;
+  transform: scale(1.15);
+}
+
+.trailguide-thumbs-row {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  margin-bottom: 20px;
+}
+
+.trailguide-thumb {
+  font-size: 40px;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+  background: none;
+  border: none;
+  padding: 0;
+  line-height: 1;
+  opacity: 0.35;
+}
+
+.trailguide-thumb.active,
+.trailguide-thumb:hover {
+  opacity: 1;
+  transform: scale(1.2);
+}
+
+.trailguide-nps-row {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.trailguide-nps-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  border: 1px solid var(--trailguide-border);
+  background: var(--trailguide-btn-bg);
+  color: var(--trailguide-btn-text);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.1s ease;
+}
+
+.trailguide-nps-btn.active,
+.trailguide-nps-btn:hover {
+  background: var(--trailguide-accent);
+  color: white;
+  border-color: var(--trailguide-accent);
+}
+
+.trailguide-feedback-comment {
+  width: 100%;
+  border: 1px solid var(--trailguide-border);
+  border-radius: calc(var(--trailguide-radius) - 2px);
+  padding: 10px 12px;
+  font-size: 13px;
+  color: var(--trailguide-text);
+  background: var(--trailguide-btn-bg);
+  resize: vertical;
+  min-height: 72px;
+  box-sizing: border-box;
+  font-family: var(--trailguide-font);
+  margin-bottom: 16px;
+  outline: none;
+  display: block;
+}
+
+.trailguide-feedback-comment:focus {
+  border-color: var(--trailguide-accent);
+}
+
+.trailguide-feedback-footer {
+  display: flex;
+  justify-content: flex-end;
+}

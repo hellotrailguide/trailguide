@@ -1,5 +1,5 @@
 import { computePosition, offset, flip, shift, arrow } from '@floating-ui/dom';
-import type { Trail, Step, TrailguideOptions, Placement } from './types';
+import type { Trail, Step, TrailguideOptions, Placement, FeedbackConfig } from './types';
 import { findElement, scrollToElement, createElement, escapeHtml } from './dom';
 import { sendEvent } from './analytics';
 import { activeTrailSession } from './storage';
@@ -171,6 +171,154 @@ export class Trailguide {
     this.tooltip.querySelector('.trailguide-btn-next')?.addEventListener('click', () => this.next());
   }
 
+  private showCelebrationStep(step: Step): void {
+    if (!this.overlay || !this.tooltip) return;
+    this.overlay.style.display = 'none';
+    this.tooltip.style.display = 'none';
+
+    const cfg = step.celebration ?? {};
+    const emoji = cfg.emoji ?? '🎉';
+    const showConfetti = cfg.showConfetti !== false;
+    const isLast = this.currentStepIndex === (this.trail?.steps.length ?? 1) - 1;
+    const ctaLabel = cfg.ctaLabel ?? (isLast ? 'Done' : 'Next');
+
+    const el = createElement('div', 'trailguide-celebration');
+    const card = createElement('div', 'trailguide-celebration-card', el);
+
+    const emojiEl = createElement('p', 'trailguide-celebration-emoji', card);
+    emojiEl.textContent = emoji;
+
+    const title = createElement('h3', 'trailguide-celebration-title', card);
+    title.textContent = step.title;
+
+    const body = createElement('p', 'trailguide-celebration-body', card);
+    body.textContent = step.content;
+
+    const btn = createElement('button', 'trailguide-btn trailguide-btn-primary', card) as HTMLButtonElement;
+    btn.textContent = ctaLabel;
+    btn.addEventListener('click', () => this.next());
+
+    if (showConfetti) {
+      const colors = ['#ff6b6b', '#ffd93d', '#6bcb77', '#4d96ff', '#ff922b', '#cc5de8', '#f06595'];
+      for (let i = 0; i < 28; i++) {
+        const p = createElement('div', 'trailguide-confetti-particle', card);
+        p.style.left = `${Math.random() * 100}%`;
+        p.style.background = colors[Math.floor(Math.random() * colors.length)];
+        p.style.animationDelay = `${Math.random() * 0.6}s`;
+        p.style.animationDuration = `${1.4 + Math.random() * 1.2}s`;
+        p.style.width = `${6 + Math.random() * 7}px`;
+        p.style.height = `${6 + Math.random() * 7}px`;
+        if (Math.random() > 0.5) p.style.borderRadius = '50%';
+      }
+    }
+
+    document.body.appendChild(el);
+    this.stepCleanupFns.push(() => {
+      el.remove();
+      if (this.overlay) this.overlay.style.display = '';
+      if (this.tooltip) this.tooltip.style.display = '';
+    });
+  }
+
+  private showFeedbackStep(step: Step): void {
+    if (!this.overlay || !this.tooltip) return;
+    this.overlay.style.display = 'none';
+    this.tooltip.style.display = 'none';
+
+    const cfg: FeedbackConfig = step.feedback ?? { type: 'stars' };
+    const question = cfg.question ?? 'How would you rate your experience?';
+    const isLast = this.currentStepIndex === (this.trail?.steps.length ?? 1) - 1;
+    const ctaLabel = cfg.ctaLabel ?? (isLast ? 'Submit' : 'Submit & Continue');
+
+    let selectedRating: number | null = null;
+    let commentText = '';
+
+    const el = createElement('div', 'trailguide-feedback');
+    const card = createElement('div', 'trailguide-feedback-card', el);
+
+    const q = createElement('p', 'trailguide-feedback-question', card);
+    q.textContent = question;
+
+    // Rating widget
+    if (cfg.type === 'stars') {
+      const row = createElement('div', 'trailguide-star-row', card);
+      const stars: HTMLElement[] = [];
+      for (let i = 1; i <= 5; i++) {
+        const star = createElement('button', 'trailguide-star', row) as HTMLButtonElement;
+        star.textContent = '★';
+        star.dataset.val = String(i);
+        stars.push(star);
+        star.addEventListener('click', () => {
+          selectedRating = i;
+          stars.forEach((s, idx) => s.classList.toggle('active', idx < i));
+        });
+        star.addEventListener('mouseover', () => {
+          stars.forEach((s, idx) => s.classList.toggle('active', idx < i));
+        });
+      }
+      row.addEventListener('mouseleave', () => {
+        const r = selectedRating ?? 0;
+        stars.forEach((s, idx) => s.classList.toggle('active', idx < r));
+      });
+    } else if (cfg.type === 'thumbs') {
+      const row = createElement('div', 'trailguide-thumbs-row', card);
+      const up = createElement('button', 'trailguide-thumb', row) as HTMLButtonElement;
+      up.textContent = '👍';
+      const down = createElement('button', 'trailguide-thumb', row) as HTMLButtonElement;
+      down.textContent = '👎';
+      up.addEventListener('click', () => { selectedRating = 1; up.classList.add('active'); down.classList.remove('active'); });
+      down.addEventListener('click', () => { selectedRating = 0; down.classList.add('active'); up.classList.remove('active'); });
+    } else {
+      // NPS 0-10
+      const row = createElement('div', 'trailguide-nps-row', card);
+      for (let i = 0; i <= 10; i++) {
+        const btn = createElement('button', 'trailguide-nps-btn', row) as HTMLButtonElement;
+        btn.textContent = String(i);
+        btn.addEventListener('click', () => {
+          selectedRating = i;
+          row.querySelectorAll('.trailguide-nps-btn').forEach((b, idx) => b.classList.toggle('active', idx === i));
+        });
+      }
+    }
+
+    // Optional comment
+    if (cfg.allowComment) {
+      const textarea = createElement('textarea', 'trailguide-feedback-comment', card) as HTMLTextAreaElement;
+      textarea.placeholder = cfg.commentPlaceholder ?? 'Any other thoughts? (optional)';
+      textarea.addEventListener('input', () => { commentText = textarea.value; });
+    }
+
+    const footer = createElement('div', 'trailguide-feedback-footer', card);
+    const submitBtn = createElement('button', 'trailguide-btn trailguide-btn-primary', footer) as HTMLButtonElement;
+    submitBtn.textContent = ctaLabel;
+    submitBtn.addEventListener('click', async () => {
+      if (cfg.webhook && selectedRating !== null) {
+        try {
+          await fetch(cfg.webhook, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              rating: selectedRating,
+              comment: commentText || undefined,
+              trailId: this.trail?.id,
+              stepId: step.id,
+            }),
+          });
+        } catch {
+          // Non-blocking — proceed regardless
+        }
+      }
+      this.next();
+    });
+
+    document.body.appendChild(el);
+    this.stepCleanupFns.push(() => {
+      el.remove();
+      if (this.overlay) this.overlay.style.display = '';
+      if (this.tooltip) this.tooltip.style.display = '';
+    });
+  }
+
   private showStep(): void {
     if (!this.trail || !this.overlay || !this.tooltip) return;
 
@@ -195,6 +343,9 @@ export class Trailguide {
     if (!step) return;
 
     this.emitAnalytics('step_viewed');
+
+    if (step.stepType === 'celebration') { this.showCelebrationStep(step); return; }
+    if (step.stepType === 'feedback') { this.showFeedbackStep(step); return; }
 
     // If the step has a URL and we're on the wrong page, prompt navigation
     if (step.url) {

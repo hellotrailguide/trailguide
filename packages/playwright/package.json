@@ -1,6 +1,6 @@
 {
   "name": "@trailguide/playwright",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Run Trailguide trails as Playwright tests",
   "type": "module",
   "main": "dist/index.cjs",
