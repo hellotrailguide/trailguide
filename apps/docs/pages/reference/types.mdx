@@ -7,7 +7,12 @@ title: Types
 All types are exported from both `@trailguide/core` and `@trailguide/runtime`.
 
 ```ts
-import type { Trail, Step, Placement, TrailMode, StepAction, StepAssert, TrailguideOptions, AnalyticsConfig } from '@trailguide/core'
+import type {
+  Trail, Step, Placement, TrailMode, StepType,
+  StepAction, StepAssert, StepWait,
+  CelebrationConfig, FeedbackConfig,
+  TrailguideOptions, AnalyticsConfig
+} from '@trailguide/core'
 ```
 
 ---
@@ -41,9 +46,23 @@ interface Step {
   content: string       // tooltip body text
   optional?: boolean    // if true, silently skip if target is not found/visible
   url?: string          // pathname this step belongs to, used for cross-page tours
-  action?: StepAction   // action Playwright executes on the target in test mode
-  value?: string        // value for fill/select actions
-  assert?: StepAssert   // assertion to run after the action in test mode
+
+  // Step type (default: 'element' — standard tooltip)
+  stepType?: StepType
+
+  // Celebration overlay config (used when stepType is 'celebration')
+  celebration?: CelebrationConfig
+
+  // Feedback form config (used when stepType is 'feedback')
+  feedback?: FeedbackConfig
+
+  // Playwright test fields
+  action?: StepAction        // action to execute on the target
+  value?: string             // value for fill, select, scroll, dragTo, etc.
+  assert?: StepAssert        // assertion to run after the action
+  wait?: StepWait            // condition to wait for before the assertion
+  opensNewTab?: boolean      // if true, waits for a new tab to open after the action
+  tabContext?: 'main' | 'new' // switch active page context before this step
 }
 ```
 
@@ -69,13 +88,76 @@ Controls how a trail runs. `'tour'` shows onboarding tooltips to users (the defa
 
 ---
 
+## `StepType`
+
+```ts
+type StepType = 'element' | 'celebration' | 'feedback'
+```
+
+Controls how a step is rendered.
+
+- `'element'` (default): standard tooltip anchored to a DOM element
+- `'celebration'`: fullscreen overlay with confetti and a completion message
+- `'feedback'`: fullscreen rating form (stars, thumbs, or NPS) with an optional comment field
+
+---
+
+## `CelebrationConfig`
+
+Configuration for a `celebration` step.
+
+```ts
+interface CelebrationConfig {
+  emoji?: string        // emoji displayed above the title (default: '🎉')
+  showConfetti?: boolean // animate confetti particles (default: true)
+  ctaLabel?: string     // button label (default: 'Done')
+}
+```
+
+---
+
+## `FeedbackConfig`
+
+Configuration for a `feedback` step.
+
+```ts
+interface FeedbackConfig {
+  type: 'stars' | 'thumbs' | 'nps'   // rating widget type
+  question?: string                    // prompt shown above the widget
+  allowComment?: boolean               // show an optional comment textarea
+  commentPlaceholder?: string          // placeholder text for the textarea
+  webhook?: string                     // POST rating + comment to this URL on submit
+  ctaLabel?: string                    // submit button label (default: 'Submit')
+}
+```
+
+When `webhook` is set, `runTrail` POSTs a JSON body of `{ rating, comment, stepId, trailId }` to that URL on submission.
+
+---
+
 ## `StepAction`
 
 ```ts
-type StepAction = 'click' | 'rightClick' | 'fill' | 'select' | 'check' | 'hover'
+type StepAction =
+  | 'click'         // locator.click()
+  | 'rightClick'    // locator.click({ button: 'right' })
+  | 'dblclick'      // locator.dblclick()
+  | 'hover'         // locator.hover()
+  | 'focus'         // locator.focus()
+  | 'fill'          // locator.fill(value)
+  | 'type'          // locator.pressSequentially(value)
+  | 'press'         // locator.press(value), e.g. "Enter", "Control+s"
+  | 'select'        // locator.selectOption(value)
+  | 'check'         // locator.check()
+  | 'uncheck'       // locator.uncheck()
+  | 'scroll'        // page.evaluate / el.scrollBy — value is "deltaX,deltaY"
+  | 'dragTo'        // locator.dragTo(page.locator(value))
+  | 'setInputFiles' // locator.setInputFiles(value)
+  | 'goto'          // page.goto(value)
+  | 'evaluate'      // page.evaluate(value) — runs arbitrary JS
 ```
 
-The action Playwright executes on the step's target element when running in test mode. Use `fill` and `select` with the `value` field.
+See the [Playwright guide](/guides/playwright) for the full action reference with examples.
 
 ---
 
@@ -83,12 +165,40 @@ The action Playwright executes on the step's target element when running in test
 
 ```ts
 interface StepAssert {
-  type: 'visible' | 'hidden' | 'text' | 'value' | 'url'
-  expected?: string  // required for 'text', 'value', and 'url' types
+  type:
+    | 'visible'       // element is visible
+    | 'hidden'        // element is hidden
+    | 'enabled'       // element is not disabled
+    | 'disabled'      // element is disabled
+    | 'checked'       // checkbox or radio is checked
+    | 'empty'         // input or element has no content
+    | 'text'          // element text matches expected exactly
+    | 'containsText'  // element text contains expected
+    | 'value'         // input value matches expected
+    | 'hasClass'      // element has the CSS class in expected
+    | 'attribute'     // element attribute equals expected
+    | 'count'         // number of matching elements equals expected
+    | 'url'           // page URL matches expected
+    | 'title'         // page title matches expected
+    | 'screenshot'    // visual screenshot comparison
+    | 'custom'        // run expected as a JS expression
+  expected?: string   // value for text/value/url/title/hasClass/count/containsText/custom
+  attribute?: string  // attribute name when type is 'attribute'
 }
 ```
 
-An assertion Playwright runs after the action. `visible` and `hidden` check element state. `text` checks the element's text content. `value` checks an input's value. `url` checks the current page URL.
+---
+
+## `StepWait`
+
+An optional wait condition that runs after the action and before the assertion.
+
+```ts
+interface StepWait {
+  type: 'networkIdle' | 'load' | 'domcontentloaded' | 'selector' | 'timeout'
+  value?: string  // selector (for 'selector') or milliseconds (for 'timeout')
+}
+```
 
 ---
 

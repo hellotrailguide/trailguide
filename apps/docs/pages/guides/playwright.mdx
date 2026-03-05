@@ -11,7 +11,7 @@ Set any trail to `both` mode and it runs as a Playwright regression test in CI f
 No separate test suite. No duplicate work.
 
 <Callout type="info">
-  `@trailguide/playwright` requires `@trailguide/core >= 0.1.4` and `@playwright/test >= 1.40.0`.
+  `@trailguide/playwright` requires `@trailguide/core >= 0.1.7` and `@playwright/test >= 1.40.0`.
 </Callout>
 
 ---
@@ -91,10 +91,11 @@ test('welcome tour', async ({ page }) => {
 
 1. Navigates to `step.url` if set and the page is not already there
 2. Waits for the target element to be visible, then executes `step.action`
-3. Runs `step.assert` if defined
-4. Falls back to checking the element is attached to the DOM if neither `action` nor `assert` is set
+3. Runs `step.wait` condition if defined
+4. Runs `step.assert` if defined
+5. Falls back to checking the element is attached to the DOM if neither `action` nor `assert` is set
 
-If any step fails — missing selector, failed action, or failed assertion — the test fails and the deploy is blocked.
+If any step fails (missing selector, failed action, or failed assertion) the test fails and the deploy is blocked.
 
 ```ts
 import { runTrail, type RunTrailOptions } from '@trailguide/playwright'
@@ -107,40 +108,129 @@ await runTrail(page, trail, {
 
 ---
 
-## Step fields reference
+## Actions
 
-| Field | Type | Description |
+The `action` field tells Playwright what to do on the step's target element.
+
+| `action` | Playwright method | Notes |
 |---|---|---|
-| `action` | `StepAction` | Action to execute on the target element |
-| `value` | `string` | Value for `fill` and `select` actions |
-| `assert` | `StepAssert` | Assertion to run after the action |
+| `'click'` | `locator.click()` | Default interaction |
+| `'rightClick'` | `locator.click({ button: 'right' })` | Opens context menus |
+| `'dblclick'` | `locator.dblclick()` | Double-click |
+| `'hover'` | `locator.hover()` | Mouse over, no click |
+| `'focus'` | `locator.focus()` | Keyboard focus without clicking |
+| `'fill'` | `locator.fill(value)` | Clears and types into an input |
+| `'type'` | `locator.pressSequentially(value)` | Types character by character |
+| `'press'` | `locator.press(value)` | Keyboard shortcut, e.g. `"Enter"`, `"Control+s"` |
+| `'select'` | `locator.selectOption(value)` | Selects a `<select>` option |
+| `'check'` | `locator.check()` | Checks a checkbox or radio |
+| `'uncheck'` | `locator.uncheck()` | Unchecks a checkbox |
+| `'scroll'` | `el.scrollBy(dx, dy)` | `value` is `"deltaX,deltaY"`, e.g. `"0,300"` |
+| `'dragTo'` | `locator.dragTo(target)` | `value` is the CSS selector of the drop target |
+| `'setInputFiles'` | `locator.setInputFiles(value)` | `value` is the file path |
+| `'goto'` | `page.goto(value)` | Navigate to `value` URL; no locator needed |
+| `'evaluate'` | `page.evaluate(value)` | Execute arbitrary JavaScript string |
 
-### `StepAction`
+### Multi-tab support
 
-| Value | Playwright method |
-|---|---|
-| `'click'` | `locator.click()` |
-| `'rightClick'` | `locator.click({ button: 'right' })` |
-| `'fill'` | `locator.fill(value)` |
-| `'select'` | `locator.selectOption(value)` |
-| `'check'` | `locator.check()` |
-| `'hover'` | `locator.hover()` |
+When an action opens a new browser tab, set `opensNewTab: true` on that step. `runTrail` waits for the new page to open and switches context to it automatically.
 
-### `StepAssert`
+```json
+{
+  "id": "open-tab",
+  "target": "[data-trail-id='external-link']",
+  "action": "click",
+  "opensNewTab": true
+}
+```
+
+To switch back to a previously opened tab, use `tabContext: "main"` (original page) or `tabContext: "new"` (most recently opened tab).
+
+```json
+{
+  "id": "back-to-main",
+  "target": "[data-trail-id='header']",
+  "tabContext": "main",
+  "assert": { "type": "visible" }
+}
+```
+
+---
+
+## Assertions
+
+The `assert` field runs a Playwright assertion after the action completes.
 
 | `type` | Assertion | Requires `expected` |
 |---|---|---|
 | `'visible'` | Element is visible | No |
 | `'hidden'` | Element is hidden | No |
-| `'text'` | Element has text content | Yes |
-| `'value'` | Input has value | Yes |
+| `'enabled'` | Element is enabled (not disabled) | No |
+| `'disabled'` | Element is disabled | No |
+| `'checked'` | Checkbox or radio is checked | No |
+| `'empty'` | Input or element has no content | No |
+| `'text'` | Element text matches exactly | Yes |
+| `'containsText'` | Element text contains substring | Yes |
+| `'value'` | Input value matches | Yes |
+| `'hasClass'` | Element has a CSS class | Yes |
+| `'attribute'` | Element attribute matches | `attribute` + `expected` |
+| `'count'` | Number of matching elements | Yes (number as string) |
 | `'url'` | Page URL matches | Yes |
+| `'title'` | Page title matches | Yes |
+| `'screenshot'` | Visual screenshot comparison | No |
+| `'custom'` | Run a custom JS assertion | Yes (JS expression) |
+
+For `'attribute'`, set `attribute` to the attribute name and `expected` to the expected value:
+
+```json
+{
+  "assert": {
+    "type": "attribute",
+    "attribute": "aria-expanded",
+    "expected": "true"
+  }
+}
+```
+
+---
+
+## Wait conditions
+
+Use `wait` on a step to pause before running the assertion. This is useful after navigations, animations, or async data loads.
+
+| `type` | Waits for | `value` |
+|---|---|---|
+| `'networkIdle'` | No network requests for 500ms | Not used |
+| `'load'` | `load` event | Not used |
+| `'domcontentloaded'` | `DOMContentLoaded` event | Not used |
+| `'selector'` | Element to appear in DOM | CSS selector |
+| `'timeout'` | Fixed delay | Milliseconds as string |
+
+```json
+{
+  "id": "after-submit",
+  "target": "[data-trail-id='success-banner']",
+  "action": "click",
+  "wait": { "type": "networkIdle" },
+  "assert": { "type": "visible" }
+}
+```
+
+```json
+{
+  "id": "wait-for-modal",
+  "target": "[data-trail-id='open-modal']",
+  "action": "click",
+  "wait": { "type": "selector", "value": ".modal" },
+  "assert": { "type": "visible" }
+}
+```
 
 ---
 
 ## Steps without action or assert
 
-Steps that have no `action` or `assert` still run in CI. `runTrail` checks that the target element is attached to the DOM. This is enough to catch the most common regression: a selector that no longer matches anything after a code change.
+Steps that have no `action` or `assert` still run in CI. `runTrail` checks that the target element is attached to the DOM. This catches the most common regression: a selector that no longer matches anything after a code change.
 
 ```json
 {
@@ -158,14 +248,18 @@ No `action`. No `assert`. The test still fails if `[data-trail-id='main-nav']` d
 
 ## Using the Pro Editor
 
-The [Pro Editor](https://app.gettrailguide.com) has a mode toggle on every trail (Guide / Test / Both) and exposes `action`, `value`, and `assert` fields per step when the mode is set to `test` or `both`. You can build and update test trails visually without touching JSON.
+The [Pro Editor](https://app.gettrailguide.com) has a mode toggle on every trail (Guide / Test / Both) and exposes `action`, `value`, `assert`, `wait`, and tab context fields per step when the mode is set to `test` or `both`. You can build and update test trails visually without touching JSON.
 
-When recording in `test` or `both` mode, the extension automatically captures actions beyond clicks:
+When recording in `test` or `both` mode, the extension automatically captures a wide range of interactions:
 
-- **Form fields** (`input`, `textarea`): click to focus, type your value, then Tab or click away. The step is recorded with `action: "fill"` and the value you typed.
-- **Dropdowns** (`select`): choose an option and the step is recorded with `action: "select"` and the selected value.
-- **Right-click menus**: right-click an element and it is recorded as `action: "rightClick"`. Then click the menu item to capture it as a separate `click` step. Playwright replays both to open the menu and interact with it.
+- **Form fields** (`input`, `textarea`): click to focus, type your value, then Tab or click away. Captured as `action: "fill"` with the typed value.
+- **Dropdowns** (`select`): choose an option. Captured as `action: "select"` with the selected value.
+- **Right-click menus**: right-click an element to capture it as `action: "rightClick"`, then click the menu item as a separate `click` step.
+- **Double-click**: double-click an element to capture it as `action: "dblclick"`.
+- **Hover**: Alt + click to capture as `action: "hover"` without triggering a navigation.
+- **Keyboard shortcuts**: pressing Enter, Tab, arrow keys, F-keys, or Ctrl/Cmd combos is captured as `action: "press"` with the key combination.
+- **Scroll**: scrolling the page or a scrollable container is captured as `action: "scroll"` with the pixel offset.
 
 <Callout type="info">
-  Every trail in the Pro Editor is stored with a screenshot of each step. When your UI ships a redesign, anyone on your team can open the trail, see exactly what changed, fix the affected steps, and push the update to GitHub or GitLab as a pull request — no engineering ticket needed.
+  Every trail in the Pro Editor is stored with a screenshot of each step. When your UI ships a redesign, anyone on your team can open the trail, see exactly what changed, fix the affected steps, and push the update to GitHub or GitLab as a pull request without an engineering ticket.
 </Callout>
