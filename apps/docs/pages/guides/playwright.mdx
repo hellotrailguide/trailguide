@@ -120,6 +120,7 @@ await runTrail(page, trail, {
 | Value | Playwright method |
 |---|---|
 | `'click'` | `locator.click()` |
+| `'rightClick'` | `locator.click({ button: 'right' })` |
 | `'fill'` | `locator.fill(value)` |
 | `'select'` | `locator.selectOption(value)` |
 | `'check'` | `locator.check()` |
@@ -158,6 +159,12 @@ No `action`. No `assert`. The test still fails if `[data-trail-id='main-nav']` d
 ## Using the Pro Editor
 
 The [Pro Editor](https://app.gettrailguide.com) has a mode toggle on every trail (Guide / Test / Both) and exposes `action`, `value`, and `assert` fields per step when the mode is set to `test` or `both`. You can build and update test trails visually without touching JSON.
+
+When recording in `test` or `both` mode, the extension automatically captures actions beyond clicks:
+
+- **Form fields** (`input`, `textarea`): click to focus, type your value, then Tab or click away. The step is recorded with `action: "fill"` and the value you typed.
+- **Dropdowns** (`select`): choose an option and the step is recorded with `action: "select"` and the selected value.
+- **Right-click menus**: right-click an element and it is recorded as `action: "rightClick"`. Then click the menu item to capture it as a separate `click` step. Playwright replays both to open the menu and interact with it.
 
 <Callout type="info">
   Every trail in the Pro Editor is stored with a screenshot of each step. When your UI ships a redesign, anyone on your team can open the trail, see exactly what changed, fix the affected steps, and push the update to GitHub or GitLab as a pull request — no engineering ticket needed.
