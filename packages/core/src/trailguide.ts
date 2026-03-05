@@ -28,6 +28,7 @@ export class Trailguide {
   }
 
   start(trail: Trail, startAtIndex = 0): void {
+    if (trail.mode === 'test') return;
     this.trail = trail;
     this.currentStepIndex = startAtIndex;
     this.isActive = true;

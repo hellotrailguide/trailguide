@@ -39,6 +39,40 @@ describe('Trailguide class', () => {
     return makeTrail({ steps })
   }
 
+  describe('trail mode', () => {
+    it('does not start when mode is "test"', () => {
+      const tg = new Trailguide()
+      const trail = buildTour(1)
+      trail.mode = 'test'
+      tg.start(trail)
+      expect(document.querySelector('.trailguide-overlay')).toBeNull()
+      expect(document.querySelector('.trailguide-tooltip')).toBeNull()
+    })
+
+    it('starts normally when mode is "both"', () => {
+      const tg = new Trailguide()
+      const trail = buildTour(1)
+      trail.mode = 'both'
+      tg.start(trail)
+      expect(document.querySelector('.trailguide-overlay')).not.toBeNull()
+    })
+
+    it('starts normally when mode is "tour"', () => {
+      const tg = new Trailguide()
+      const trail = buildTour(1)
+      trail.mode = 'tour'
+      tg.start(trail)
+      expect(document.querySelector('.trailguide-overlay')).not.toBeNull()
+    })
+
+    it('starts normally when mode is undefined', () => {
+      const tg = new Trailguide()
+      const trail = buildTour(1)
+      tg.start(trail)
+      expect(document.querySelector('.trailguide-overlay')).not.toBeNull()
+    })
+  })
+
   describe('start()', () => {
     it('appends overlay and tooltip to DOM', () => {
       const tg = new Trailguide()

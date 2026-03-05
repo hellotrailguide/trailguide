@@ -9,7 +9,7 @@
 [Live Demo](https://app.gettrailguide.com/demo) · [Website](https://gettrailguide.com) · [Documentation](https://docs.gettrailguide.com)
 
 ![Trailguide Pro — record a trail and sync to GitHub or GitLab in seconds](https://raw.githubusercontent.com/hellotrailguide/trailguide/main/.github/assets/QuickStart.gif)
-*↑ [Trailguide Pro](https://app.gettrailguide.com) — visual editor, Git sync, and analytics for your whole team*
+*↑ [Trailguide Pro](https://app.gettrailguide.com): visual editor, Git sync, and analytics for your whole team*
 
 ---
 
@@ -18,11 +18,11 @@
 Most product tour tools charge per user, lock your content in their dashboard, and have no answer for "what happens when a deploy breaks the tour?" Trailguide solves all three.
 
 - **One file, two jobs.** Set a trail to `both` mode and it shows onboarding tooltips to users *and* runs as a Playwright regression test in CI. No other tour tool does this.
-- **No vendor lock-in** — Tours are JSON files in your repo. You own them forever.
-- **No per-user pricing** — The runtime is free. Show tours to a million users without paying a cent.
-- **Git-native** — Review tour changes in PRs. Roll back mistakes. Branch for experiments.
-- **Framework-agnostic** — Works with React, Vue, Svelte, vanilla JS, or anything that runs in a browser.
-- **Keyboard navigation built in** — Arrow keys, Enter, Escape. Works out of the box.
+- **No vendor lock-in.** Tours are JSON files in your repo. You own them forever.
+- **No per-user pricing.** The runtime is free. Show tours to a million users without paying a cent.
+- **Git-native.** Review tour changes in PRs. Roll back mistakes. Branch for experiments.
+- **Framework-agnostic.** Works with React, Vue, Svelte, vanilla JS, or anything that runs in a browser.
+- **Keyboard navigation built in.** Arrow keys, Enter, Escape. Works out of the box.
 
 Your UI already knows how to teach itself. Trailguide makes it easy and makes sure it stays working.
 
@@ -40,7 +40,7 @@ You can:
 
 No accounts. No tracking. No hosted dependencies.
 
-The free path is a **developer tool** — someone on your team writes or records the JSON, commits it, and deploys it. If you want non-developers to create and manage tours, built-in analytics, and one-click Git sync, that's what [Pro](#trailguide-pro) is for.
+The free path is a **developer tool**: someone on your team writes or records the JSON, commits it, and deploys it. If you want non-developers to create and manage tours, built-in analytics, and one-click Git sync, that's what [Pro](#trailguide-pro) is for.
 
 ---
 
@@ -54,16 +54,16 @@ The free path is a **developer tool** — someone on your team writes or records
 - Teams who want tours in version control, not a vendor dashboard
 
 **Not a fit:**
-- Teams with no engineering resources — the initial install requires a developer
+- Teams with no engineering resources (the initial install requires a developer)
 - Teams who need marketing to deploy tours with zero engineer involvement
 
 ---
 
 ## How It Works
 
-Two paths — pick the one that fits your team:
+Two paths. Pick the one that fits your team:
 
-**Free — developer workflow**
+**Free: developer workflow**
 ```
 1. Install the runtime in your app
 2. Write trail JSON by hand, or use the recorder to capture steps by clicking
@@ -71,13 +71,13 @@ Two paths — pick the one that fits your team:
 4. Load it with <Trailguide />
 ```
 
-**Pro — whole team workflow**
+**Pro: whole team workflow**
 ```
 1. A developer installs the runtime once
 2. Anyone on your team opens the editor, enters your app URL, and hits Record
-3. Click through your app — every click becomes a step, no code required
+3. Click through your app. Every click becomes a step, no code required.
 4. Edit, reorder, and preview in the visual editor
-5. Hit Sync — trails push to GitHub or GitLab as a PR/MR
+5. Hit Sync. Trails push to GitHub or GitLab as a PR/MR.
 6. Engineers review and merge. Done.
 ```
 
@@ -263,7 +263,7 @@ Use `data-trail-id` attributes for selectors that won't break when classes chang
 
 ## Theming
 
-Trailguide ships with CSS custom properties so tooltips match your app, not ours. Override a few variables and you're done — no class hunting, no `!important`.
+Trailguide ships with CSS custom properties so tooltips match your app, not ours. Override a few variables and you're done. No class hunting, no `!important`.
 
 ### Quick customization
 
@@ -299,7 +299,7 @@ Trailguide ships with CSS custom properties so tooltips match your app, not ours
 
 ### Dark mode
 
-Dark mode is automatic when `.dark` is on your `<html>` or `<body>` — the defaults flip to dark backgrounds and light text. You can also override the dark values directly:
+Dark mode is automatic when `.dark` is on your `<html>` or `<body>`. The defaults flip to dark backgrounds and light text. You can also override the dark values directly:
 
 ```css
 .dark {
@@ -331,15 +331,15 @@ Dark mode is automatic when `.dark` is on your `<html>` or `<body>` — the defa
 }
 ```
 
-No ejecting, no custom render functions, no build step — just CSS.
+No ejecting, no custom render functions, no build step. Just CSS.
 
 ---
 
 ## Using the Recorder
 
-The recorder is a **developer capture tool** for the free workflow. You add it directly to your React app — it renders as a floating panel that only appears in development, never in production. Use it to click through your app and capture steps, then export the JSON and commit it to your repo. When you need to create or update a tour later, the recorder is already there waiting in your dev environment.
+The recorder is a **developer capture tool** for the free workflow. You add it directly to your React app. It renders as a floating panel that only appears in development, never in production. Use it to click through your app and capture steps, then export the JSON and commit it to your repo. When you need to create or update a tour later, the recorder is already there waiting in your dev environment.
 
-**Try it before installing** — visit [app.gettrailguide.com/demo](https://app.gettrailguide.com/demo) to see the recorder in action without writing a line of code.
+**Try it before installing:** visit [app.gettrailguide.com/demo](https://app.gettrailguide.com/demo) to see the recorder in action without writing a line of code.
 
 ```bash
 npm install @trailguide/recorder
@@ -362,7 +362,7 @@ function App() {
 }
 ```
 
-Gate it behind an env variable so it only appears when you explicitly want to record — not every time you run your dev server. Add it to your `.env.local` when you need it, leave it out the rest of the time. It never ships to production regardless.
+Gate it behind an env variable so it only appears when you explicitly want to record, not every time you run your dev server. Add it to your `.env.local` when you need it, leave it out the rest of the time. It never ships to production regardless.
 
 ```bash
 # .env.local — only add this when you want to record
@@ -373,7 +373,7 @@ For non-Next.js apps, use whatever env prefix your framework requires (e.g. `VIT
 
 ### Recording Flow
 
-1. Run your app locally — the recorder panel appears automatically
+1. Run your app locally. The recorder panel appears automatically.
 2. Click **Record** in the overlay
 3. Click any element on the page to capture it as a step
 4. Fill in what the user should do and know
@@ -488,13 +488,13 @@ pnpm dev
 
 ### Pro
 - [x] Visual Editor (point-and-click, drag-and-drop, rich text, live preview)
-- [x] Trail & screenshot storage — every trail is saved with screenshots so your team can open and modify them anytime
+- [x] Trail & screenshot storage: every trail is saved with screenshots so your team can open and modify them anytime
 - [x] Inline flow recording (Chrome extension)
 - [x] Trail playback preview
 - [x] Selector quality indicators
 - [x] Selector auto-repair
 - [x] Analytics dashboard (completion rates, drop-off funnel, time per step)
-- [x] Git Sync — push trails as PRs/MRs to GitHub or GitLab
+- [x] Git Sync: push trails as PRs/MRs to GitHub or GitLab
 - [x] Trail mode toggle (Guide / Test / Both) in the editor
 - [ ] A/B testing for trails
 - [ ] Team workspaces with role-based access
@@ -503,48 +503,48 @@ pnpm dev
 
 ## Trailguide Pro
 
-Your app ships every week. Your tours need to keep up. Pro is how your whole team — product, marketing, customer success — stays on top of it without filing an engineering ticket every time copy changes.
+Your app ships every week. Your tours need to keep up. Pro is how your whole team (product, marketing, customer success) stays on top of it without filing an engineering ticket every time copy changes.
 
 A developer installs the runtime once. After that, anyone on your team can open the editor, record a new trail, edit an existing one, and push it to GitHub or GitLab as a pull request. Engineers review and merge. No one has to hand-edit JSON.
 
 ### Your trails, stored with screenshots
 
-Every trail you build in the Pro Editor is saved to your account with a screenshot of each step. When your UI changes, you'll see exactly what shifted — open any trail, update the affected steps, and push a fix before users hit a broken tour.
+Every trail you build in the Pro Editor is saved to your account with a screenshot of each step. When your UI changes, you'll see exactly what shifted. Open any trail, update the affected steps, and push a fix before users hit a broken tour.
 
 ### Visual Editor
-- **Point-and-click recording** — open your app in the editor, click through it, every click becomes a step
-- **Rich text editing** — format step content without touching JSON
-- **Drag-and-drop step ordering** — reorganize flows instantly
-- **Live preview** — step through the full trail inside the editor before publishing
-- **JSON import/export** — everything is still plain JSON you own
+- **Point-and-click recording:** open your app in the editor, click through it, every click becomes a step
+- **Rich text editing:** format step content without touching JSON
+- **Drag-and-drop step ordering:** reorganize flows instantly
+- **Live preview:** step through the full trail inside the editor before publishing
+- **JSON import/export:** everything is still plain JSON you own
 
 ### Analytics
 
-See exactly where users drop off, how long they spend on each step, and which tours actually get completed. Completion funnels, time-per-step breakdowns, daily and weekly trends. This is data companies pay hundreds of dollars a month for in standalone analytics tools — it's built into Pro.
+See exactly where users drop off, how long they spend on each step, and which tours actually get completed. Completion funnels, time-per-step breakdowns, daily and weekly trends. This is data companies pay hundreds of dollars a month for in standalone analytics tools. It's built into Pro.
 
-### Git Sync — GitHub & GitLab
+### Git Sync: GitHub & GitLab
 - Push trails as PRs (GitHub) or MRs (GitLab) directly from the editor
-- Choose any branch — push to `develop`, `main`, or a feature branch
+- Choose any branch. Push to `develop`, `main`, or a feature branch.
 - Review changes in code like any other diff
-- Full version history, rollbacks, branching — everything Git already gives you
+- Full version history, rollbacks, branching. Everything Git already gives you.
 
 ### Selector Quality & Reliability
-- **Selector quality indicators** — every captured selector is graded Stable, Moderate, or Fragile with actionable hints
-- **Selector auto-repair** — when DOM changes break a selector, the editor suggests fixes with confidence scores
+- **Selector quality indicators:** every captured selector is graded Stable, Moderate, or Fragile with actionable hints
+- **Selector auto-repair:** when DOM changes break a selector, the editor suggests fixes with confidence scores
 
 ### Pricing
 
-Appcues starts at $249/month. Pendo won't show you pricing until you talk to sales. Trailguide Pro is **$49/month** — one flat price, unlimited trails, unlimited users.
+Appcues starts at $249/month. Pendo won't show you pricing until you talk to sales. Trailguide Pro is **$49/month**: one flat price, unlimited trails, unlimited users.
 
 **The Pro Editor is optional.** Everything it produces is still plain JSON in your repo. No lock-in, ever.
 
-[Try Pro Free](https://app.gettrailguide.com) — 14-day free trial, cancel anytime.
+[Try Pro Free](https://app.gettrailguide.com): 14-day free trial, cancel anytime.
 
 ---
 
 ## License
 
-**MIT** — free for personal and commercial use.
+**MIT.** Free for personal and commercial use.
 
 Trailguide is and will always be open source. Use it, fork it, build on it.
 

@@ -8,6 +8,7 @@ export interface RunTrailOptions {
 }
 
 export async function runTrail(page: Page, trail: Trail, options: RunTrailOptions = {}): Promise<void> {
+  if (trail.mode === 'tour') return;
   const { baseUrl = '', timeout = 8000 } = options;
 
   for (const step of trail.steps) {
