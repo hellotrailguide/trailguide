@@ -19,8 +19,8 @@ export interface StepAssert {
   attribute?: string;
 }
 
-/** Step type — 'element' is the default (tooltip on a page element). 'celebration' and 'feedback' are full-screen overlay steps with no target element. */
-export type StepType = 'element' | 'celebration' | 'feedback';
+/** Step type — 'element' is the default (tooltip on a page element). All other values are full-screen overlay steps with no target element. */
+export type StepType = 'element' | 'celebration' | 'feedback' | 'announcement' | 'checklist' | 'redirect' | 'delay';
 
 export interface CelebrationConfig {
   emoji?: string;
@@ -37,6 +37,43 @@ export interface FeedbackConfig {
   /** URL to POST { rating, comment, trailId, stepId } on submit */
   webhook?: string;
   ctaLabel?: string;
+}
+
+export interface AnnouncementConfig {
+  /** Optional hero image URL displayed at the top of the card */
+  imageUrl?: string;
+  /** Small pill label shown above the title, e.g. "NEW" or "PRO" */
+  badge?: string;
+  /** Primary CTA button label (default: "Got it") */
+  primaryCta?: string;
+  /** Secondary/dismiss button label — if omitted, no secondary button is shown */
+  secondaryCta?: string;
+}
+
+export interface ChecklistItem {
+  id: string;
+  label: string;
+  /** Navigate to this URL when the item is clicked (optional) */
+  url?: string;
+  /** If false, this item is optional and does not block the Done button (default: true) */
+  required?: boolean;
+}
+
+export interface ChecklistConfig {
+  items: ChecklistItem[];
+  /** Done button label (default: "Done") */
+  ctaLabel?: string;
+  /** Show a Skip link that bypasses unchecked required items */
+  allowSkip?: boolean;
+}
+
+export interface RedirectConfig {
+  /** URL to navigate to */
+  url: string;
+  /** Milliseconds to wait before redirecting (default: 0) */
+  delay?: number;
+  /** Message shown in the overlay before redirecting */
+  message?: string;
 }
 
 export interface StepWait {
@@ -74,6 +111,14 @@ export interface Step {
   celebration?: CelebrationConfig;
   /** Config for stepType: 'feedback' */
   feedback?: FeedbackConfig;
+  /** Config for stepType: 'announcement' */
+  announcement?: AnnouncementConfig;
+  /** Config for stepType: 'checklist' */
+  checklist?: ChecklistConfig;
+  /** Config for stepType: 'redirect' */
+  redirect?: RedirectConfig;
+  /** Milliseconds to pause for stepType: 'delay' (no UI shown) */
+  delayMs?: number;
 }
 
 export interface Trail {

@@ -1,5 +1,5 @@
 import { computePosition, offset, flip, shift, arrow } from '@floating-ui/dom';
-import type { Trail, Step, TrailguideOptions, Placement, FeedbackConfig } from './types';
+import type { Trail, Step, TrailguideOptions, Placement, FeedbackConfig, ChecklistItem } from './types';
 import { findElement, scrollToElement, createElement, escapeHtml } from './dom';
 import { sendEvent } from './analytics';
 import { activeTrailSession } from './storage';
@@ -319,6 +319,188 @@ export class Trailguide {
     });
   }
 
+  private showAnnouncementStep(step: Step): void {
+    if (!this.overlay || !this.tooltip) return;
+    this.overlay.style.display = 'none';
+    this.tooltip.style.display = 'none';
+
+    const cfg = step.announcement ?? {};
+    const primaryLabel = cfg.primaryCta ?? 'Got it';
+
+    const el = createElement('div', 'trailguide-announcement');
+    const card = createElement('div', 'trailguide-announcement-card', el);
+
+    if (cfg.imageUrl) {
+      const img = createElement('img', 'trailguide-announcement-image', card) as HTMLImageElement;
+      img.src = cfg.imageUrl;
+      img.alt = '';
+    }
+
+    const body = createElement('div', 'trailguide-announcement-body', card);
+
+    if (cfg.badge) {
+      const badge = createElement('span', 'trailguide-announcement-badge', body);
+      badge.textContent = cfg.badge;
+    }
+
+    const title = createElement('h3', 'trailguide-announcement-title', body);
+    title.textContent = step.title;
+
+    const text = createElement('p', 'trailguide-announcement-text', body);
+    text.textContent = step.content;
+
+    const footer = createElement('div', 'trailguide-announcement-footer', body);
+
+    if (cfg.secondaryCta) {
+      const skipBtn = createElement('button', 'trailguide-btn trailguide-btn-secondary', footer) as HTMLButtonElement;
+      skipBtn.textContent = cfg.secondaryCta;
+      skipBtn.addEventListener('click', () => this.skip());
+    }
+
+    const primaryBtn = createElement('button', 'trailguide-btn trailguide-btn-primary', footer) as HTMLButtonElement;
+    primaryBtn.textContent = primaryLabel;
+    primaryBtn.addEventListener('click', () => this.next());
+
+    document.body.appendChild(el);
+    this.stepCleanupFns.push(() => {
+      el.remove();
+      if (this.overlay) this.overlay.style.display = '';
+      if (this.tooltip) this.tooltip.style.display = '';
+    });
+  }
+
+  private showChecklistStep(step: Step): void {
+    if (!this.overlay || !this.tooltip) return;
+    this.overlay.style.display = 'none';
+    this.tooltip.style.display = 'none';
+
+    const cfg = step.checklist ?? { items: [] };
+    const ctaLabel = cfg.ctaLabel ?? 'Done';
+    const checked = new Set<string>();
+
+    const el = createElement('div', 'trailguide-checklist');
+    const card = createElement('div', 'trailguide-checklist-card', el);
+
+    const header = createElement('div', 'trailguide-checklist-header', card);
+    const titleEl = createElement('h3', 'trailguide-checklist-title', header);
+    titleEl.textContent = step.title || 'Getting Started';
+    const closeBtn = createElement('button', 'trailguide-checklist-close', header) as HTMLButtonElement;
+    closeBtn.textContent = '×';
+    closeBtn.addEventListener('click', () => this.skip());
+
+    const itemsEl = createElement('div', 'trailguide-checklist-items', card);
+
+    const requiredItems = cfg.items.filter(i => i.required !== false);
+
+    const updateFooter = () => {
+      const completedRequired = requiredItems.filter(i => checked.has(i.id)).length;
+      progressEl.textContent = `${completedRequired} of ${requiredItems.length} completed`;
+      const allRequired = requiredItems.every(i => checked.has(i.id));
+      doneBtn.disabled = !allRequired;
+      doneBtn.style.opacity = allRequired ? '1' : '0.4';
+    };
+
+    cfg.items.forEach((item: ChecklistItem) => {
+      const row = createElement('button', 'trailguide-checklist-item', itemsEl) as HTMLButtonElement;
+
+      const checkEl = createElement('span', 'trailguide-checklist-check', row);
+      checkEl.innerHTML = '';
+
+      const labelEl = createElement('span', 'trailguide-checklist-label', row);
+      labelEl.textContent = item.label;
+
+      if (item.required === false) {
+        const opt = createElement('span', 'trailguide-checklist-optional', row);
+        opt.textContent = 'optional';
+      }
+
+      row.addEventListener('click', () => {
+        if (checked.has(item.id)) {
+          checked.delete(item.id);
+          row.classList.remove('done');
+          checkEl.innerHTML = '';
+        } else {
+          checked.add(item.id);
+          row.classList.add('done');
+          checkEl.innerHTML = '<svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5L4.5 8.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+          if (item.url) {
+            setTimeout(() => { window.location.href = item.url!; }, 300);
+          }
+        }
+        updateFooter();
+      });
+    });
+
+    const footer = createElement('div', 'trailguide-checklist-footer', card);
+    const progressEl = createElement('span', 'trailguide-checklist-progress', footer);
+
+    const rightGroup = createElement('div', '', footer);
+    rightGroup.style.display = 'flex';
+    rightGroup.style.alignItems = 'center';
+    rightGroup.style.gap = '12px';
+
+    if (cfg.allowSkip) {
+      const skipBtn = createElement('button', 'trailguide-checklist-skip', rightGroup) as HTMLButtonElement;
+      skipBtn.textContent = 'Skip';
+      skipBtn.addEventListener('click', () => this.next());
+    }
+
+    const doneBtn = createElement('button', 'trailguide-btn trailguide-btn-primary', rightGroup) as HTMLButtonElement;
+    doneBtn.textContent = ctaLabel;
+    doneBtn.addEventListener('click', () => this.next());
+
+    updateFooter();
+
+    document.body.appendChild(el);
+    this.stepCleanupFns.push(() => {
+      el.remove();
+      if (this.overlay) this.overlay.style.display = '';
+      if (this.tooltip) this.tooltip.style.display = '';
+    });
+  }
+
+  private showRedirectStep(step: Step): void {
+    if (!this.overlay || !this.tooltip) return;
+    this.overlay.style.display = 'none';
+    this.tooltip.style.display = 'none';
+
+    const cfg = step.redirect;
+    if (!cfg?.url) { this.next(); return; }
+
+    const message = cfg.message || step.content || 'Taking you there...';
+    const delay = cfg.delay ?? 1200;
+
+    const el = createElement('div', 'trailguide-redirect');
+    const card = createElement('div', 'trailguide-redirect-card', el);
+
+    const icon = createElement('div', 'trailguide-redirect-icon', card);
+    icon.textContent = '→';
+
+    const msg = createElement('p', 'trailguide-redirect-message', card);
+    msg.textContent = message;
+
+    const urlEl = createElement('p', 'trailguide-redirect-url', card);
+    urlEl.textContent = cfg.url;
+
+    document.body.appendChild(el);
+    this.stepCleanupFns.push(() => {
+      el.remove();
+      if (this.overlay) this.overlay.style.display = '';
+      if (this.tooltip) this.tooltip.style.display = '';
+    });
+
+    setTimeout(() => {
+      window.location.href = cfg.url;
+    }, delay);
+  }
+
+  private showDelayStep(step: Step): void {
+    const ms = step.delayMs ?? 1000;
+    setTimeout(() => {
+      if (this.isActive) this.next();
+    }, ms);
+  }
+
   private showStep(): void {
     if (!this.trail || !this.overlay || !this.tooltip) return;
 
@@ -346,6 +528,10 @@ export class Trailguide {
 
     if (step.stepType === 'celebration') { this.showCelebrationStep(step); return; }
     if (step.stepType === 'feedback') { this.showFeedbackStep(step); return; }
+    if (step.stepType === 'announcement') { this.showAnnouncementStep(step); return; }
+    if (step.stepType === 'checklist') { this.showChecklistStep(step); return; }
+    if (step.stepType === 'redirect') { this.showRedirectStep(step); return; }
+    if (step.stepType === 'delay') { this.showDelayStep(step); return; }
 
     // If the step has a URL and we're on the wrong page, prompt navigation
     if (step.url) {
