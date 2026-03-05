@@ -24,11 +24,12 @@ export async function runTrail(page: Page, trail: Trail, options: RunTrailOption
     if (step.action) {
       await locator.waitFor({ state: 'visible', timeout });
       switch (step.action) {
-        case 'click':  await locator.click(); break;
-        case 'fill':   await locator.fill(step.value ?? ''); break;
-        case 'select': await locator.selectOption(step.value ?? ''); break;
-        case 'check':  await locator.check(); break;
-        case 'hover':  await locator.hover(); break;
+        case 'click':       await locator.click(); break;
+        case 'rightClick':  await locator.click({ button: 'right' }); break;
+        case 'fill':        await locator.fill(step.value ?? ''); break;
+        case 'select':      await locator.selectOption(step.value ?? ''); break;
+        case 'check':       await locator.check(); break;
+        case 'hover':       await locator.hover(); break;
       }
     }
 
