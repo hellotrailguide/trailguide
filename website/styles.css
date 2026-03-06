@@ -1445,6 +1445,107 @@ section { padding: 96px 0; position: relative; }
   margin: 0 auto 36px;
 }
 
+/* ─── RESPONSIVE ─────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .container { padding: 0 20px; }
+  section { padding: 64px 0; }
+
+  /* Nav */
+  .nav-container { padding: 0 20px; }
+  .nav-links a:not(.btn) { display: none; }
+  .nav-links .btn { margin-left: 0; }
+  .logo-text { font-size: 16px; }
+
+  /* Hero */
+  .hero { min-height: auto; padding: 60px 0; }
+  .hero .container { padding-top: 40px; padding-bottom: 40px; }
+  .hero-grid { grid-template-columns: 1fr; gap: 48px; }
+  .hero h1 { font-size: 48px; letter-spacing: -2.5px; }
+  .hero-subtitle { font-size: 17px; max-width: 100%; }
+  .hero-right { justify-content: flex-start; }
+  .hero-diagram { max-width: 100%; }
+  .hd-source { width: 100%; }
+  .hd-connector svg { width: 100%; }
+
+  /* Section headings */
+  .philosophy h2,
+  .how-it-works h2,
+  .who-for h2,
+  .features h2,
+  .two-jobs h2,
+  .pro-analytics h2,
+  .visual-editor h2,
+  .pricing h2,
+  .waitlist h2,
+  .e2e-testing h2,
+  .step-types h2 {
+    font-size: 34px;
+    letter-spacing: -1.5px;
+  }
+
+  /* Philosophy */
+  .philosophy-points { grid-template-columns: 1fr; }
+
+  /* Problem */
+  .problem-grid { grid-template-columns: 1fr; }
+
+  /* How it works */
+  .steps { grid-template-columns: 1fr; }
+
+  /* Who it's for */
+  .who-grid { grid-template-columns: 1fr; }
+
+  /* Features */
+  .features-grid { grid-template-columns: 1fr 1fr; }
+
+  /* Two jobs */
+  .two-jobs-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .two-jobs-divider { display: none; }
+  .code-block-large { overflow-x: auto; }
+
+  /* Playwright caps */
+  .playwright-caps { grid-template-columns: 1fr 1fr; }
+
+  /* E2E Testing */
+  .e2e-grid { grid-template-columns: 1fr; gap: 40px; }
+  .e2e-right { position: static; }
+
+  /* Analytics */
+  .analytics-grid { grid-template-columns: 1fr; gap: 40px; }
+
+  /* Visual editor */
+  .editor-grid { grid-template-columns: 1fr; }
+  .editor-mockup { position: static; }
+  .personas-grid { grid-template-columns: 1fr; }
+
+  /* Step types */
+  .step-types-grid { grid-template-columns: 1fr 1fr; }
+
+  /* Pricing */
+  .pricing-grid { grid-template-columns: 1fr; }
+
+  /* CTA */
+  .waitlist h2 { font-size: 36px; letter-spacing: -1.5px; }
+  .waitlist .hero-cta { flex-direction: column; align-items: center; }
+  .waitlist .hero-cta .btn { width: 100%; max-width: 320px; }
+
+  /* Footer */
+  .footer-grid { grid-template-columns: 1fr; gap: 32px; }
+}
+
+@media (max-width: 480px) {
+  .hero h1 { font-size: 38px; letter-spacing: -2px; }
+  .features-grid { grid-template-columns: 1fr; }
+  .step-types-grid { grid-template-columns: 1fr; }
+  .playwright-caps { grid-template-columns: 1fr; }
+  .hero-cta { flex-direction: column; }
+  .hero-cta .btn { width: 100%; }
+  .hd-outputs { flex-direction: column; }
+}
+
 /* ─── FOOTER ─────────────────────────────────────────────────────────── */
 .footer {
   background: var(--bg-subtle);
