@@ -767,6 +767,40 @@ section { padding: 96px 0; position: relative; }
   opacity: 0.5;
 }
 
+.playwright-caps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-top: 40px;
+  padding: 28px;
+  background: var(--bg-node);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+.playwright-cap-label {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--teal);
+  margin-bottom: 12px;
+}
+.playwright-cap-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.playwright-cap-tags span {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--text-muted);
+  background: var(--bg-muted);
+  border: 1px solid var(--border);
+  padding: 3px 9px;
+  border-radius: 4px;
+}
+
 .analytics-cta {
   text-align: center;
   margin-top: 48px;
@@ -777,6 +811,119 @@ section { padding: 96px 0; position: relative; }
   font-size: 13px;
   color: var(--text-muted);
   letter-spacing: 0.04em;
+}
+
+/* ─── E2E TESTING ────────────────────────────────────────────────────── */
+.e2e-testing {
+  background: var(--bg-subtle);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  overflow: hidden;
+  position: relative;
+}
+.e2e-testing::before {
+  content: '';
+  position: absolute;
+  top: -100px; left: -100px;
+  width: 600px; height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(26,145,162,0.07) 0%, transparent 65%);
+  pointer-events: none;
+}
+.e2e-testing h2 {
+  font-size: clamp(36px, 4vw, 50px);
+  font-weight: 800;
+  letter-spacing: -2.5px;
+  line-height: 1.05;
+  color: var(--text);
+}
+.e2e-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  margin-top: 52px;
+  align-items: start;
+}
+.e2e-left {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+.e2e-point {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+.e2e-point-icon {
+  width: 36px; height: 36px;
+  background: rgba(26,145,162,0.07);
+  border: 1px solid rgba(26,145,162,0.15);
+  border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--teal);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.e2e-point h4 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 5px;
+  letter-spacing: -0.2px;
+}
+.e2e-point p {
+  font-size: 13.5px;
+  color: var(--text-muted);
+  line-height: 1.65;
+}
+
+/* Compare card */
+.e2e-right { position: sticky; top: 80px; }
+.e2e-compare {
+  background: var(--bg-node);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.e2e-compare-header {
+  padding: 14px 20px;
+  background: rgba(255,255,255,0.02);
+  border-bottom: 1px solid var(--border);
+}
+.e2e-compare-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-ghost);
+}
+.e2e-compare-label-good { color: var(--teal); }
+.e2e-compare-row {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 11px 20px;
+  font-size: 14px;
+  border-bottom: 1px solid rgba(42,42,46,0.5);
+}
+.e2e-compare-row:last-child { border-bottom: none; }
+.e2e-bad  { color: var(--text-dim); }
+.e2e-good { color: var(--text-muted); }
+.e2e-compare-x {
+  color: var(--red);
+  font-weight: 700;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+.e2e-compare-check {
+  color: var(--teal);
+  font-size: 13px;
+  flex-shrink: 0;
+}
+.e2e-compare-divider {
+  height: 1px;
+  background: var(--border);
 }
 
 /* ─── PRO ANALYTICS ──────────────────────────────────────────────────── */
