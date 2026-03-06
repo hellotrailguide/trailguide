@@ -44,21 +44,62 @@
       <div class="hero-glow"></div>
       <div class="hero-rule"></div>
     </div>
-    <div class="container">
-      <div class="badge">Open Source · MIT License</div>
-      <h1>One recording. Two jobs.</h1>
-      <p class="hero-subtitle" data-trail-id="hero-subtitle">
-        Trailguide started as a product tour tool. We made it double as a Playwright regression test in CI. Same JSON file. Zero extra work.
-      </p>
-      <div class="hero-cta">
-        <button onclick="startTour()" class="btn btn-primary btn-large">
-          See it in action
-        </button>
-        <a href="https://docs.gettrailguide.com" class="btn btn-secondary btn-large">
-          View Documentation
-        </a>
+    <div class="container hero-grid">
+      <div class="hero-left">
+        <div class="badge">Open Source · MIT License</div>
+        <h1>One recording. Two jobs.</h1>
+        <p class="hero-subtitle" data-trail-id="hero-subtitle">
+          Trailguide started as a product tour tool. We made it double as a Playwright regression test in CI. Same JSON file. Zero extra work.
+        </p>
+        <div class="hero-cta">
+          <button onclick="startTour()" class="btn btn-primary btn-large">
+            See it in action
+          </button>
+          <a href="https://docs.gettrailguide.com" class="btn btn-secondary btn-large">
+            View Documentation
+          </a>
+        </div>
+        <p class="hero-note">Free forever. No account required.</p>
       </div>
-      <p class="hero-note">Free forever. No account required.</p>
+
+      <div class="hero-right">
+        <div class="hero-diagram">
+          <div class="hd-source">
+            <div class="hd-source-header">
+              <span class="hd-file-dot"></span>
+              <span class="hd-filename">welcome.json</span>
+            </div>
+            <div class="hd-code-lines">
+              <div class="hd-line hd-line-teal"></div>
+              <div class="hd-line hd-line-w80"></div>
+              <div class="hd-line hd-line-w90"></div>
+              <div class="hd-line hd-line-w60"></div>
+            </div>
+          </div>
+
+          <div class="hd-connector">
+            <svg width="300" height="56" viewBox="0 0 300 56" fill="none">
+              <line x1="150" y1="0" x2="150" y2="20" stroke="#2a2a2e" stroke-width="1.5"/>
+              <line x1="65" y1="20" x2="235" y2="20" stroke="#2a2a2e" stroke-width="1.5"/>
+              <line x1="65" y1="20" x2="65" y2="56" stroke="rgba(26,145,162,0.55)" stroke-width="1.5"/>
+              <line x1="235" y1="20" x2="235" y2="56" stroke="rgba(34,197,94,0.45)" stroke-width="1.5"/>
+              <circle cx="65" cy="56" r="3.5" fill="#1a91a2"/>
+              <circle cx="235" cy="56" r="3.5" fill="#22c55e"/>
+            </svg>
+          </div>
+
+          <div class="hd-outputs">
+            <div class="hd-output hd-output-tour">
+              <div class="hd-output-tag">Onboarding</div>
+              <div class="hd-output-label">User tour<br>in browser</div>
+            </div>
+            <div class="hd-output hd-output-test">
+              <div class="hd-output-tag">CI Test</div>
+              <div class="hd-output-label">Playwright<br>regression</div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
