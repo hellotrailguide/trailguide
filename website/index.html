@@ -19,7 +19,7 @@
   <meta name="twitter:description" content="Record a product tour once. It runs as an onboarding guide for users and a Playwright regression test in CI, from the same JSON file. Free, open-source, no per-user pricing.">
   <meta name="twitter:image" content="https://gettrailguide.com/og-image.png">
   <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@trailguide/core@0.1.4/dist/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@trailguide/core@0.1.8/dist/style.css">
 </head>
 <body>
   <!-- Nav -->
@@ -33,7 +33,7 @@
         <a href="https://docs.gettrailguide.com">Documentation</a>
         <a href="https://github.com/hellotrailguide/trailguide" target="_blank">GitHub</a>
         <a href="#pricing">Pricing</a>
-        <a href="https://app.gettrailguide.com" class="btn btn-primary">Get Started</a>
+        <a href="https://app.gettrailguide.com" class="btn btn-primary" data-trail-id="get-started-btn">Get Started</a>
       </div>
     </div>
   </nav>
@@ -60,6 +60,7 @@
           </a>
         </div>
         <p class="hero-note">Free forever. No account required.</p>
+        <p class="hero-hint">p.s. the confetti at the end is a built-in step type. One line of JSON.</p>
       </div>
 
       <div class="hero-right">
@@ -307,7 +308,7 @@
   <section class="two-jobs">
     <div class="container">
       <div class="pro-badge">New · @trailguide/playwright</div>
-      <h2>The only tour tool that also runs your tours as tests</h2>
+      <h2 data-trail-id="two-jobs-heading">The only tour tool that also runs your tours as tests</h2>
       <p class="section-subtitle">Set any trail to <strong>Both</strong> mode. It shows onboarding tooltips to real users <em>and</em> runs as a Playwright regression test in CI. Automatically.</p>
 
       <div class="two-jobs-grid">
@@ -386,7 +387,7 @@
   <section class="e2e-testing">
     <div class="container">
       <div class="eyebrow"><span class="eyebrow-dot"></span><span>E2E Testing</span></div>
-      <h2>Full E2E automation.<br>Not the enterprise price tag.</h2>
+      <h2 data-trail-id="e2e-heading">Full E2E automation.<br>Not the enterprise price tag.</h2>
       <p class="section-subtitle">Codeless testing platforms charge per test, per seat, and per month — often hundreds or thousands of dollars. Trailguide's full test runner is included in Pro at $49/month. Unlimited tests. Unlimited team.</p>
 
       <div class="e2e-grid">
@@ -759,7 +760,7 @@
     <div class="container">
       <div class="eyebrow"><span class="eyebrow-dot"></span><span>Step Types</span></div>
       <div class="pro-badge">Pro Editor · Drag &amp; Drop</div>
-      <h2>Not just tooltips</h2>
+      <h2 data-trail-id="step-types-heading">Not just tooltips</h2>
       <p class="section-subtitle">Every trail is built from step types. Drag any of them into your flow from the editor toolbar. No code.</p>
 
       <div class="step-types-grid">
@@ -927,38 +928,78 @@
       </div>
     </div>
   </footer>
-  <script src="https://cdn.jsdelivr.net/npm/@trailguide/core@0.1.4/dist/trailguide.umd.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@trailguide/core@0.1.8/dist/trailguide.umd.js"></script>
   <script>
     var trail = {
       id: 'website-tour',
-      title: 'Trailguide in 60 seconds',
+      title: 'Trailguide in 90 seconds',
       steps: [
         {
           id: 'step-1',
           target: '[data-trail-id="hero-subtitle"]',
-          title: 'You just triggered a Trailguide tour',
-          content: 'This tooltip is running on this page right now. One script tag, one JSON file. No iframes, no third-party dashboard.',
+          title: 'This tooltip is Trailguide',
+          content: 'You just clicked a button and a product tour started. One script tag, one JSON file. No iframes, no third-party dashboard, no account required to run this.',
           placement: 'bottom'
         },
         {
           id: 'step-2',
           target: '[data-trail-id="how-it-works-heading"]',
-          title: 'Ship in 5 minutes',
-          content: 'Install the package, drop in a JSON file, call start(). That\'s the entire integration. Works with React, Vue, Svelte, or plain JS.',
+          title: 'Setup takes 5 minutes',
+          content: 'Install the package, create a JSON file with your steps, call start(). That is the entire integration. Works with React, Vue, Svelte, vanilla JS — anything that runs in a browser.',
           placement: 'bottom'
         },
         {
           id: 'step-3',
-          target: '[data-trail-id="visual-editor-heading"]',
-          title: 'The Pro Editor records it for you',
-          content: 'Hit Record, click through your app, and every click becomes a step. No CSS selectors to write.',
+          target: '[data-trail-id="step-types-heading"]',
+          title: 'Not just tooltips',
+          content: 'Build announcements, interactive checklists, celebration moments, redirects, and delays — all from the same drag-and-drop toolbar. Mix and match in any order.',
           placement: 'bottom'
         },
         {
           id: 'step-4',
+          target: '[data-trail-id="two-jobs-heading"]',
+          title: 'Here is where it gets interesting',
+          content: 'Set any trail to Both mode. It plays as an onboarding tour for real users and runs as a Playwright regression test in CI — from the exact same JSON file. No extra work.',
+          placement: 'bottom'
+        },
+        {
+          id: 'step-5',
+          target: '[data-trail-id="e2e-heading"]',
+          title: 'A full E2E test runner at $49/month',
+          content: 'Trails can also be test-only — no tooltip ever shows to users. Use them to automate login flows, checkout paths, onboarding funnels. Click, fill, assert, wait, multi-tab. Everything codeless testing platforms charge hundreds for, included in Pro.',
+          placement: 'bottom'
+        },
+        {
+          id: 'step-6',
+          target: '[data-trail-id="visual-editor-heading"]',
+          title: 'Your team owns the tours',
+          content: 'Hit Record, click through your app, and every click becomes a step. Non-devs can update copy, fix broken selectors, reorder steps, and push changes back to GitHub or GitLab — without touching the codebase.',
+          placement: 'bottom'
+        },
+        {
+          id: 'step-7',
           target: '[data-trail-id="pricing-heading"]',
-          title: 'Free runtime, forever',
-          content: 'No per-user pricing, ever. The runtime is MIT licensed and free for unlimited users. Pay for the Pro Editor when your team needs it.',
+          title: 'Free runtime. Pro for everything else.',
+          content: 'The tour runtime is MIT licensed and free forever — unlimited users, unlimited tours. Pro adds the visual editor, E2E test runner, analytics, and Git sync for $49/month. Cancel anytime.',
+          placement: 'bottom'
+        },
+        {
+          id: 'step-8',
+          target: 'body',
+          title: 'You just finished a Trailguide tour',
+          content: 'Seven steps. No iframes, no third-party scripts phoning home, no per-user fee to show this to your users. One JSON file.',
+          stepType: 'celebration',
+          celebration: {
+            emoji: '🎉',
+            showConfetti: true,
+            ctaLabel: 'Next'
+          }
+        },
+        {
+          id: 'step-9',
+          target: '[data-trail-id="get-started-btn"]',
+          title: 'Your turn',
+          content: '14-day free trial. Cancel anytime.',
           placement: 'bottom'
         }
       ]
@@ -967,6 +1008,19 @@
     function startTour() {
       Trailguide.start(trail, { theme: 'dark' });
     }
-  </script>
+
+    // Inject confetti note under the celebration button when that step renders
+    const _celebObserver = new MutationObserver(() => {
+      const card = document.querySelector('.trailguide-celebration-card');
+      if (card && !card.querySelector('.tg-confetti-note')) {
+        const note = document.createElement('p');
+        note.className = 'tg-confetti-note';
+        note.style.cssText = 'margin-top:12px;font-size:11.5px;color:#52525b;font-family:SF Mono,Fira Code,Consolas,monospace;letter-spacing:0.02em;text-align:center;';
+        note.textContent = 'p.s. confetti is a built-in step type. one line of JSON.';
+        card.appendChild(note);
+      }
+    });
+    _celebObserver.observe(document.body, { childList: true, subtree: true });
+</script>
 </body>
 </html>

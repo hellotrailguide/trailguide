@@ -398,6 +398,16 @@ section { padding: 96px 0; position: relative; }
   animation-delay: 0.35s;
 }
 
+.hero-hint {
+  margin-top: 10px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-ghost);
+  letter-spacing: 0.04em;
+  animation: fadeInUp 0.6s ease both;
+  animation-delay: 0.45s;
+}
+
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(18px); }
   to   { opacity: 1; transform: translateY(0); }
