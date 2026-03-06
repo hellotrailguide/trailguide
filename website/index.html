@@ -6,18 +6,27 @@
   <link rel="icon" type="image/png" href="icon.png">
   <title>Trailguide | Product tours that double as Playwright tests</title>
   <meta name="description" content="Record a product tour once. It runs as an onboarding guide for users and a Playwright regression test in CI, from the same JSON file. Free, open-source, no per-user pricing.">
+  <link rel="canonical" href="https://gettrailguide.com/">
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://gettrailguide.com/">
+  <meta property="og:title" content="Trailguide | Product tours that double as Playwright tests">
+  <meta property="og:description" content="Record a product tour once. It runs as an onboarding guide for users and a Playwright regression test in CI, from the same JSON file. Free, open-source, no per-user pricing.">
+  <meta property="og:image" content="https://gettrailguide.com/og-image.png">
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Trailguide | Product tours that double as Playwright tests">
+  <meta name="twitter:description" content="Record a product tour once. It runs as an onboarding guide for users and a Playwright regression test in CI, from the same JSON file. Free, open-source, no per-user pricing.">
+  <meta name="twitter:image" content="https://gettrailguide.com/og-image.png">
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@trailguide/core@0.1.4/dist/style.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 </head>
 <body>
   <!-- Nav -->
   <nav class="nav">
     <div class="nav-container">
       <a href="/" class="logo">
-        <img src="icon.png" alt="" height="44">
+        <img src="icon.png" alt="Trailguide" class="logo-img">
         <span class="logo-text">Trailguide</span>
       </a>
       <div class="nav-links">
@@ -31,12 +40,15 @@
 
   <!-- Hero -->
   <section class="hero">
+    <div class="hero-bg">
+      <div class="hero-glow"></div>
+      <div class="hero-rule"></div>
+    </div>
     <div class="container">
       <div class="badge">Open Source · MIT License</div>
       <h1>One recording. Two jobs.</h1>
       <p class="hero-subtitle" data-trail-id="hero-subtitle">
-        Record a product tour once. It runs as an onboarding guide for your users<br>
-        <em>and</em> a Playwright regression test in CI, from the same JSON file.
+        Trailguide started as a product tour tool. We made it double as a Playwright regression test in CI. Same JSON file. Zero extra work.
       </p>
       <div class="hero-cta">
         <button onclick="startTour()" class="btn btn-primary btn-large">
@@ -53,6 +65,7 @@
   <!-- Philosophy -->
   <section class="philosophy">
     <div class="container">
+      <div class="eyebrow"><span class="eyebrow-dot"></span><span>Philosophy</span></div>
       <h2>Why Trailguide exists</h2>
       <p class="philosophy-lead">
         Most product tour tools charge per user, lock your content in their dashboard, and disappear when they shut down. We think that's broken.
@@ -107,6 +120,7 @@
   <!-- How it works -->
   <section id="how-it-works" class="how-it-works">
     <div class="container">
+      <div class="eyebrow"><span class="eyebrow-dot"></span><span>Quick Start</span></div>
       <h2 data-trail-id="how-it-works-heading">Ship a tour in 5 minutes</h2>
       <p class="section-subtitle">Three steps. No account required.</p>
 
@@ -162,6 +176,7 @@
   <!-- Who it's for -->
   <section class="who-for">
     <div class="container">
+      <div class="eyebrow"><span class="eyebrow-dot"></span><span>Ideal Fit</span></div>
       <h2>Built for teams who want control</h2>
       <p class="section-subtitle">Engineers set it up once. Then anyone on the team can build tours.</p>
 
@@ -192,6 +207,7 @@
   <!-- Features -->
   <section class="features">
     <div class="container">
+      <div class="eyebrow"><span class="eyebrow-dot"></span><span>What You Get</span></div>
       <h2>Everything you need, nothing you don't</h2>
 
       <div class="features-grid">
@@ -559,9 +575,74 @@
     </div>
   </section>
 
+  <!-- Step Types -->
+  <section class="step-types">
+    <div class="container">
+      <div class="eyebrow"><span class="eyebrow-dot"></span><span>Step Types</span></div>
+      <div class="pro-badge">Pro Editor · Drag &amp; Drop</div>
+      <h2>Not just tooltips</h2>
+      <p class="section-subtitle">Every trail is built from step types. Drag any of them into your flow from the editor toolbar. No code.</p>
+
+      <div class="step-types-grid">
+
+        <div class="step-type-card">
+          <div class="step-type-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          </div>
+          <div class="step-type-label">Tooltip</div>
+          <p>Point at any element. The classic guided step that highlights a button, field, or UI element and walks users through it.</p>
+        </div>
+
+        <div class="step-type-card step-type-featured">
+          <div class="step-type-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>
+          </div>
+          <div class="step-type-label">Announcement</div>
+          <p>Feature launch modal with image and rich content. Introduce new capabilities with the attention they deserve.</p>
+        </div>
+
+        <div class="step-type-card step-type-featured">
+          <div class="step-type-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+          </div>
+          <div class="step-type-label">Checklist</div>
+          <p>Interactive task list users check off. Drive activation by guiding users to the actions that make them successful.</p>
+        </div>
+
+        <div class="step-type-card step-type-featured">
+          <div class="step-type-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          </div>
+          <div class="step-type-label">Celebration</div>
+          <p>A confetti moment that fires when users hit a milestone. Reward the action that matters most in your onboarding.</p>
+        </div>
+
+        <div class="step-type-card">
+          <div class="step-type-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </div>
+          <div class="step-type-label">Redirect</div>
+          <p>Navigate users to another URL mid-tour. Chain onboarding flows across multiple pages without breaking the sequence.</p>
+        </div>
+
+        <div class="step-type-card">
+          <div class="step-type-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div class="step-type-label">Delay</div>
+          <p>Pause before advancing. Wait for animations to finish, pages to load, or async operations to complete.</p>
+        </div>
+
+      </div>
+
+      <p class="step-types-footer">All step types drag into any position in your flow. Mix and match freely.</p>
+    </div>
+  </section>
+
   <!-- Pricing -->
   <section id="pricing" class="pricing">
     <div class="container">
+      <div class="eyebrow"><span class="eyebrow-dot"></span><span>Plans</span></div>
       <h2 data-trail-id="pricing-heading">Simple pricing</h2>
       <p class="section-subtitle">Free to use. Pay only for convenience and insights.</p>
 

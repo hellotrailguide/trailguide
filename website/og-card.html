@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1200">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      width: 1200px;
+      height: 630px;
+      overflow: hidden;
+      background: #0a0a0b;
+      font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Dot grid background */
+    .bg {
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(circle, rgba(26,145,162,0.18) 1px, transparent 1px);
+      background-size: 28px 28px;
+      background-position: 14px 14px;
+    }
+
+    /* Radial vignette to fade the grid out from center */
+    .bg::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 70% 70% at 38% 50%, transparent 30%, #0a0a0b 100%);
+    }
+
+    /* Teal glow top-left behind headline */
+    .glow {
+      position: absolute;
+      top: -180px;
+      left: -80px;
+      width: 620px;
+      height: 620px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(26,145,162,0.13) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    /* Subtle bottom-right glow */
+    .glow2 {
+      position: absolute;
+      bottom: -160px;
+      right: 60px;
+      width: 500px;
+      height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(26,145,162,0.07) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    /* Teal vertical rule on far left */
+    .rule {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 3px;
+      height: 100%;
+      background: linear-gradient(to bottom, transparent, #1a91a2 25%, #1a91a2 75%, transparent);
+      opacity: 0.7;
+    }
+
+    .card {
+      position: relative;
+      width: 1200px;
+      height: 630px;
+      padding: 60px 72px 56px 72px;
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 40px;
+      z-index: 1;
+    }
+
+    /* ── LEFT COLUMN ── */
+    .left {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+    }
+
+    .logo-mark {
+      width: 36px;
+      height: 36px;
+      background: #1a91a2;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .logo-name {
+      font-size: 17px;
+      font-weight: 700;
+      color: #fafafa;
+      letter-spacing: -0.3px;
+    }
+
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 16px 0 8px;
+    }
+
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .eyebrow-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #1a91a2;
+      flex-shrink: 0;
+    }
+
+    .eyebrow-text {
+      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', 'Consolas', 'Courier New', monospace;
+      font-size: 12.5px;
+      font-weight: 500;
+      color: #1a91a2;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      font-size: 82px;
+      font-weight: 800;
+      line-height: 0.97;
+      letter-spacing: -4px;
+      color: #fafafa;
+      margin-bottom: 26px;
+    }
+
+    h1 em {
+      font-style: normal;
+      color: #1a91a2;
+    }
+
+    .subtitle {
+      font-size: 21px;
+      font-weight: 400;
+      color: #71717a;
+      line-height: 1.45;
+      max-width: 500px;
+      letter-spacing: -0.2px;
+    }
+
+    .subtitle strong {
+      color: #a1a1aa;
+      font-weight: 500;
+    }
+
+    .footer-row {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .pill {
+      background: #141416;
+      border: 1px solid #2a2a2e;
+      color: #52525b;
+      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 5px 13px;
+      border-radius: 100px;
+      letter-spacing: 0.04em;
+    }
+
+    .url {
+      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+      font-size: 13px;
+      color: #3f3f46;
+      margin-left: auto;
+      letter-spacing: 0.02em;
+    }
+
+    /* ── RIGHT COLUMN ── */
+    .right {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    /* The diagram card */
+    .diagram {
+      width: 308px;
+      position: relative;
+    }
+
+    /* Source file node */
+    .node-source {
+      background: #111113;
+      border: 1px solid #2a2a2e;
+      border-radius: 10px;
+      padding: 16px 18px;
+      margin: 0 auto;
+      width: 240px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .node-source-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .file-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
+      background: #1a91a2;
+    }
+
+    .filename {
+      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+      font-size: 12px;
+      color: #fafafa;
+      font-weight: 600;
+    }
+
+    .code-lines {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .code-line {
+      height: 7px;
+      border-radius: 3px;
+      background: #1c1c1f;
+    }
+
+    .code-line.teal { background: rgba(26,145,162,0.25); width: 70%; }
+    .code-line.w80 { width: 80%; }
+    .code-line.w60 { width: 60%; }
+    .code-line.w90 { width: 90%; }
+
+    /* SVG connector */
+    .connector-wrap {
+      display: flex;
+      justify-content: center;
+      position: relative;
+      height: 52px;
+    }
+
+    /* Output nodes */
+    .nodes-row {
+      display: flex;
+      gap: 12px;
+    }
+
+    .node-out {
+      flex: 1;
+      border-radius: 10px;
+      padding: 14px 14px;
+      border: 1px solid transparent;
+    }
+
+    .node-out.tour {
+      background: rgba(26,145,162,0.06);
+      border-color: rgba(26,145,162,0.28);
+    }
+
+    .node-out.test {
+      background: rgba(34,197,94,0.05);
+      border-color: rgba(34,197,94,0.22);
+    }
+
+    .node-tag {
+      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .node-out.tour .node-tag { color: #1a91a2; }
+    .node-out.test .node-tag { color: #22c55e; }
+
+    .node-desc {
+      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+      font-size: 11.5px;
+      font-weight: 500;
+      color: #a1a1aa;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <div class="bg"></div>
+  <div class="glow"></div>
+  <div class="glow2"></div>
+  <div class="rule"></div>
+
+  <div class="card">
+
+    <!-- LEFT -->
+    <div class="left">
+      <div class="logo">
+        <div class="logo-mark">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="13 17 18 12 13 7"/>
+            <polyline points="6 17 11 12 6 7"/>
+          </svg>
+        </div>
+        <span class="logo-name">Trailguide</span>
+      </div>
+
+      <div class="main">
+        <div class="eyebrow">
+          <span class="eyebrow-dot"></span>
+          <span class="eyebrow-text">Open Source · MIT License</span>
+        </div>
+        <h1>One recording.<br><em>Two jobs.</em></h1>
+        <p class="subtitle">
+          Product tours that also run as <strong>Playwright tests in CI.</strong>
+          Free forever, no per-user pricing.
+        </p>
+      </div>
+
+      <div class="footer-row">
+        <span class="pill">React · Vue · Svelte · Vanilla</span>
+        <span class="pill">Free runtime</span>
+        <span class="url">gettrailguide.com</span>
+      </div>
+    </div>
+
+    <!-- RIGHT: diagram -->
+    <div class="right">
+      <div class="diagram">
+
+        <!-- Source -->
+        <div class="node-source">
+          <div class="node-source-header">
+            <span class="file-dot"></span>
+            <span class="filename">welcome.json</span>
+          </div>
+          <div class="code-lines">
+            <div class="code-line teal"></div>
+            <div class="code-line w80"></div>
+            <div class="code-line w90"></div>
+            <div class="code-line w60"></div>
+          </div>
+        </div>
+
+        <!-- Connector SVG -->
+        <div class="connector-wrap">
+          <svg width="260" height="52" viewBox="0 0 260 52" fill="none">
+            <!-- stem down from source -->
+            <line x1="130" y1="0" x2="130" y2="18" stroke="#2a2a2e" stroke-width="1.5"/>
+            <!-- horizontal bar -->
+            <line x1="60" y1="18" x2="200" y2="18" stroke="#2a2a2e" stroke-width="1.5"/>
+            <!-- left leg (teal) -->
+            <line x1="60" y1="18" x2="60" y2="52" stroke="rgba(26,145,162,0.55)" stroke-width="1.5" stroke-dasharray="0"/>
+            <!-- right leg (green) -->
+            <line x1="200" y1="18" x2="200" y2="52" stroke="rgba(34,197,94,0.45)" stroke-width="1.5"/>
+            <!-- terminal dots -->
+            <circle cx="60" cy="52" r="3.5" fill="#1a91a2"/>
+            <circle cx="200" cy="52" r="3.5" fill="#22c55e"/>
+          </svg>
+        </div>
+
+        <!-- Output nodes -->
+        <div class="nodes-row">
+          <div class="node-out tour">
+            <div class="node-tag">Onboarding</div>
+            <div class="node-desc">User tour<br>in browser</div>
+          </div>
+          <div class="node-out test">
+            <div class="node-tag">CI Test</div>
+            <div class="node-desc">Playwright<br>regression</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>
