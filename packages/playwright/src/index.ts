@@ -29,7 +29,21 @@ export async function runTrail(page: Page, trail: Trail, options: RunTrailOption
       if (!currentPage.url().endsWith(step.url)) await currentPage.goto(target);
     }
 
-    const locator = currentPage.locator(step.target);
+    // When fallback selectors are available, try them in order if the primary times out.
+    // Without fallbacks, use the primary directly so Playwright's native error messages are unaffected.
+    let locator = currentPage.locator(step.target);
+    if (step.fallbackSelectors?.length) {
+      for (const selector of [step.target, ...step.fallbackSelectors]) {
+        const candidate = currentPage.locator(selector);
+        try {
+          await candidate.waitFor({ state: 'attached', timeout: selector === step.target ? timeout : 2000 });
+          locator = candidate;
+          break;
+        } catch {
+          // try next
+        }
+      }
+    }
 
     // Execute action
     if (step.action) {

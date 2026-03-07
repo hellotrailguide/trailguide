@@ -86,6 +86,7 @@ export interface StepWait {
 export interface Step {
   id: string;
   target: string;
+  fallbackSelectors?: string[];
   placement: Placement;
   title: string;
   content: string;
