@@ -208,11 +208,54 @@ When `mode` is `"test"` or `"both"`, steps support additional fields for automat
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `action` | `click` \| `fill` \| `select` \| `check` \| `hover` | Action Playwright executes on the target |
-| `value` | string | Value to fill or select (used with `fill` and `select` actions) |
+| `action` | string | Action Playwright executes on the target element (see table below) |
+| `value` | string | Value to use with `fill`, `type`, `select`, `press`, or `goto` |
 | `assert` | object | Assertion to run after the action |
-| `assert.type` | `visible` \| `hidden` \| `text` \| `value` \| `url` | What to check |
-| `assert.expected` | string | Expected value (used with `text`, `value`, `url`) |
+| `assert.type` | string | What to check (see table below) |
+| `assert.expected` | string | Expected value for `text`, `containsText`, `value`, `url`, `title`, `attribute`, `hasClass`, `count` |
+| `assert.attribute` | string | Attribute name when `assert.type` is `attribute` |
+
+**Actions**
+
+| Action | Description |
+|--------|-------------|
+| `click` | Click the element |
+| `dblclick` | Double-click the element |
+| `rightClick` | Right-click the element |
+| `fill` | Clear and fill an input with `value` |
+| `type` | Type `value` into an input (character by character) |
+| `select` | Select an option by `value` in a `<select>` |
+| `check` | Check a checkbox or radio |
+| `uncheck` | Uncheck a checkbox |
+| `hover` | Hover the mouse over the element |
+| `focus` | Focus the element |
+| `press` | Press a keyboard key (e.g. `"Enter"`, `"Tab"`) via `value` |
+| `scroll` | Scroll the element into view |
+| `goto` | Navigate to the URL in `value` |
+| `dragTo` | Drag the element (target is the drag destination) |
+| `setInputFiles` | Set files on a file input |
+| `evaluate` | Run arbitrary JavaScript on the page |
+
+**Assertions**
+
+| `assert.type` | Description |
+|---------------|-------------|
+| `visible` | Element is visible |
+| `hidden` | Element is not visible |
+| `enabled` | Element is enabled (not disabled) |
+| `disabled` | Element is disabled |
+| `checked` | Checkbox or radio is checked |
+| `empty` | Input is empty |
+| `text` | Element text exactly matches `expected` |
+| `containsText` | Element text contains `expected` |
+| `value` | Input value matches `expected` |
+| `url` | Current URL matches `expected` |
+| `title` | Page title matches `expected` |
+| `attribute` | Element has an attribute matching `expected` |
+| `hasClass` | Element has a CSS class matching `expected` |
+| `count` | Number of matching elements equals `expected` |
+| `screenshot` | Visual snapshot matches a stored baseline |
+| `custom` | Run a custom assertion function |
 
 ---
 
@@ -232,10 +275,29 @@ import { runTrail } from '@trailguide/playwright';
 import welcomeTrail from './tours/welcome.json';
 
 test('welcome tour', async ({ page }) => {
-  await page.goto('https://myapp.com');
-  await runTrail(page, welcomeTrail);
+  await runTrail(page, welcomeTrail, {
+    baseUrl: process.env.BASE_URL,
+    test,                                         // wraps each step in test.step() for the reporter
+    reportUrl: process.env.TRAILGUIDE_REPORT_URL, // optional: send results to Test Health dashboard
+    apiKey: process.env.TRAILGUIDE_API_KEY,        // optional: API key for the dashboard
+    notify: {
+      slack: process.env.SLACK_WEBHOOK_URL,        // optional: Slack notification on failure
+    },
+  });
 });
 ```
+
+**`runTrail` options**
+
+| Option | Type | Description |
+|--------|------|-------------|
+| `baseUrl` | string | Base URL prepended to relative `goto` URLs |
+| `test` | Playwright `TestType` | Wraps each step in `test.step()` so step names appear in the reporter |
+| `reportUrl` | string | URL to POST pass/fail results to (use with the Pro Test Health dashboard) |
+| `apiKey` | string | API key for the `reportUrl` endpoint |
+| `notify.slack` | string | Slack Incoming Webhook URL. Sends a message on failure. |
+| `notify.webhook` | string | Generic webhook URL. Receives a POST with failure details. |
+| `notify.trailUrl` | string | URL included in failure notifications linking back to the trail in the editor |
 
 `runTrail` walks each step in order. For each step it:
 1. Navigates to `step.url` if set
@@ -493,9 +555,16 @@ pnpm dev
 - [x] Trail playback preview
 - [x] Selector quality indicators
 - [x] Selector auto-repair
+- [x] Selector health scan (check all selectors against your live app in one click)
+- [x] Re-record individual steps in place (no full re-record needed)
+- [x] Cross-trail selector sync (heal a selector once, propagate to all trails)
 - [x] Analytics dashboard (completion rates, drop-off funnel, time per step)
 - [x] Git Sync: push trails as PRs/MRs to GitHub or GitLab
 - [x] Trail mode toggle (Guide / Test / Both) in the editor
+- [x] Test Health dashboard (per-trail pass rates, broken step rankings, run history)
+- [x] Failure notifications (Slack and webhook alerts when a trail fails in CI)
+- [x] Reusable flows (save step groups, drag them into any trail)
+- [x] Feedback step type (collect user input mid-tour)
 - [ ] A/B testing for trails
 - [ ] Team workspaces with role-based access
 
@@ -531,6 +600,18 @@ See exactly where users drop off, how long they spend on each step, and which to
 ### Selector Quality & Reliability
 - **Selector quality indicators:** every captured selector is graded Stable, Moderate, or Fragile with actionable hints
 - **Selector auto-repair:** when DOM changes break a selector, the editor suggests fixes with confidence scores
+- **Selector health scan:** one-click scan across your entire trail checks every selector against your live app and surfaces broken ones
+- **Re-record in place:** click the re-record button on any fragile or broken step to capture a fresh selector without re-recording the whole trail
+- **Cross-trail sync:** when a selector is healed, the editor detects other trails that use the same selector and offers to update them all at once
+
+### Test Health Dashboard
+See every CI run across all your trails in one place. Pass rates per trail, a ranked list of the steps that break most often, and a full recent-run feed with duration and failure context. Generate an API key, add it to your CI environment, and results start appearing automatically.
+
+### Failure Notifications
+Get a Slack message or webhook ping the moment a trail fails in CI. The notification names the step that failed, includes the error, and links back to the trail in the editor so you can fix it immediately.
+
+### Reusable Flows
+Save any group of steps as a named flow. Drag it into any trail to insert all those steps at once. Useful for login sequences, setup steps, or any repeated interaction pattern across multiple trails.
 
 ### Pricing
 

@@ -139,6 +139,83 @@ See the [Playwright guide](/guides/playwright) for full setup instructions.
 
 ---
 
+## Step types
+
+Every step has a `stepType` field that controls what UI it renders. The default is `element` (a tooltip anchored to a page element). All other types are full-screen overlays.
+
+| `stepType` | Description |
+|---|---|
+| `'element'` | Tooltip anchored to a target element. Default. |
+| `'announcement'` | Full-screen modal with headline, body, optional image, badge, and up to two buttons. |
+| `'checklist'` | Interactive task list. Users check off items before continuing. Supports required vs optional tasks and per-task navigation URLs. |
+| `'celebration'` | Confetti moment. Shows a congratulations card with an emoji, message, and CTA button. |
+| `'feedback'` | In-tour feedback form. Supports stars, thumbs up/down, or NPS (0-10). Optional free-text comment. POSTs the response to a webhook URL you configure. |
+| `'redirect'` | Navigates the user to another URL mid-tour with an optional delay and message overlay. Use it to chain onboarding flows across pages. |
+| `'delay'` | Silent pause. No UI is shown. The tour waits for the configured number of milliseconds before advancing. Useful before navigations or animations settle. |
+
+```ts
+// Announcement step
+{
+  id: 'announce-feature',
+  stepType: 'announcement',
+  title: 'Meet the new dashboard',
+  content: 'We rebuilt it from scratch. Here is what changed.',
+  announcement: {
+    badge: 'NEW',
+    imageUrl: 'https://cdn.example.com/dashboard-preview.png',
+    primaryCta: 'Show me',
+    secondaryCta: 'Maybe later',
+  },
+}
+
+// Celebration step
+{
+  id: 'onboarding-complete',
+  stepType: 'celebration',
+  title: 'You did it!',
+  content: 'Your first project is live.',
+  celebration: {
+    emoji: '🎉',
+    showConfetti: true,
+    ctaLabel: 'Go to dashboard',
+  },
+}
+
+// Feedback step
+{
+  id: 'rate-experience',
+  stepType: 'feedback',
+  title: 'How did we do?',
+  feedback: {
+    type: 'stars',
+    question: 'How would you rate your onboarding experience?',
+    allowComment: true,
+    commentPlaceholder: 'Any other thoughts?',
+    webhook: 'https://your-api.com/feedback',
+    ctaLabel: 'Submit',
+  },
+}
+
+// Checklist step
+{
+  id: 'getting-started',
+  stepType: 'checklist',
+  title: 'Get set up',
+  checklist: {
+    items: [
+      { id: 'item-1', label: 'Connect your data source', url: '/settings/data', required: true },
+      { id: 'item-2', label: 'Invite your team', url: '/settings/team', required: false },
+    ],
+    ctaLabel: 'Done',
+    allowSkip: false,
+  },
+}
+```
+
+In the Pro Editor, all step types appear in the drag-and-drop toolbar. Drop any type into any position in the flow. The step editor adapts to show the relevant configuration fields for the selected type.
+
+---
+
 ## Versioning strategy
 
 Tours are just data. Treat them like any other content in your codebase:
@@ -146,7 +223,7 @@ Tours are just data. Treat them like any other content in your codebase:
 - Commit tour changes in the same PR as the feature they document
 - Review tour copy in code review alongside the UI changes
 - Use the `version` field to communicate breaking changes
-- Export tour JSON for use with [Trailguide Pro's visual editor](https://app.gettrailguide.com) (coming soon)
+- Export tour JSON for use with [Trailguide Pro's visual editor](https://app.gettrailguide.com).
 
 <Callout type="info">
   **Tip:** Keep step `id` values stable. They are used as the primary key in analytics reports — changing an `id` breaks historical step-level metrics.

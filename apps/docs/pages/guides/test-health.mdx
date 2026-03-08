@@ -1,0 +1,160 @@
+---
+title: Test Health Dashboard
+---
+
+import { Callout, Steps } from 'nextra/components'
+
+# Test Health Dashboard
+
+The Test Health Dashboard shows pass rates, failure trends, and the most frequently broken steps across your entire trail suite. Every time a trail runs in CI, it posts a result to your dashboard.
+
+<Callout type="info">
+  The Test Health Dashboard requires Trailguide Pro and `@trailguide/playwright >= 0.1.4`.
+</Callout>
+
+---
+
+## Setup
+
+<Steps>
+
+### Generate an API key
+
+Go to [Dashboard > Tests](https://app.gettrailguide.com/dashboard/tests) in the Pro Editor and click **Generate API Key**. Copy the full key — it is only shown once.
+
+The key starts with `tg_` and is 67 characters long.
+
+### Add the key to CI
+
+**GitHub Actions**
+
+Go to your repository's Settings > Secrets and variables > Actions > New repository secret:
+
+- Name: `TRAILGUIDE_API_KEY`
+- Value: your `tg_...` key
+
+**GitLab CI**
+
+Go to Settings > CI/CD > Variables > Add variable:
+
+- Key: `TRAILGUIDE_API_KEY`
+- Value: your `tg_...` key
+- Protect and mask it so it does not appear in logs
+
+### Update your `runTrail` calls
+
+Add `reportUrl` and `apiKey` to every `runTrail` call you want to track:
+
+```ts
+import { test } from '@playwright/test'
+import { runTrail } from '@trailguide/playwright'
+import trail from './tours/welcome.trail.json'
+
+test('welcome tour', async ({ page }) => {
+  await runTrail(page, trail, {
+    baseUrl: process.env.BASE_URL ?? 'http://localhost:3000',
+    test,
+    reportUrl: 'https://app.gettrailguide.com/api/test-runs',
+    apiKey: process.env.TRAILGUIDE_API_KEY,
+  })
+})
+```
+
+If you have multiple trail tests, add `reportUrl` and `apiKey` to each one.
+
+### Add `BASE_URL` and `TRAILGUIDE_API_KEY` to your CI config
+
+**GitHub Actions** (`.github/workflows/test.yml`):
+
+```yaml
+- run: npx playwright test
+  env:
+    BASE_URL: ${{ secrets.BASE_URL }}
+    TRAILGUIDE_API_KEY: ${{ secrets.TRAILGUIDE_API_KEY }}
+```
+
+**GitLab CI** (`.gitlab-ci.yml`):
+
+```yaml
+trail-tests:
+  script:
+    - npx playwright test
+  variables:
+    BASE_URL: $BASE_URL
+    TRAILGUIDE_API_KEY: $TRAILGUIDE_API_KEY
+```
+
+</Steps>
+
+---
+
+## What gets reported
+
+After each test run, Trailguide posts:
+
+| Field | Description |
+|---|---|
+| Trail ID and title | Which trail ran |
+| Pass / fail | Whether the full run succeeded |
+| Failed step | Index and title of the step that failed, if any |
+| Error message | The Playwright error string |
+| Duration | Total run time in milliseconds |
+| Base URL | The URL the test ran against |
+
+---
+
+## Reading the dashboard
+
+The dashboard at [/dashboard/tests](https://app.gettrailguide.com/dashboard/tests) shows:
+
+**Pass rate by trail** — a bar per trail showing the percentage of runs that passed. Bars turn amber below 80% and red below 50%.
+
+**Most broken steps** — the steps that appear in the most failures across all trails, ranked by failure count. This is where to look first when something is consistently flaky.
+
+**Recent runs** — a chronological feed of every run with pass/fail status, which step failed, duration, and the base URL tested.
+
+---
+
+## Failure notifications
+
+Combine the dashboard with Slack or webhook notifications so your team knows about failures immediately, without checking the dashboard manually:
+
+```ts
+await runTrail(page, trail, {
+  reportUrl: 'https://app.gettrailguide.com/api/test-runs',
+  apiKey: process.env.TRAILGUIDE_API_KEY,
+  notify: {
+    slack: process.env.SLACK_WEBHOOK_URL,
+  },
+})
+```
+
+See the [Playwright Testing guide](/guides/playwright) for the full `notify` API.
+
+---
+
+## API reference
+
+If you need to build your own integration, the endpoint accepts a standard HTTP POST:
+
+```
+POST https://app.gettrailguide.com/api/test-runs
+Authorization: Bearer <api_key>
+Content-Type: application/json
+```
+
+```json
+{
+  "trail_id": "onboarding",
+  "trail_title": "Welcome Tour",
+  "passed": false,
+  "total_steps": 5,
+  "failed_step_index": 2,
+  "failed_step_title": "Click the create button",
+  "error_message": "Timeout: element not found",
+  "duration_ms": 4823,
+  "base_url": "https://staging.myapp.com"
+}
+```
+
+Returns `201` with the created run record on success.

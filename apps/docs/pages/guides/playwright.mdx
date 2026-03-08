@@ -11,7 +11,7 @@ Set any trail to `both` mode and it runs as a Playwright regression test in CI f
 No separate test suite. No duplicate work.
 
 <Callout type="info">
-  `@trailguide/playwright` requires `@trailguide/core >= 0.1.7` and `@playwright/test >= 1.40.0`.
+  `@trailguide/playwright` requires `@trailguide/core >= 0.1.8` and `@playwright/test >= 1.40.0`.
 </Callout>
 
 ---
@@ -103,6 +103,14 @@ import { runTrail, type RunTrailOptions } from '@trailguide/playwright'
 await runTrail(page, trail, {
   baseUrl: 'https://staging.myapp.com',  // prepended to step.url if relative
   timeout: 8000,                          // per-step timeout in ms (default: 8000)
+  test,                                   // Playwright test object — wraps each step in test.step()
+  notify: {                               // send alerts on failure
+    slack: process.env.SLACK_WEBHOOK_URL,
+    webhook: process.env.ALERT_WEBHOOK_URL,
+    trailUrl: 'https://app.gettrailguide.com',
+  },
+  reportUrl: process.env.TRAILGUIDE_REPORT_URL, // post run results to the test health dashboard
+  apiKey: process.env.TRAILGUIDE_API_KEY,
 })
 ```
 
@@ -243,6 +251,105 @@ Steps that have no `action` or `assert` still run in CI. `runTrail` checks that 
 ```
 
 No `action`. No `assert`. The test still fails if `[data-trail-id='main-nav']` disappears.
+
+---
+
+## Named steps in the reporter
+
+Pass the Playwright `test` object to wrap each step in `test.step()`. Every step title appears as a named sub-step in the Playwright HTML reporter and CI output — no extra configuration needed.
+
+```ts
+import { test } from '@playwright/test'
+import { runTrail } from '@trailguide/playwright'
+import welcomeTrail from './tours/welcome.trail.json'
+
+test('welcome tour', async ({ page }) => {
+  await runTrail(page, welcomeTrail, { test })
+})
+```
+
+When a step fails, the reporter highlights exactly which named step broke and shows the error inline.
+
+---
+
+## Failure notifications
+
+Get alerted immediately when a trail test fails in CI. Configure `notify` with a Slack webhook, a generic HTTP endpoint, or both:
+
+```ts
+await runTrail(page, trail, {
+  notify: {
+    slack: process.env.SLACK_WEBHOOK_URL,
+    webhook: process.env.ALERT_WEBHOOK_URL,
+    trailUrl: 'https://app.gettrailguide.com',
+  },
+})
+```
+
+On any step failure, Trailguide POSTs a payload before re-throwing the error so Playwright still fails the test:
+
+```json
+{
+  "trailId": "onboarding",
+  "trailTitle": "Welcome Tour",
+  "stepIndex": 2,
+  "stepTitle": "Click the create button",
+  "error": "Timeout waiting for selector '[data-trail-id=\"create-btn\"]'",
+  "trailUrl": "https://app.gettrailguide.com"
+}
+```
+
+### Slack
+
+Pass any [Slack incoming webhook URL](https://api.slack.com/messaging/webhooks). The message includes the trail name, failing step, and a link back to the trail if `trailUrl` is set.
+
+### Generic webhook
+
+`webhook` receives the same JSON payload via `POST`. Works with PagerDuty, Datadog, custom Slack apps, or any HTTP endpoint.
+
+### GitHub Actions setup
+
+```yaml
+- run: npx playwright test
+  env:
+    BASE_URL: ${{ secrets.BASE_URL }}
+    SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+```
+
+---
+
+## Test health dashboard (Pro)
+
+Track pass rates, failure trends, and most-broken steps over time across your entire trail suite.
+
+<Steps>
+
+### Generate an API key
+
+Open [Dashboard > Tests](https://app.gettrailguide.com/dashboard/tests) in the Pro Editor, click **Generate API Key**, and copy the key.
+
+### Add to CI secrets
+
+**GitHub Actions:** Settings > Secrets and variables > Actions > New repository secret
+- Name: `TRAILGUIDE_API_KEY`
+- Value: your `tg_...` key
+
+**GitLab CI:** Settings > CI/CD > Variables > Add variable
+- Key: `TRAILGUIDE_API_KEY`
+- Value: your `tg_...` key
+
+### Wire up `runTrail`
+
+```ts
+await runTrail(page, trail, {
+  reportUrl: 'https://app.gettrailguide.com/api/test-runs',
+  apiKey: process.env.TRAILGUIDE_API_KEY,
+})
+```
+
+</Steps>
+
+After each run, the dashboard updates with pass/fail status, duration, which step failed, and the base URL that was tested. The **Most broken steps** panel shows which steps fail most often across all trails so you know where to focus fixes.
 
 ---
 

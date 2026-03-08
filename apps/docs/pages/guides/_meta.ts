@@ -7,4 +7,5 @@ export default {
   progress: 'Progress & Resuming',
   analytics: 'Analytics (Pro)',
   playwright: 'Playwright Testing',
+  'test-health': 'Test Health Dashboard',
 }
