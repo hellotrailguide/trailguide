@@ -83,6 +83,21 @@ export interface StepWait {
   value?: string;
 }
 
+export interface StepFingerprint {
+  tag?: string | null;
+  type?: string | null;
+  role?: string | null;
+  name?: string | null;
+  placeholder?: string | null;
+  ariaLabel?: string | null;
+  innerText?: string | null;
+  title?: string | null;
+  dataAttrs?: Record<string, string> | null;
+  closestLabel?: string | null;
+  viewportRatio?: { x: number; y: number } | null;
+  strength?: 'strong' | 'moderate' | 'weak';
+}
+
 export interface Step {
   id: string;
   target: string;
@@ -121,6 +136,8 @@ export interface Step {
   redirect?: RedirectConfig;
   /** Milliseconds to pause for stepType: 'delay' (no UI shown) */
   delayMs?: number;
+  /** Multi-signal fingerprint captured at record time for scored fallback matching */
+  fingerprint?: StepFingerprint;
 }
 
 export interface Trail {
