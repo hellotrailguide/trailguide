@@ -87,6 +87,7 @@ export interface Step {
   id: string;
   target: string;
   fallbackSelectors?: string[];
+  textHint?: string;
   placement: Placement;
   title: string;
   content: string;
