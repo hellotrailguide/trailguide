@@ -162,6 +162,7 @@ export class Trailguide {
         <div class="trailguide-tooltip-arrow"></div>
       </div>
     `;
+    this.tooltip.style.visibility = 'hidden';
     document.body.appendChild(this.tooltip);
 
     this.arrowEl = this.tooltip.querySelector('.trailguide-tooltip-arrow');
@@ -545,6 +546,7 @@ export class Trailguide {
     // Fast path: element is already in the DOM
     const immediateTarget = findElement(step.target);
     if (immediateTarget) {
+      if (this.tooltip) this.tooltip.style.visibility = 'hidden';
       scrollToElement(immediateTarget);
       this.stepTimerId = setTimeout(() => {
         this.stepTimerId = null;
@@ -577,7 +579,7 @@ export class Trailguide {
     this.waitForElement(step.target).then(target => {
       if (!this.isActive || !target) return;
       // Element appeared — clear error state and show the step properly
-      if (this.tooltip) this.tooltip.style.transform = '';
+      if (this.tooltip) { this.tooltip.style.transform = ''; this.tooltip.style.visibility = 'hidden'; }
       if (spotlight) spotlight.style.display = '';
       if (highlight) highlight.style.display = '';
       scrollToElement(target);
@@ -622,6 +624,7 @@ export class Trailguide {
     this.tooltip.style.left = '50%';
     this.tooltip.style.top = '50%';
     this.tooltip.style.transform = 'translate(-50%, -50%)';
+    this.tooltip.style.visibility = '';
   }
 
   private showNavigateState(step: Step): void {
@@ -650,6 +653,7 @@ export class Trailguide {
     }
     if (progress) progress.textContent = `${this.currentStepIndex + 1} of ${this.trail.steps.length}`;
     if (prevBtn) prevBtn.style.display = isFirst ? 'none' : 'block';
+    this.tooltip.style.visibility = '';
     if (nextBtn) {
       nextBtn.textContent = 'Go There';
       const navHandler = (e: Event) => { e.stopImmediatePropagation(); window.location.href = destination; };
@@ -743,6 +747,7 @@ export class Trailguide {
 
     this.tooltip.style.left = `${x}px`;
     this.tooltip.style.top = `${y}px`;
+    this.tooltip.style.visibility = '';
     this.tooltip.dataset.placement = placement;
 
     if (middlewareData.arrow && this.arrowEl) {
