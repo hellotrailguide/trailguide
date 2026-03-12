@@ -17,6 +17,10 @@ const tour: Trail = {
   id: 'onboarding',        // unique identifier
   title: 'Get started',    // used in analytics
   version: '1.0.0',        // bump when steps change significantly
+  theme: {                 // optional: per-trail CSS custom property overrides
+    '--trailguide-accent': '#6366f1',
+    '--trailguide-radius': '12px',
+  },
   steps: [/* ... */],
 }
 ```
@@ -28,6 +32,20 @@ A stable unique string. Used as the key for analytics events and for `tourStorag
 ### `version`
 
 Not enforced by the SDK — use it as a convention to track which version of a tour a user has seen, e.g. by storing it alongside the completion flag in your own backend.
+
+### `theme`
+
+An optional map of CSS custom property overrides applied to this trail at runtime. Useful when you want different trails to use different brand colors without touching global CSS.
+
+```ts
+theme: {
+  '--trailguide-accent': '#6366f1',
+  '--trailguide-accent-hover': '#4f46e5',
+  '--trailguide-radius': '12px',
+},
+```
+
+Any variable from the [full variable reference](https://github.com/hellotrailguide/trailguide#theming) can be overridden here. The Pro Editor includes a live theme preview that applies these values in real time.
 
 ---
 

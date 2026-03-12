@@ -50,13 +50,19 @@ Most onboarding tools are third-party scripts — loaded from a CDN, configured 
 | Works offline / in staging | ✅ | Sometimes |
 | No per-user pricing | ✅ | ❌ |
 | CSS selector targeting | ✅ | ✅ |
+| Announcement, checklist, celebration, feedback step types | ✅ | ✅ |
+| Redirect and delay step types | ✅ | Sometimes |
 | Runs as a Playwright CI test | ✅ | ❌ |
 | Analytics | ✅ Pro | ✅ |
 | Visual editor | ✅ Pro | ✅ |
+| AI-assisted step authoring | ✅ Pro | ❌ |
+| Guided recording with action quick-pick | ✅ Pro | ❌ |
 | Hosted trail storage with screenshots | ✅ Pro | ❌ |
 | Git sync (GitHub + GitLab) | ✅ Pro | ❌ |
 | Load trails from your repo | ✅ Pro | ❌ |
 | Selector quality grades | ✅ Pro | ❌ |
+| Reusable flows | ✅ Pro | ❌ |
+| Test Health dashboard | ✅ Pro | ❌ |
 
 ## Packages
 
@@ -81,11 +87,15 @@ The SDK is fully open source (MIT). Everything in this documentation works out o
 **What Pro adds:**
 
 - **Hosted trail storage with screenshots** — every trail lives in your dashboard. Each step is stored with a screenshot taken at the time you built it. When your app ships a redesign, open the editor, see exactly what shifted, fix it, and push the update. Non-devs can own this without touching the repo.
-- **Visual editor** — build tours by clicking through your app. No CSS selectors to write. Drag steps to reorder, edit copy inline, and play back the full trail before you ship it.
+- **Visual editor** — build tours by clicking through your app. No CSS selectors to write. Drag steps to reorder, edit copy inline, and play back the full trail before you ship it. Per-step pass/fail indicators appear after a test run.
+- **AI-assisted step authoring** — click the ✦ Suggest button on any step and Claude generates a title, body copy, and placement from the element's context. Accept the whole suggestion or pick individual fields.
+- **Guided recording mode** — an action quick-pick overlay appears near every clicked element so you can choose Click, Hover, or Skip before the step commits. Hold Shift while clicking to instantly capture and navigate without waiting for the overlay.
+- **Reusable flows** — save any group of steps as a named flow and drag them into any trail to insert all those steps at once.
 - **Analytics** — see starts, completions, and a step-by-step drop-off funnel. Know which steps lose users and whether your changes made things better.
 - **Git sync (GitHub + GitLab)** — load existing trails straight from your repo, edit them in the dashboard, and push changes back as commits or pull/merge requests. Works with both GitHub and GitLab.
 - **Selector quality grades** — every captured element is graded Stable, Moderate, or Fragile, with suggestions to fix brittle selectors before they break in production.
 - **Playwright test runner** — set any trail to `both` mode and it runs as a Playwright regression test in CI from the same JSON file. No separate test suite to maintain.
+- **Test Health dashboard** — track pass rates, the most frequently broken steps, and full run history across all your CI pipelines in one place. Slack and webhook failure notifications included.
 
 <Callout type="info">
   Start a **free 14-day Pro trial** at [app.gettrailguide.com](https://app.gettrailguide.com).

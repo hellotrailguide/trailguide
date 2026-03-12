@@ -151,6 +151,10 @@ Tours are JSON files. Simple, readable, diffable.
   "id": "welcome",
   "title": "Welcome Tour",
   "version": "1.0.0",
+  "theme": {
+    "--trailguide-accent": "#6366f1",
+    "--trailguide-radius": "12px"
+  },
   "steps": [
     {
       "id": "step-1",
@@ -163,15 +167,42 @@ Tours are JSON files. Simple, readable, diffable.
 }
 ```
 
+The optional `theme` field is a map of CSS custom property overrides applied to the trail at runtime. This lets you brand individual trails differently without touching your global CSS:
+
+```json
+"theme": {
+  "--trailguide-accent": "#6366f1",
+  "--trailguide-radius": "12px"
+}
+```
+
 ### Step Fields
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `id` | string | Yes | Unique step identifier |
-| `target` | string | Yes | CSS selector for the target element |
-| `placement` | `top` \| `bottom` \| `left` \| `right` | Yes | Tooltip position |
+| `target` | string | No | CSS selector for the target element (required for `element` type) |
+| `placement` | `top` \| `bottom` \| `left` \| `right` | No | Tooltip position relative to the target |
 | `title` | string | Yes | Step headline |
-| `content` | string | Yes | Step description |
+| `content` | string | No | Step body text |
+| `stepType` | string | No | Controls what UI the step renders. Defaults to `element` (tooltip). See Step Types below. |
+| `optional` | boolean | No | If `true`, silently skips the step when the target element is not found |
+
+### Step Types
+
+Every step has a `stepType` field that controls what UI it renders. The default is `element`.
+
+| `stepType` | Description |
+|---|---|
+| `element` | Tooltip anchored to a target element. Default. |
+| `announcement` | Full-screen modal with headline, body, optional image, badge, and up to two buttons. |
+| `checklist` | Interactive task list. Users check off items before continuing. Supports required vs optional tasks and per-task navigation URLs. |
+| `celebration` | Confetti moment with a congratulations card, emoji, and CTA button. |
+| `feedback` | In-tour feedback form. Supports stars, thumbs up/down, or NPS (0-10). Optional free-text comment. POSTs the response to a webhook URL. |
+| `redirect` | Navigates the user to another URL mid-tour with an optional delay and message overlay. |
+| `delay` | Silent pause. No UI is shown. The tour waits for the configured milliseconds before advancing. |
+
+Mix any step types in a single trail. The Pro Editor surfaces all types in a drag-and-drop toolbar.
 
 ### Trail Modes
 
@@ -551,8 +582,9 @@ pnpm dev
 ### Pro
 - [x] Visual Editor (point-and-click, drag-and-drop, rich text, live preview)
 - [x] Trail & screenshot storage: every trail is saved with screenshots so your team can open and modify them anytime
-- [x] Inline flow recording (Chrome extension)
-- [x] Trail playback preview
+- [x] Inline flow recording (Chrome extension) with action quick-pick overlay and Shift+click shortcut
+- [x] AI-assisted step authoring (✦ Suggest button generates title, content, and placement from element context)
+- [x] Trail playback preview with per-step pass/fail indicators
 - [x] Selector quality indicators
 - [x] Selector auto-repair
 - [x] Selector health scan (check all selectors against your live app in one click)
@@ -581,10 +613,12 @@ A developer installs the runtime once. After that, anyone on your team can open 
 Every trail you build in the Pro Editor is saved to your account with a screenshot of each step. When your UI changes, you'll see exactly what shifted. Open any trail, update the affected steps, and push a fix before users hit a broken tour.
 
 ### Visual Editor
-- **Point-and-click recording:** open your app in the editor, click through it, every click becomes a step
+- **Point-and-click recording:** open your app in the editor, click through it, every click becomes a step. An action quick-pick overlay appears near the clicked element so you can choose Click, Hover, or Skip before committing. Hold Shift while clicking to instantly capture as a click and navigate.
+- **AI-assisted step authoring:** click the ✦ Suggest button on any step and Claude generates a title, body, and placement from the element's context. Edit or accept individual fields.
 - **Rich text editing:** format step content without touching JSON
 - **Drag-and-drop step ordering:** reorganize flows instantly
-- **Live preview:** step through the full trail inside the editor before publishing
+- **Live preview:** step through the full trail inside the editor before publishing, with per-step pass/fail indicators after a test run
+- **Reusable flows:** save any group of steps as a named flow and drag them into any trail
 - **JSON import/export:** everything is still plain JSON you own
 
 ### Analytics
