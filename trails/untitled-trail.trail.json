@@ -1,0 +1,137 @@
+{
+  "id": "1774916713014-eplko7p",
+  "title": "Untitled Trail",
+  "version": "1.0.0",
+  "steps": [
+    {
+      "title": "Step 1",
+      "content": "Describe this step...",
+      "target": "[data-attr=\"login-button\"]",
+      "placement": "bottom",
+      "fallbackSelectors": [
+        "[data-componentid=\"button-1025\"]"
+      ],
+      "textHint": "Login",
+      "action": "click",
+      "value": "",
+      "id": "1774916790714-m49j21g",
+      "fingerprint": {
+        "tag": "span",
+        "type": null,
+        "role": null,
+        "name": null,
+        "placeholder": null,
+        "ariaLabel": null,
+        "innerText": "Login",
+        "title": null,
+        "dataAttrs": {
+          "data-ref": "btnInnerEl"
+        },
+        "closestLabel": null,
+        "viewportRatio": {
+          "x": 0.316884661117717,
+          "y": 0.5036344755970924
+        },
+        "strength": "weak"
+      }
+    },
+    {
+      "title": "Step 2",
+      "content": "Describe this step...",
+      "target": "[data-componentid=\"button-1137\"]",
+      "placement": "bottom",
+      "fallbackSelectors": [
+        "[data-componentid=\"welcome-popup-1126\"]",
+        "[role=\"dialog\"]"
+      ],
+      "action": "click",
+      "value": "",
+      "id": "1774916799808-rvjoxo0",
+      "fingerprint": {
+        "tag": "span",
+        "type": null,
+        "role": "presentation",
+        "name": null,
+        "placeholder": null,
+        "ariaLabel": null,
+        "innerText": null,
+        "title": null,
+        "dataAttrs": {
+          "data-ref": "btnIconEl"
+        },
+        "closestLabel": null,
+        "viewportRatio": {
+          "x": 0.22770511296076099,
+          "y": 0.5010384215991692
+        },
+        "strength": "weak"
+      }
+    },
+    {
+      "title": "Step 3",
+      "content": "Describe this step...",
+      "target": "[data-componentid=\"menuitem-1158\"]",
+      "placement": "bottom",
+      "fallbackSelectors": [
+        "[role=\"menu\"]",
+        "[data-componentid=\"new-element-menu-1030\"]",
+        "[role=\"dialog\"]"
+      ],
+      "textHint": "Quote",
+      "action": "click",
+      "value": "",
+      "id": "1774916806349-fjqmtgq",
+      "fingerprint": {
+        "tag": "span",
+        "type": null,
+        "role": "presentation",
+        "name": null,
+        "placeholder": null,
+        "ariaLabel": null,
+        "innerText": "Quote",
+        "title": null,
+        "dataAttrs": {
+          "data-ref": "textEl"
+        },
+        "closestLabel": null,
+        "viewportRatio": {
+          "x": 0.7599305142687277,
+          "y": 0.5991692627206646
+        },
+        "strength": "weak"
+      }
+    },
+    {
+      "title": "Step 4",
+      "content": "Describe this step...",
+      "target": "[data-componentid=\"textfield-1179\"]",
+      "placement": "bottom",
+      "fallbackSelectors": [
+        "[name=\"textfield-1179-inputEl\"]"
+      ],
+      "action": "click",
+      "value": "",
+      "id": "1774916816359-4b5s2p3",
+      "fingerprint": {
+        "tag": "input",
+        "type": "text",
+        "role": "textbox",
+        "name": "textfield-1179-inputEl",
+        "placeholder": null,
+        "ariaLabel": null,
+        "innerText": null,
+        "title": null,
+        "dataAttrs": {
+          "data-ref": "inputEl",
+          "data-componentid": "textfield-1179"
+        },
+        "closestLabel": null,
+        "viewportRatio": {
+          "x": 0.45541022592152197,
+          "y": 0.17009021287642784
+        },
+        "strength": "moderate"
+      }
+    }
+  ]
+}
