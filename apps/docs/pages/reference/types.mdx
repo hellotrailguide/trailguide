@@ -11,6 +11,8 @@ import type {
   Trail, Step, Placement, TrailMode, StepType,
   StepAction, StepAssert, StepWait,
   CelebrationConfig, FeedbackConfig,
+  AnnouncementConfig, ChecklistConfig, ChecklistItem,
+  RedirectConfig, NudgeConfig, NudgeEffect,
   TrailguideOptions, AnalyticsConfig
 } from '@trailguide/core'
 ```
@@ -49,6 +51,9 @@ interface Step {
 
   // Step type (default: 'element' — standard tooltip)
   stepType?: StepType
+
+  // Nudge config (used when stepType is 'nudge')
+  nudge?: NudgeConfig
 
   // Celebration overlay config (used when stepType is 'celebration')
   celebration?: CelebrationConfig
@@ -91,14 +96,16 @@ Controls how a trail runs. `'tour'` shows onboarding tooltips to users (the defa
 ## `StepType`
 
 ```ts
-type StepType = 'element' | 'celebration' | 'feedback'
+type StepType =
+  | 'element'      // default — tooltip anchored to a DOM element
+  | 'nudge'        // visual highlight effect on an element, advances on click
+  | 'celebration'  // fullscreen confetti overlay
+  | 'announcement' // fullscreen modal with headline, image, and CTA buttons
+  | 'checklist'    // interactive task list
+  | 'feedback'     // rating form (stars, thumbs, or NPS)
+  | 'redirect'     // navigates to a URL mid-tour
+  | 'delay'        // silent pause before advancing
 ```
-
-Controls how a step is rendered.
-
-- `'element'` (default): standard tooltip anchored to a DOM element
-- `'celebration'`: fullscreen overlay with confetti and a completion message
-- `'feedback'`: fullscreen rating form (stars, thumbs, or NPS) with an optional comment field
 
 ---
 
@@ -132,6 +139,57 @@ interface FeedbackConfig {
 ```
 
 When `webhook` is set, `runTrail` POSTs a JSON body of `{ rating, comment, stepId, trailId }` to that URL on submission.
+
+---
+
+## `NudgeEffect`
+
+```ts
+type NudgeEffect = 'pulse' | 'glow' | 'sparkles' | 'badge'
+```
+
+The visual animation applied to the target element for a `nudge` step.
+
+| Value | Description |
+|---|---|
+| `'pulse'` | An expanding ring that radiates outward from the element and fades, matching the element's border-radius. |
+| `'glow'` | A colored box-shadow bloom applied directly to the element. |
+| `'sparkles'` | Eight ✦ particles that burst outward from the element center and loop. |
+| `'badge'` | A pill label anchored to the top-right corner of the element. |
+
+---
+
+## `NudgeConfig`
+
+Configuration for a `nudge` step.
+
+```ts
+interface NudgeConfig {
+  effect: NudgeEffect  // which animation to apply
+  color?: string       // any CSS hex color (default: '#1a91a2')
+  label?: string       // text for the badge pill (only used when effect is 'badge')
+}
+```
+
+```ts
+// Pulse nudge
+{
+  id: 'nudge-cta',
+  stepType: 'nudge',
+  target: '[data-trail-id="create-btn"]',
+  nudge: { effect: 'pulse', color: '#6366f1' },
+}
+
+// Badge nudge
+{
+  id: 'nudge-new-feature',
+  stepType: 'nudge',
+  target: '[data-trail-id="reports-nav"]',
+  nudge: { effect: 'badge', color: '#10b981', label: 'New' },
+}
+```
+
+Nudge steps advance automatically when the user clicks the highlighted element. In a sequence of nudge-only steps, they run one at a time — each activating after the previous one is clicked.
 
 ---
 

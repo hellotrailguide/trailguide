@@ -159,11 +159,12 @@ See the [Playwright guide](/guides/playwright) for full setup instructions.
 
 ## Step types
 
-Every step has a `stepType` field that controls what UI it renders. The default is `element` (a tooltip anchored to a page element). All other types are full-screen overlays.
+Every step has a `stepType` field that controls what UI it renders. The default is `element` (a tooltip anchored to a page element).
 
 | `stepType` | Description |
 |---|---|
 | `'element'` | Tooltip anchored to a target element. Default. |
+| `'nudge'` | Visual highlight effect on an element. No popup — just a pulse, glow, sparkle, or badge animation. Advances automatically when the user clicks the target. |
 | `'announcement'` | Full-screen modal with headline, body, optional image, badge, and up to two buttons. |
 | `'checklist'` | Interactive task list. Users check off items before continuing. Supports required vs optional tasks and per-task navigation URLs. |
 | `'celebration'` | Confetti moment. Shows a congratulations card with an emoji, message, and CTA button. |
@@ -172,6 +173,29 @@ Every step has a `stepType` field that controls what UI it renders. The default 
 | `'delay'` | Silent pause. No UI is shown. The tour waits for the configured number of milliseconds before advancing. Useful before navigations or animations settle. |
 
 ```ts
+// Nudge step — highlights an element with a visual effect, advances on click
+{
+  id: 'nudge-new-project',
+  stepType: 'nudge',
+  target: '[data-trail-id="new-project-btn"]',
+  nudge: {
+    effect: 'pulse',           // 'pulse' | 'glow' | 'sparkles' | 'badge'
+    color: '#6366f1',          // any CSS hex color
+  },
+}
+
+// Badge nudge — attaches a pill label to the element
+{
+  id: 'nudge-new-feature',
+  stepType: 'nudge',
+  target: '[data-trail-id="reports-nav"]',
+  nudge: {
+    effect: 'badge',
+    color: '#10b981',
+    label: 'New',
+  },
+}
+
 // Announcement step
 {
   id: 'announce-feature',
