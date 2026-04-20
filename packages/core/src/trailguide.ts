@@ -460,6 +460,99 @@ export class Trailguide {
     });
   }
 
+  private showNudgeStep(step: Step): void {
+    if (!this.overlay || !this.tooltip) return;
+    this.overlay.style.display = 'none';
+    this.tooltip.style.display = 'none';
+
+    const el = findElement(step.target);
+    if (!el) { this.next(); return; }
+
+    const cfg = step.nudge;
+    const effect = cfg?.effect ?? 'pulse';
+    const color = cfg?.color ?? '#1a91a2';
+    const label = cfg?.label ?? 'New';
+    const rect = el.getBoundingClientRect();
+    const domCleanups: (() => void)[] = [];
+
+    if (effect === 'pulse') {
+      const styleId = 'trailguide-nudge-pulse-style';
+      if (!document.getElementById(styleId)) {
+        const s = document.createElement('style');
+        s.id = styleId;
+        s.textContent = '@keyframes trailguide-nudge-ping{0%{transform:scale(1);opacity:0.8}100%{transform:scale(1.9);opacity:0}}';
+        document.head.appendChild(s);
+      }
+      const br = window.getComputedStyle(el).borderRadius;
+      const ring = document.createElement('div');
+      ring.style.cssText = [
+        'position:fixed', 'pointer-events:none', 'z-index:2147483645',
+        'border-radius:' + br, 'box-sizing:border-box',
+        'top:' + (rect.top - 4) + 'px', 'left:' + (rect.left - 4) + 'px',
+        'width:' + (rect.width + 8) + 'px', 'height:' + (rect.height + 8) + 'px',
+        'border:2.5px solid ' + color,
+        'animation:trailguide-nudge-ping 1.4s cubic-bezier(0,0,0.2,1) infinite',
+      ].join(';');
+      document.body.appendChild(ring);
+      domCleanups.push(() => ring.remove());
+
+    } else if (effect === 'glow') {
+      const prevBoxShadow = el.style.boxShadow;
+      const prevTransition = el.style.transition;
+      el.style.boxShadow = '0 0 0 3px ' + color + ', 0 0 20px 6px ' + color + '55';
+      el.style.transition = 'box-shadow 0.3s ease';
+      domCleanups.push(() => { el.style.boxShadow = prevBoxShadow; el.style.transition = prevTransition; });
+
+    } else if (effect === 'sparkles') {
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const dist = Math.min(Math.max(rect.width, rect.height) * 0.15 + 4, 14);
+      for (let i = 0; i < 8; i++) {
+        const angle = (i / 8) * Math.PI * 2;
+        const endDx = Math.cos(angle) * dist;
+        const endDy = Math.sin(angle) * dist;
+        const sp = document.createElement('div');
+        sp.textContent = '✦';
+        sp.style.cssText = 'position:fixed;pointer-events:none;z-index:2147483645;font-size:13px;line-height:1;color:' + color + ';top:' + (cy - 7) + 'px;left:' + (cx - 7) + 'px;transform-origin:center;';
+        document.body.appendChild(sp);
+        sp.animate([
+          { opacity: 0, transform: 'translate(0,0) scale(0.3)' },
+          { opacity: 1, transform: `translate(${endDx * 0.55}px,${endDy * 0.55}px) scale(1)`, offset: 0.35 },
+          { opacity: 0.9, transform: `translate(${endDx}px,${endDy}px) scale(0.7)`, offset: 0.65 },
+          { opacity: 0, transform: `translate(${endDx * 1.35}px,${endDy * 1.35}px) scale(0)` },
+        ], { duration: 1400, delay: i * 170, iterations: Infinity, easing: 'ease-out' });
+        domCleanups.push(() => sp.remove());
+      }
+
+    } else if (effect === 'badge') {
+      const badge = document.createElement('div');
+      badge.textContent = label;
+      badge.style.cssText = [
+        'position:fixed', 'pointer-events:none', 'z-index:2147483645',
+        'top:' + (rect.top - 10) + 'px', 'left:' + (rect.right - 10) + 'px',
+        'background:' + color, 'color:#fff',
+        'font-size:10px', 'font-weight:700', 'font-family:system-ui,sans-serif',
+        'padding:2px 7px', 'border-radius:999px', 'white-space:nowrap', 'line-height:18px',
+      ].join(';');
+      document.body.appendChild(badge);
+      domCleanups.push(() => badge.remove());
+    }
+
+    const clickHandler = () => {
+      domCleanups.forEach(fn => fn());
+      el.removeEventListener('click', clickHandler, true);
+      this.next();
+    };
+    el.addEventListener('click', clickHandler, true);
+
+    this.stepCleanupFns.push(() => {
+      domCleanups.forEach(fn => fn());
+      el.removeEventListener('click', clickHandler, true);
+      if (this.overlay) this.overlay.style.display = '';
+      if (this.tooltip) this.tooltip.style.display = '';
+    });
+  }
+
   private showRedirectStep(step: Step): void {
     if (!this.overlay || !this.tooltip) return;
     this.overlay.style.display = 'none';
@@ -527,6 +620,7 @@ export class Trailguide {
 
     this.emitAnalytics('step_viewed');
 
+    if (step.stepType === 'nudge') { this.showNudgeStep(step); return; }
     if (step.stepType === 'celebration') { this.showCelebrationStep(step); return; }
     if (step.stepType === 'feedback') { this.showFeedbackStep(step); return; }
     if (step.stepType === 'announcement') { this.showAnnouncementStep(step); return; }

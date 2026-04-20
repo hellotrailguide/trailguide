@@ -20,7 +20,17 @@ export interface StepAssert {
 }
 
 /** Step type — 'element' is the default (tooltip on a page element). All other values are full-screen overlay steps with no target element. */
-export type StepType = 'element' | 'celebration' | 'feedback' | 'announcement' | 'checklist' | 'redirect' | 'delay';
+export type StepType = 'element' | 'nudge' | 'celebration' | 'feedback' | 'announcement' | 'checklist' | 'redirect' | 'delay';
+
+export type NudgeEffect = 'pulse' | 'glow' | 'sparkles' | 'badge';
+
+export interface NudgeConfig {
+  effect: NudgeEffect;
+  /** Any CSS color string (default: '#1a91a2') */
+  color?: string;
+  /** Text for the badge pill — only used when effect is 'badge' */
+  label?: string;
+}
 
 export interface CelebrationConfig {
   emoji?: string;
@@ -132,6 +142,8 @@ export interface Step {
   announcement?: AnnouncementConfig;
   /** Config for stepType: 'checklist' */
   checklist?: ChecklistConfig;
+  /** Config for stepType: 'nudge' */
+  nudge?: NudgeConfig;
   /** Config for stepType: 'redirect' */
   redirect?: RedirectConfig;
   /** Milliseconds to pause for stepType: 'delay' (no UI shown) */

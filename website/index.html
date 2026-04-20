@@ -785,6 +785,14 @@
 
         <div class="step-type-card step-type-featured">
           <div class="step-type-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="9" stroke-dasharray="2 3" opacity="0.5"/></svg>
+          </div>
+          <div class="step-type-label">Nudge</div>
+          <p>Draw attention without explaining. A pulse, glow, sparkle, or badge on any element. Advances when the user clicks it — no tooltip, no interruption.</p>
+        </div>
+
+        <div class="step-type-card step-type-featured">
+          <div class="step-type-icon">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>
           </div>
           <div class="step-type-label">Announcement</div>
@@ -834,6 +842,78 @@
       </div>
 
       <p class="step-types-footer">All step types drag into any position in your flow. Mix and match freely.</p>
+    </div>
+  </section>
+
+  <!-- Nudge -->
+  <section class="nudge-section">
+    <div class="container">
+      <div class="eyebrow"><span class="eyebrow-dot"></span><span>Nudge</span></div>
+      <h2>Not every user wants to be walked through it</h2>
+      <p class="section-subtitle">A lot of companies prefer guiding users to their own discoveries over reading a series of cards. The "New" badge that surfaces a buried feature. The pulsing ring on an empty workspace. These work because they respect what the user was already doing.</p>
+
+      <div class="nudge-main">
+        <div class="nudge-copy">
+          <p>Trailguide Nudges are built for that instinct. A Nudge step places a visual highlight on any element in your flow — no tooltip card, no progress bar, no next button to read past. The user clicks the highlighted element and the tour advances automatically, invisibly.</p>
+          <p>It fits seamlessly into a linear tour sequence alongside tooltips and announcements, or stands alone as a one-step spotlight on a feature users keep missing. Four effects, any color, zero friction.</p>
+        </div>
+
+        <div class="nudge-code">
+          <div class="code-block code-block-large">
+<pre><code><span class="code-comment">// No tooltip — just draw the eye and let the user click</span>
+{
+  <span class="code-key">"id"</span>: <span class="code-string">"nudge-create"</span>,
+  <span class="code-key">"stepType"</span>: <span class="code-string">"nudge"</span>,
+  <span class="code-key">"target"</span>: <span class="code-string">"[data-trail-id='create-btn']"</span>,
+  <span class="code-key">"nudge"</span>: { <span class="code-key">"effect"</span>: <span class="code-string">"pulse"</span>, <span class="code-key">"color"</span>: <span class="code-string">"#1a91a2"</span> }
+}
+
+<span class="code-comment">// Badge nudge — surface a feature users keep overlooking</span>
+{
+  <span class="code-key">"id"</span>: <span class="code-string">"nudge-reports"</span>,
+  <span class="code-key">"stepType"</span>: <span class="code-string">"nudge"</span>,
+  <span class="code-key">"target"</span>: <span class="code-string">"[data-trail-id='reports-nav']"</span>,
+  <span class="code-key">"nudge"</span>: {
+    <span class="code-key">"effect"</span>: <span class="code-string">"badge"</span>,
+    <span class="code-key">"color"</span>: <span class="code-string">"#10b981"</span>,
+    <span class="code-key">"label"</span>: <span class="code-string">"New"</span>
+  }
+}</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="nudge-effects-row">
+        <div class="nudge-effect-card">
+          <div class="nudge-demo-wrap">
+            <div class="nudge-dot nudge-dot-pulse"></div>
+          </div>
+          <div class="nudge-effect-name">pulse</div>
+          <p>An expanding ring radiates outward from the element and fades, matching its border-radius.</p>
+        </div>
+        <div class="nudge-effect-card">
+          <div class="nudge-demo-wrap">
+            <div class="nudge-dot nudge-dot-glow"></div>
+          </div>
+          <div class="nudge-effect-name">glow</div>
+          <p>A colored box-shadow bloom applied directly to the element, pulsing on loop.</p>
+        </div>
+        <div class="nudge-effect-card">
+          <div class="nudge-demo-wrap">
+            <div class="nudge-dot nudge-dot-sparkles">✦</div>
+          </div>
+          <div class="nudge-effect-name">sparkles</div>
+          <p>Eight ✦ particles burst outward from the element center and loop continuously.</p>
+        </div>
+        <div class="nudge-effect-card">
+          <div class="nudge-demo-wrap">
+            <div class="nudge-dot"></div>
+            <div class="nudge-badge-pill">New</div>
+          </div>
+          <div class="nudge-effect-name">badge</div>
+          <p>A pill label anchored to the top-right corner of the element. Set any text and color.</p>
+        </div>
+      </div>
     </div>
   </section>
 

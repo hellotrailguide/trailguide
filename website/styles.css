@@ -421,6 +421,7 @@ section { padding: 96px 0; position: relative; }
 .two-jobs h2,
 .pro-analytics h2,
 .visual-editor h2,
+.nudge-section h2,
 .pricing h2,
 .waitlist h2 {
   font-size: clamp(36px, 4vw, 50px);
@@ -1333,6 +1334,138 @@ section { padding: 96px 0; position: relative; }
   letter-spacing: 0.04em;
 }
 
+/* ─── NUDGE SECTION ──────────────────────────────────────────────────── */
+.nudge-section {
+  background: var(--bg);
+  overflow: hidden;
+  position: relative;
+}
+.nudge-section::before {
+  content: '';
+  position: absolute;
+  top: -120px; left: -80px;
+  width: 600px; height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(26,145,162,0.07) 0%, transparent 65%);
+  pointer-events: none;
+}
+.nudge-main {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 52px;
+  margin-top: 44px;
+  align-items: start;
+}
+.nudge-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.nudge-copy p {
+  font-size: 15px;
+  color: var(--text-dim);
+  line-height: 1.78;
+}
+.nudge-copy em {
+  font-style: normal;
+  color: var(--text-muted);
+}
+.nudge-effects-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-top: 40px;
+  padding: 28px;
+  background: var(--bg-node);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+.nudge-effect-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+}
+.nudge-demo-wrap {
+  position: relative;
+  width: 60px; height: 30px;
+  display: flex; align-items: center; justify-content: center;
+}
+.nudge-dot {
+  width: 60px; height: 30px;
+  border-radius: 7px;
+  background: rgba(26,145,162,0.1);
+  border: 1px solid rgba(26,145,162,0.28);
+  position: relative;
+  flex-shrink: 0;
+}
+
+/* Pulse */
+@keyframes nudge-ring {
+  0%   { transform: scale(0.9); opacity: 0.7; }
+  100% { transform: scale(1.75); opacity: 0; }
+}
+.nudge-dot-pulse::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 8px;
+  border: 2px solid var(--teal);
+  animation: nudge-ring 1.5s ease-out infinite;
+}
+
+/* Glow */
+@keyframes nudge-glow-anim {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(26,145,162,0.55), 0 0 10px rgba(26,145,162,0.3); }
+  50%       { box-shadow: 0 0 0 8px rgba(26,145,162,0), 0 0 18px rgba(26,145,162,0.15); }
+}
+.nudge-dot-glow {
+  animation: nudge-glow-anim 1.8s ease-in-out infinite;
+}
+
+/* Sparkles */
+@keyframes nudge-sparkle {
+  0%, 100% { transform: scale(1) rotate(0deg);   opacity: 1; }
+  33%       { transform: scale(1.2) rotate(18deg); opacity: 0.75; }
+  66%       { transform: scale(0.9) rotate(-12deg); opacity: 0.9; }
+}
+.nudge-dot-sparkles {
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px;
+  color: var(--teal);
+  animation: nudge-sparkle 2s ease-in-out infinite;
+}
+
+/* Badge */
+.nudge-badge-pill {
+  position: absolute;
+  top: -10px; right: -12px;
+  background: var(--teal);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 2px 8px;
+  border-radius: 100px;
+  white-space: nowrap;
+}
+
+.nudge-effect-name {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--teal);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.nudge-effect-card p {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
 /* ─── PRICING ────────────────────────────────────────────────────────── */
 .pricing {
   background: var(--bg-subtle);
@@ -1485,6 +1618,7 @@ section { padding: 96px 0; position: relative; }
   .two-jobs h2,
   .pro-analytics h2,
   .visual-editor h2,
+  .nudge-section h2,
   .pricing h2,
   .waitlist h2,
   .e2e-testing h2,
@@ -1533,6 +1667,10 @@ section { padding: 96px 0; position: relative; }
 
   /* Step types */
   .step-types-grid { grid-template-columns: 1fr 1fr; }
+
+  /* Nudge */
+  .nudge-main { grid-template-columns: 1fr; }
+  .nudge-effects-row { grid-template-columns: 1fr 1fr; }
 
   /* Pricing */
   .pricing-grid { grid-template-columns: 1fr; }
