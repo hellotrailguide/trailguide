@@ -4,19 +4,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/png" href="icon.png">
-  <title>Trailguide | Product tours that double as Playwright tests</title>
-  <meta name="description" content="Record a product tour once. It runs as an onboarding guide for users and a Playwright regression test in CI, from the same JSON file. Free, open-source, no per-user pricing.">
+  <title>Trailguide | Product tours, CI tests, analytics, and feedback — one tool</title>
+  <meta name="description" content="Trailguide replaces Pendo, Mabl, and Hotjar. Guided onboarding tours that automatically run as Playwright CI tests, with completion funnels and structured feedback analytics. Free runtime. Pro at $49/month.">
   <link rel="canonical" href="https://gettrailguide.com/">
   <!-- Open Graph -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://gettrailguide.com/">
-  <meta property="og:title" content="Trailguide | Product tours that double as Playwright tests">
-  <meta property="og:description" content="Record a product tour once. It runs as an onboarding guide for users and a Playwright regression test in CI, from the same JSON file. Free, open-source, no per-user pricing.">
+  <meta property="og:title" content="Trailguide | Product tours, CI tests, and onboarding analytics in one tool">
+  <meta property="og:description" content="Build guided tours. Run them as CI tests. Track drop-off funnels. Collect structured feedback. All from JSON in your repo, for $49/month.">
   <meta property="og:image" content="https://gettrailguide.com/og-image.png">
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Trailguide | Product tours that double as Playwright tests">
-  <meta name="twitter:description" content="Record a product tour once. It runs as an onboarding guide for users and a Playwright regression test in CI, from the same JSON file. Free, open-source, no per-user pricing.">
+  <meta name="twitter:title" content="Trailguide | Product tours, CI tests, and onboarding analytics in one tool">
+  <meta name="twitter:description" content="Build guided tours. Run them as CI tests. Track drop-off funnels. Collect structured feedback. All from JSON in your repo, for $49/month.">
   <meta name="twitter:image" content="https://gettrailguide.com/og-image.png">
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@trailguide/core@0.1.8/dist/style.css">
@@ -47,9 +47,9 @@
     <div class="container hero-grid">
       <div class="hero-left">
         <div class="badge">Open Source · MIT License</div>
-        <h1>One recording. Two jobs.</h1>
+        <h1>Tours break.<br>Tests miss it.<br>Trailguide fixes both.</h1>
         <p class="hero-subtitle" data-trail-id="hero-subtitle">
-          Trailguide started as a product tour tool. We made it double as a Playwright regression test in CI. Same JSON file. Zero extra work.
+          Guided onboarding tours that automatically run as Playwright CI tests — so broken steps get caught before users do. Plus completion analytics and structured feedback to understand what to fix next.
         </p>
         <div class="hero-cta">
           <button onclick="startTour()" class="btn btn-primary btn-large">
@@ -59,7 +59,7 @@
             View Documentation
           </a>
         </div>
-        <p class="hero-note">Free forever. No account required.</p>
+        <p class="hero-note">Free runtime forever. 14-day Pro trial — $49/month.</p>
         <p class="hero-hint">p.s. the confetti at the end is a built-in step type. One line of JSON.</p>
       </div>
 
@@ -98,6 +98,57 @@
               <div class="hd-output-tag">CI Test</div>
               <div class="hd-output-label">Playwright<br>regression</div>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Replace -->
+  <section class="replace-section">
+    <div class="container">
+      <div class="eyebrow"><span class="eyebrow-dot"></span><span>Replaces</span></div>
+      <h2 class="replace-h2">Four tools in one.<br>At a fraction of the cost.</h2>
+      <p class="section-subtitle">Most teams pay for a product tour tool, an E2E testing platform, an analytics dashboard, and a feedback collector separately — and none of them talk to each other.</p>
+
+      <div class="replace-layout">
+        <div class="replace-old">
+          <div class="replace-tool">
+            <div class="replace-tool-info">
+              <div class="replace-tool-name">Pendo</div>
+              <div class="replace-tool-desc">Product tours &amp; in-app guidance</div>
+            </div>
+            <div class="replace-tool-price">~$500<span>/mo</span></div>
+          </div>
+          <div class="replace-tool">
+            <div class="replace-tool-info">
+              <div class="replace-tool-name">Mabl / Cypress Cloud</div>
+              <div class="replace-tool-desc">E2E automated testing</div>
+            </div>
+            <div class="replace-tool-price">~$500<span>/mo</span></div>
+          </div>
+          <div class="replace-tool">
+            <div class="replace-tool-info">
+              <div class="replace-tool-name">Hotjar / Mixpanel</div>
+              <div class="replace-tool-desc">Analytics &amp; user feedback</div>
+            </div>
+            <div class="replace-tool-price">~$100<span>/mo</span></div>
+          </div>
+          <div class="replace-total">
+            <span class="replace-total-label">Total</span>
+            <span class="replace-total-price">$1,100+/month</span>
+          </div>
+        </div>
+
+        <div class="replace-vs">or</div>
+
+        <div class="replace-new">
+          <div class="replace-tg">
+            <div class="replace-tg-label">Tours · Tests · Analytics · Feedback</div>
+            <div class="replace-tg-name">Trailguide</div>
+            <div class="replace-tg-price">$49<span>/mo</span></div>
+            <div class="replace-tg-note">+ free open source runtime</div>
+            <a href="https://app.gettrailguide.com" class="btn btn-primary" style="width:100%;justify-content:center;">Start 14-day trial</a>
           </div>
         </div>
       </div>
@@ -490,12 +541,46 @@
     </div>
   </section>
 
+  <!-- The Loop -->
+  <section class="loop-section">
+    <div class="container">
+      <div class="eyebrow"><span class="eyebrow-dot"></span><span>The Loop</span></div>
+      <h2 class="loop-h2">Build. Tour. Test. Understand.</h2>
+      <p class="section-subtitle">Every product team runs this cycle — ship a feature, guide users through it, verify it doesn't break, learn what to fix next. Trailguide is designed around that loop.</p>
+
+      <div class="loop-nodes">
+        <div class="loop-node">
+          <div class="loop-step-label">01 · Build</div>
+          <h3>Write the trail</h3>
+          <p>Define tours as JSON in your repo — or record them visually by clicking through your app. Flows live next to the features they document, reviewed in PRs alongside code.</p>
+        </div>
+        <div class="loop-node">
+          <div class="loop-step-label">02 · Tour</div>
+          <h3>Guide your users</h3>
+          <p>The trail plays as an interactive onboarding sequence. Tooltips, announcements, checklists, nudges, celebrations, feedback prompts — all step types, in any order.</p>
+        </div>
+        <div class="loop-node">
+          <div class="loop-step-label">03 · Test</div>
+          <h3>Catch breaks in CI</h3>
+          <p>The same JSON file runs as a Playwright regression test on every deploy. If a button moves or a selector breaks, CI fails before any user is affected.</p>
+        </div>
+        <div class="loop-node">
+          <div class="loop-step-label">04 · Understand</div>
+          <h3>See what's next</h3>
+          <p>Completion funnels show exactly where users drop off. Product Signals reveal word themes and sentiment. The data tells you what to fix in the next cycle.</p>
+        </div>
+      </div>
+
+      <p class="loop-back">↩ Then loop back to Build — fix what you found and ship the next version.</p>
+    </div>
+  </section>
+
   <!-- Pro Analytics -->
   <section id="analytics" class="pro-analytics">
     <div class="container">
       <div class="pro-badge">Pro Feature</div>
       <h2>Know exactly where users drop off</h2>
-      <p class="section-subtitle">Stop guessing. See real completion data for every trail.</p>
+      <p class="section-subtitle">Stop guessing. See real completion data for every trail — with trend comparisons, step-by-step funnels, and word themes from your feedback.</p>
 
       <div class="analytics-grid">
         <div class="analytics-preview">
@@ -565,7 +650,7 @@
             </div>
             <div>
               <h4>Measure improvements</h4>
-              <p>Ship a change, watch completion rates climb. No more hoping your onboarding works. Now you'll know.</p>
+              <p>Ship a change, watch completion rates climb. Trend arrows compare the current period to the previous one so you know instantly if things are getting better or worse.</p>
             </div>
           </div>
           <div class="benefit">
@@ -574,7 +659,16 @@
             </div>
             <div>
               <h4>Track over time</h4>
-              <p>Daily and weekly trends show if your onboarding is getting better or worse. Catch regressions before they hurt.</p>
+              <p>A dual-line chart shows starts vs. completions every day. The gap between the two lines tells you how many users are still not making it through.</p>
+            </div>
+          </div>
+          <div class="benefit">
+            <div class="benefit-icon">
+              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+            </div>
+            <div>
+              <h4>Collect feedback, see the themes</h4>
+              <p>Product Signals connects any app to send structured feedback via API key. Automatic sentiment detection, categorical breakdowns, and word-frequency themes — no schema required.</p>
             </div>
           </div>
         </div>
@@ -965,7 +1059,8 @@
             <li><strong>Test Health dashboard:</strong> track pass rates, most broken steps, and run history across all your CI pipelines in one place</li>
             <li><strong>Failure notifications:</strong> get a Slack message or webhook ping the moment a trail fails in CI, with a direct link to the broken step</li>
             <li><strong>Hosted trail storage:</strong> every step saved with a screenshot so you can see exactly what changed when your app updates</li>
-            <li><strong>Analytics:</strong> completion rates, step-by-step drop-off funnel, trends over time</li>
+            <li><strong>Trail Analytics:</strong> completion rates, step-by-step drop-off funnel with color-coded health, dual-line starts vs. completions trend, prior-period comparison arrows</li>
+            <li><strong>Product Signals:</strong> connect any app via API key to send structured feedback. Auto-detects sentiment scores, categorical field breakdowns, and word-frequency themes from any JSON payload. Backfill from Jira in one click.</li>
             <li><strong>Git Sync (GitHub + GitLab):</strong> load trails from your repo, edit in the dashboard, push back as commits or PRs/MRs</li>
             <li><strong>Selector quality grades:</strong> Stable / Moderate / Fragile, one-click health scan across your entire trail, re-record any broken step in seconds</li>
             <li><strong>Reusable flows:</strong> save groups of steps as named flows and drag them into any trail</li>
@@ -1010,7 +1105,7 @@
             <img src="icon.png" alt="" height="24">
             <span class="logo-text">Trailguide</span>
           </a>
-          <p>One recording. Two jobs. Free forever.</p>
+          <p>Tours · Tests · Analytics · Feedback. Free runtime forever.</p>
         </div>
         <div class="footer-links">
           <h4>Product</h4>

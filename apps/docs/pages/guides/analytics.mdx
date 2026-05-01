@@ -10,7 +10,27 @@ import { Callout } from 'nextra/components'
   Analytics require a **Trailguide Pro** account. [Start a free 14-day trial](https://app.gettrailguide.com).
 </Callout>
 
-Trailguide Pro tracks tour events — starts, completions, skips, step views, and abandoned tours — and surfaces them in a dashboard with drop-off charts, completion rates, and step-level metrics.
+Trailguide Pro tracks tour events — starts, completions, skips, step views, and abandoned tours — and surfaces them in a dashboard with trend comparisons, completion funnels, and step-level drop-off metrics.
+
+## What the dashboard shows
+
+The Trail Analytics dashboard in the Pro Editor ([/dashboard/analytics](https://app.gettrailguide.com/dashboard/analytics)) has three levels of detail:
+
+**L1 — Snapshot bar**
+Four at-a-glance metrics, each with a trend arrow comparing the current period to the previous one:
+- **Sessions** — total tours started
+- **Completion rate** — percentage of sessions that reached the last step (color-coded: green ≥70%, amber ≥40%, red below that)
+- **Avg steps viewed** — average number of steps users see before stopping
+- **Top exit step** — the step where the most users drop off, with the percentage that left there
+
+**L2 — Charts**
+- **Starts vs. completions** — a dual-line chart showing how many sessions started and how many completed each day, revealing the gap between acquisition and activation over time
+- **Step funnel** — a horizontal bar per step showing what percentage of sessions reached it. Color-coded (green/amber/red). Drop-off percentages between adjacent steps make it obvious where the tour loses people.
+
+**L3 — Raw sessions table** (collapsed by default)
+Every individual session with outcome badge (Completed / Dropped / In Progress), steps viewed, exit step, and relative timestamp.
+
+**Time period selector**: 7d / 30d / 90d / 6mo / 1yr / All — switching periods is instant (all events are fetched once on load, filtered client-side).
 
 ## Enable analytics
 

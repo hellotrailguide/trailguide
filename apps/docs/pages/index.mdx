@@ -53,7 +53,8 @@ Most onboarding tools are third-party scripts — loaded from a CDN, configured 
 | Announcement, checklist, celebration, feedback step types | ✅ | ✅ |
 | Redirect and delay step types | ✅ | Sometimes |
 | Runs as a Playwright CI test | ✅ | ❌ |
-| Analytics | ✅ Pro | ✅ |
+| Trail analytics (completion funnel, drop-off trends) | ✅ Pro | ✅ |
+| Product Signals (connect any app, sentiment + word analysis) | ✅ Pro | ❌ |
 | Visual editor | ✅ Pro | ✅ |
 | AI-assisted step authoring | ✅ Pro | ❌ |
 | Guided recording with action quick-pick | ✅ Pro | ❌ |
@@ -91,7 +92,8 @@ The SDK is fully open source (MIT). Everything in this documentation works out o
 - **AI-assisted step authoring** — click the ✦ Suggest button on any step and Claude generates a title, body copy, and placement from the element's context. Accept the whole suggestion or pick individual fields.
 - **Guided recording mode** — an action quick-pick overlay appears near every clicked element so you can choose Click, Hover, or Skip before the step commits. Hold Shift while clicking to instantly capture and navigate without waiting for the overlay.
 - **Reusable flows** — save any group of steps as a named flow and drag them into any trail to insert all those steps at once.
-- **Analytics** — see starts, completions, and a step-by-step drop-off funnel. Know which steps lose users and whether your changes made things better.
+- **Analytics** — see starts, completions, and a step-by-step drop-off funnel with trend comparisons vs. the prior period. L1 snapshot metrics (completion rate, avg steps viewed, top exit step), L2 dual-line chart (starts vs. completions over time) and color-coded funnel, L3 raw session table. Know which steps lose users and whether your changes made things better.
+- **Product Signals** — connect any app to send structured feedback via API key. Automatic sentiment detection, categorical breakdowns, and word-frequency themes from any JSON payload. Backfill from Jira in one click. See [Product Signals guide](/guides/product-signals).
 - **Git sync (GitHub + GitLab)** — load existing trails straight from your repo, edit them in the dashboard, and push changes back as commits or pull/merge requests. Works with both GitHub and GitLab.
 - **Selector quality grades** — every captured element is graded Stable, Moderate, or Fragile, with suggestions to fix brittle selectors before they break in production.
 - **Playwright test runner** — set any trail to `both` mode and it runs as a Playwright regression test in CI from the same JSON file. No separate test suite to maintain.

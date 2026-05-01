@@ -1,0 +1,152 @@
+---
+title: Product Signals (Pro)
+---
+
+import { Callout, Steps } from 'nextra/components'
+
+# Product Signals
+
+<Callout type="info">
+  Product Signals requires a **Trailguide Pro** account. [Start a free 14-day trial](https://app.gettrailguide.com).
+</Callout>
+
+Product Signals is the feedback analytics dashboard in Trailguide Pro. Connect any app to send structured feedback responses — from in-trail feedback steps, support forms, or any other source — and get automatic sentiment analysis, categorical breakdowns, and word-frequency themes, all in one place.
+
+---
+
+## How it works
+
+1. Generate an API key in the Pro dashboard
+2. POST feedback submissions from your app to the Trailguide API
+3. View responses in the Product Signals dashboard at [/dashboard/feedback](https://app.gettrailguide.com/dashboard/feedback)
+
+Each submission is a JSON object with a `payload` field that can contain any fields you want to track. Trailguide automatically detects sentiment scores, categorical breakdowns, and text themes from whatever you send.
+
+---
+
+## Setup
+
+<Steps>
+
+### Generate an API key
+
+Go to [Dashboard > Product Signals](https://app.gettrailguide.com/dashboard/feedback) and open the **API Keys** panel. Click **Generate API Key**.
+
+Copy the full key — it is only shown once.
+
+### POST feedback submissions
+
+Send a `POST` to `https://app.gettrailguide.com/api/feedback` with a `Bearer` token header:
+
+```ts
+await fetch('https://app.gettrailguide.com/api/feedback', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${process.env.TRAILGUIDE_FEEDBACK_KEY}`,
+  },
+  body: JSON.stringify({
+    formId: 'contact-import-feedback',     // identifies this form in the dashboard
+    formLabel: 'Contact Import Feedback',  // human-readable label (optional)
+    appId: 'my-app',                       // your app identifier
+    instance: 'acme-corp',                 // tenant / subdomain / customer ID
+    respondentName: 'Jane Smith',
+    respondentEmail: 'jane@acme.com',
+    payload: {
+      // any fields you want to track
+      source: 'Google Contacts',
+      rating: 4,
+      comment: 'Import was smooth but the field mapping could be clearer.',
+    },
+  }),
+})
+```
+
+The request returns `201` on success. It is safe to fire-and-forget — errors are non-blocking.
+
+### View responses in the dashboard
+
+Open [/dashboard/feedback](https://app.gettrailguide.com/dashboard/feedback). Your form appears in the left panel with a submission count. Click it to see the full breakdown.
+
+</Steps>
+
+---
+
+## Request body fields
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `formId` | Yes | Stable identifier for this form. Used to group responses together. |
+| `formLabel` | No | Human-readable name shown in the left panel. Defaults to `formId`. |
+| `appId` | Yes | Your app's identifier. |
+| `instance` | Yes | Tenant, subdomain, or customer ID. Appears in the raw data table. |
+| `respondentName` | Yes | Name of the person who submitted. |
+| `respondentEmail` | Yes | Email of the person who submitted. |
+| `payload` | Yes | A JSON object with any fields you want to track. No schema required. |
+
+---
+
+## What the dashboard shows
+
+The Product Signals dashboard has three levels of detail:
+
+**L1 — Snapshot bar**
+Three at-a-glance metrics with trend arrows comparing the current period to the previous one:
+- **Total submissions** and change vs. prior period
+- **Average sentiment** — automatically detected from any numeric rating field in your payload (1–5 or 1–10 scale, or fields named `rating`, `score`, `nps`, `stars`)
+- **Top word** — the most frequent meaningful word across all text responses
+
+**L2 — Breakdown charts**
+- **Sentiment distribution** — histogram of rating values if a sentiment field is detected
+- **Categorical breakdowns** — for any payload field with 2–15 distinct string values (like `source`, `plan`, `role`), a bar chart shows submission counts per category
+- **Word themes** — top keywords extracted from free-text fields (fields where the average response length is over 30 characters), with stopwords filtered out
+
+**L3 — Raw submissions table** (collapsed by default)
+Every individual submission with all payload fields, respondent, instance, and timestamp.
+
+**Time period selector**: 7d / 30d / 90d / 6mo / 1yr / All — switching is instant.
+
+---
+
+## Backfilling from Jira
+
+If your team previously collected feedback as Jira comments (in the format `Instance: X\nUser: Y (email)\nSource: Z\n...`), you can import them in one click. In the left panel next to any form, click **Sync from Jira**. Trailguide fetches the Jira issue's comment history, parses each comment into structured fields, and imports them as submissions with `sync_source: jira_import`.
+
+---
+
+## Using with in-trail feedback steps
+
+If you use the `feedback` step type in a trail, you can forward those responses to Product Signals by configuring the step's `webhook` field to point at your own server, then forwarding the payload to the Trailguide API:
+
+```ts
+// Your server — receives the webhook from the feedback step
+app.post('/feedback-webhook', async (req, res) => {
+  const { rating, comment, trailId, stepId } = req.body
+
+  await fetch('https://app.gettrailguide.com/api/feedback', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${process.env.TRAILGUIDE_FEEDBACK_KEY}`,
+    },
+    body: JSON.stringify({
+      formId: trailId,
+      appId: 'my-app',
+      instance: req.user.tenantId,
+      respondentName: req.user.name,
+      respondentEmail: req.user.email,
+      payload: { rating, comment, stepId },
+    }),
+  })
+
+  res.sendStatus(200)
+})
+```
+
+This connects the user experience of the tour with the analytics of their response.
+
+---
+
+## CORS
+
+The `POST /api/feedback` endpoint accepts requests from any origin (`Access-Control-Allow-Origin: *`). You can call it directly from the browser if your API key is acceptable to expose in client code, though posting from your server is recommended.
